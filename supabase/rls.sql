@@ -13,10 +13,25 @@ language sql security definer stable as $$
 $$;
 
 -- ENABLE RLS
-alter table profiles, buildings, units, memberships, dues_periods, dues_invoices,
-  payments, announcements, announcement_reads, issues, issue_comments, expenses,
-  documents, polls, poll_options, votes, subscriptions, notifications, invitations
-  enable row level security;
+alter table profiles enable row level security;
+alter table buildings enable row level security;
+alter table units enable row level security;
+alter table memberships enable row level security;
+alter table dues_periods enable row level security;
+alter table dues_invoices enable row level security;
+alter table payments enable row level security;
+alter table announcements enable row level security;
+alter table announcement_reads enable row level security;
+alter table issues enable row level security;
+alter table issue_comments enable row level security;
+alter table expenses enable row level security;
+alter table documents enable row level security;
+alter table polls enable row level security;
+alter table poll_options enable row level security;
+alter table votes enable row level security;
+alter table subscriptions enable row level security;
+alter table notifications enable row level security;
+alter table invitations enable row level security;
 
 -- PROFILES
 create policy "self_profile" on profiles for all using (id = auth.uid()) with check (id = auth.uid());

@@ -1,6 +1,36 @@
-# apartment_manager
+# Apartman Yöneticisi
 
-A new Flutter project.
+Türkiye pazarına yönelik Flutter tabanlı apartman/site yönetim uygulaması.
+
+## Kurulum
+
+Gereksinimler:
+- Flutter (stable)
+- Dart (Flutter ile birlikte gelir)
+
+Komutlar:
+
+```bash
+flutter pub get
+flutter gen-l10n
+flutter analyze
+flutter run
+```
+
+## Proje Yapısı
+
+- `lib/core/`: tema, ortak widgetlar, utils, hata tipleri
+- `lib/features/`: feature-first yapı (`<feature>/{data,domain,presentation}`)
+- `lib/router/`: `go_router` yapılandırması
+- `lib/l10n/`: çeviri dosyaları
+
+## Phase 1
+
+- Spec’e göre bağımlılıklar eklendi
+- Lint kuralları (very_good_analysis + flutter_lints) aktif
+- Feature-first klasör yapısı kuruldu
+- Material 3 light/dark tema + Inter font
+- Splash ekranı (2sn) eklendi
 
 ## Getting Started
 
