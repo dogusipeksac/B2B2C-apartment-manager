@@ -14,7 +14,10 @@ final profileRepositoryProvider = Provider<ProfileRepository>(
 );
 
 final sessionStreamProvider = Provider<Stream<Session?>>(
-  (ref) => ref.watch(authRepositoryProvider).sessionStream(),
+  (ref) => ref
+      .watch(authRepositoryProvider)
+      .sessionStream()
+      .asBroadcastStream(),
 );
 
 final currentSessionProvider = StreamProvider<Session?>(
@@ -22,10 +25,11 @@ final currentSessionProvider = StreamProvider<Session?>(
 );
 
 final currentUserProvider = Provider<User?>((ref) {
-  return ref.watch(currentSessionProvider).maybeWhen(
-        data: (session) => session?.user,
-        orElse: () => null,
-      );
+  final session = ref.watch(currentSessionProvider).maybeWhen(
+    data: (value) => value,
+    orElse: () => null,
+  );
+  return session?.user ?? ref.watch(authRepositoryProvider).currentUser;
 });
 
 final currentProfileProvider = FutureProvider<Profile?>((ref) async {

@@ -23,6 +23,8 @@ abstract interface class AuthRepository {
 
   Stream<Session?> sessionStream();
 
+  Session? get currentSession;
+
   User? get currentUser;
 }
 
@@ -50,8 +52,18 @@ class SupabaseAuthRepository implements AuthRepository {
       }
     } on SocketException {
       throw const AppException.network();
-    } on AuthException {
-      throw const AppException.auth();
+    } on AuthException catch (e) {
+      final status = int.tryParse(e.statusCode ?? '');
+      final code = e.code;
+
+      if (status == 429 || code == 'over_email_send_rate_limit') {
+        throw const AppException.validation(
+          code: 'rate_limit',
+          messageKey: 'errorRateLimit',
+        );
+      }
+
+      throw AppException.auth(code: code, messageKey: 'errorGeneric');
     } on Object {
       throw const AppException.server();
     }
@@ -81,10 +93,35 @@ class SupabaseAuthRepository implements AuthRepository {
     } on SocketException {
       throw const AppException.network();
     } on AuthException catch (e) {
-      if (e.statusCode == '400' || e.statusCode == '401') {
-        throw const AppException.validation();
+      final status = int.tryParse(e.statusCode ?? '');
+      final code = e.code;
+
+      if (status == 429 || code == 'over_email_send_rate_limit') {
+        throw const AppException.validation(
+          code: 'rate_limit',
+          messageKey: 'errorRateLimit',
+        );
       }
-      throw const AppException.auth();
+
+      if (code == 'otp_expired') {
+        throw const AppException.validation(
+          code: 'otp_expired',
+          messageKey: 'errorOtpExpired',
+        );
+      }
+
+      if (code == 'invalid_otp' || code == 'token_not_found') {
+        throw const AppException.validation(
+          code: 'invalid_otp',
+          messageKey: 'errorInvalidOtp',
+        );
+      }
+
+      if (status == 400 || status == 401) {
+        throw const AppException.validation(messageKey: 'errorInvalidOtp');
+      }
+
+      throw AppException.auth(code: code, messageKey: 'errorGeneric');
     } on Object {
       throw const AppException.server();
     }
@@ -96,8 +133,8 @@ class SupabaseAuthRepository implements AuthRepository {
       await _authClient.signOut();
     } on SocketException {
       throw const AppException.network();
-    } on AuthException {
-      throw const AppException.auth();
+    } on AuthException catch (e) {
+      throw AppException.auth(code: e.code, messageKey: 'errorGeneric');
     } on Object {
       throw const AppException.server();
     }
@@ -108,6 +145,9 @@ class SupabaseAuthRepository implements AuthRepository {
     yield _authClient.currentSession;
     yield* _authClient.onAuthStateChange.map((event) => event.session);
   }
+
+  @override
+  Session? get currentSession => _authClient.currentSession;
 
   @override
   User? get currentUser => _authClient.currentUser;

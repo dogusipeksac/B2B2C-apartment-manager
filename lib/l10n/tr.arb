@@ -1,5 +1,45 @@
 {
   "@@locale": "tr",
-  "appTitle": "Apartman Yöneticisi"
+  "appTitle": "Apartman Yöneticisi",
+  "emailEntryTitle": "Giriş",
+  "emailHint": "E-posta adresi",
+  "continueButton": "Devam et",
+  "otpTitle": "Doğrulama Kodu",
+  "otpSubtitle": "{identifier} adresine gönderilen 6 haneli kodu girin.",
+  "@otpSubtitle": {
+    "placeholders": {
+      "identifier": {}
+    }
+  },
+  "resendIn": "{seconds} sn sonra yeniden gönder",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "resendOtp": "Yeniden gönder",
+  "verifyButton": "Doğrula",
+  "profileSetupTitle": "Profil",
+  "fullNameHint": "Ad Soyad",
+  "saveButton": "Kaydet",
+  "welcomeMessage": "Hoş geldin {fullName}",
+  "@welcomeMessage": {
+    "placeholders": {
+      "fullName": {}
+    }
+  },
+  "signOut": "Çıkış yap",
+  "errorGeneric": "Bir hata oluştu. Lütfen tekrar deneyin.",
+  "errorNetwork": "İnternet bağlantınızı kontrol edin ve tekrar deneyin.",
+  "errorInvalidOtp": "Kod geçersiz. Lütfen tekrar deneyin.",
+  "errorRateLimit": "Çok fazla deneme yaptınız, lütfen biraz bekleyip tekrar deneyin.",
+  "errorOtpExpired": "Doğrulama kodunun süresi doldu, yeniden gönderin.",
+  "errorEmailInvalid": "Geçerli bir e-posta adresi girin.",
+  "otpSentToEmail": "{email} adresine doğrulama kodu gönderildi.",
+  "@otpSentToEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  }
 }
 

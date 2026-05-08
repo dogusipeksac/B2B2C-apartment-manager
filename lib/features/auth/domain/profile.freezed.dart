@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Profile {
 
- String get id; String get fullName; String? get phone; String? get email; String? get avatarUrl; String get language;
+ String get id; String get fullName; String get language; String? get phone; String? get email; String? get avatarUrl;
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.language, language) || other.language == language));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,phone,email,avatarUrl,language);
+int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl);
 
 @override
 String toString() {
-  return 'Profile(id: $id, fullName: $fullName, phone: $phone, email: $email, avatarUrl: $avatarUrl, language: $language)';
+  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String fullName, String? phone, String? email, String? avatarUrl, String language
+ String id, String fullName, String language, String? phone, String? email, String? avatarUrl
 });
 
 
@@ -65,15 +65,15 @@ class _$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,Object? language = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
-as String,
+as String?,
   ));
 }
 
@@ -158,10 +158,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String fullName,  String? phone,  String? email,  String? avatarUrl,  String language)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,_that.language);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
   return orElse();
 
 }
@@ -179,10 +179,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String fullName,  String? phone,  String? email,  String? avatarUrl,  String language)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
-return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,_that.language);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +199,10 @@ return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String fullName,  String? phone,  String? email,  String? avatarUrl,  String language)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,_that.language);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
   return null;
 
 }
@@ -214,15 +214,15 @@ return $default(_that.id,_that.fullName,_that.phone,_that.email,_that.avatarUrl,
 @JsonSerializable()
 
 class _Profile extends Profile {
-  const _Profile({required this.id, required this.fullName, this.phone, this.email, this.avatarUrl, required this.language}): super._();
+  const _Profile({required this.id, required this.fullName, required this.language, this.phone, this.email, this.avatarUrl}): super._();
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
 @override final  String id;
 @override final  String fullName;
+@override final  String language;
 @override final  String? phone;
 @override final  String? email;
 @override final  String? avatarUrl;
-@override final  String language;
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +237,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.language, language) || other.language == language));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,phone,email,avatarUrl,language);
+int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl);
 
 @override
 String toString() {
-  return 'Profile(id: $id, fullName: $fullName, phone: $phone, email: $email, avatarUrl: $avatarUrl, language: $language)';
+  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl)';
 }
 
 
@@ -257,7 +257,7 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String fullName, String? phone, String? email, String? avatarUrl, String language
+ String id, String fullName, String language, String? phone, String? email, String? avatarUrl
 });
 
 
@@ -274,15 +274,15 @@ class __$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,Object? language = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,}) {
   return _then(_Profile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
+as String,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,language: null == language ? _self.language : language // ignore: cast_nullable_to_non_nullable
-as String,
+as String?,
   ));
 }
 

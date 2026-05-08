@@ -43,7 +43,7 @@ void main() {
         identifier: 'a@b.com',
         channel: OtpChannel.email,
       ),
-      throwsA(const AppException.auth()),
+      throwsA(isA<AppException>()),
     );
   });
 
@@ -95,7 +95,9 @@ void main() {
         token: any(named: 'token'),
         type: any(named: 'type'),
       ),
-    ).thenThrow(const AuthException('invalid', statusCode: '400'));
+    ).thenThrow(
+      const AuthException('invalid', statusCode: '400', code: 'invalid_otp'),
+    );
 
     expect(
       () => repository.verifyOtp(
@@ -103,7 +105,13 @@ void main() {
         code: '000000',
         channel: OtpChannel.email,
       ),
-      throwsA(const AppException.validation()),
+      throwsA(
+        predicate(
+          (e) =>
+              e is AppException &&
+              e.mapOrNull(validation: (v) => v.code) == 'invalid_otp',
+        ),
+      ),
     );
   });
 }

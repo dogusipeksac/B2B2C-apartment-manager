@@ -103,6 +103,126 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Apartman Yöneticisi'**
   String get appTitle;
+
+  /// No description provided for @emailEntryTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş'**
+  String get emailEntryTitle;
+
+  /// No description provided for @emailHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-posta adresi'**
+  String get emailHint;
+
+  /// No description provided for @continueButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam et'**
+  String get continueButton;
+
+  /// No description provided for @otpTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama Kodu'**
+  String get otpTitle;
+
+  /// No description provided for @otpSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'{identifier} adresine gönderilen 6 haneli kodu girin.'**
+  String otpSubtitle(Object identifier);
+
+  /// No description provided for @resendIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'{seconds} sn sonra yeniden gönder'**
+  String resendIn(Object seconds);
+
+  /// No description provided for @resendOtp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden gönder'**
+  String get resendOtp;
+
+  /// No description provided for @verifyButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrula'**
+  String get verifyButton;
+
+  /// No description provided for @profileSetupTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
+  String get profileSetupTitle;
+
+  /// No description provided for @fullNameHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad Soyad'**
+  String get fullNameHint;
+
+  /// No description provided for @saveButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get saveButton;
+
+  /// No description provided for @welcomeMessage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hoş geldin {fullName}'**
+  String welcomeMessage(Object fullName);
+
+  /// No description provided for @signOut.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çıkış yap'**
+  String get signOut;
+
+  /// No description provided for @errorGeneric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir hata oluştu. Lütfen tekrar deneyin.'**
+  String get errorGeneric;
+
+  /// No description provided for @errorNetwork.
+  ///
+  /// In tr, this message translates to:
+  /// **'İnternet bağlantınızı kontrol edin ve tekrar deneyin.'**
+  String get errorNetwork;
+
+  /// No description provided for @errorInvalidOtp.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod geçersiz. Lütfen tekrar deneyin.'**
+  String get errorInvalidOtp;
+
+  /// No description provided for @errorRateLimit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok fazla deneme yaptınız, lütfen biraz bekleyip tekrar deneyin.'**
+  String get errorRateLimit;
+
+  /// No description provided for @errorOtpExpired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama kodunun süresi doldu, yeniden gönderin.'**
+  String get errorOtpExpired;
+
+  /// No description provided for @errorEmailInvalid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geçerli bir e-posta adresi girin.'**
+  String get errorEmailInvalid;
+
+  /// No description provided for @otpSentToEmail.
+  ///
+  /// In tr, this message translates to:
+  /// **'{email} adresine doğrulama kodu gönderildi.'**
+  String otpSentToEmail(Object email);
 }
 
 class _AppLocalizationsDelegate

@@ -29,6 +29,22 @@ class OtpVerificationScreen extends ConsumerStatefulWidget {
 class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   static const _cooldownSeconds = 60;
 
+  String _localizedError(AppLocalizations l10n, AppException e) {
+    final key = e.mapOrNull(
+      auth: (v) => v.messageKey,
+      validation: (v) => v.messageKey,
+      server: (v) => v.messageKey,
+    );
+
+    return switch (key) {
+      'errorRateLimit' => l10n.errorRateLimit,
+      'errorOtpExpired' => l10n.errorOtpExpired,
+      'errorInvalidOtp' => l10n.errorInvalidOtp,
+      'errorGeneric' => l10n.errorGeneric,
+      _ => e.userMessage,
+    };
+  }
+
   final _pinController = PinInputController();
   Timer? _cooldownTimer;
   int _remaining = _cooldownSeconds;
@@ -72,11 +88,25 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
       next.whenOrNull(
         error: (err, _) {
           final message = switch (err) {
-            AppException(:final userMessage) => userMessage,
+            AppException() => _localizedError(l10n, err),
             _ => l10n.errorGeneric,
           };
+          final code = (err is AppException)
+              ? err.mapOrNull(
+                  auth: (v) => v.code,
+                  validation: (v) => v.code,
+                  server: (v) => v.code,
+                )
+              : null;
+
+          final isRateLimit = code == 'rate_limit';
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message)),
+            SnackBar(
+              content: Text(message),
+              duration: Duration(seconds: isRateLimit ? 6 : 4),
+              backgroundColor:
+                  isRateLimit ? Theme.of(context).colorScheme.error : null,
+            ),
           );
         },
       );

@@ -1,5 +1,45 @@
 {
   "@@locale": "en",
-  "appTitle": "Apartment Manager"
+  "appTitle": "Apartment Manager",
+  "emailEntryTitle": "Sign in",
+  "emailHint": "Email address",
+  "continueButton": "Continue",
+  "otpTitle": "Verification Code",
+  "otpSubtitle": "Enter the 6-digit code sent to {identifier}.",
+  "@otpSubtitle": {
+    "placeholders": {
+      "identifier": {}
+    }
+  },
+  "resendIn": "Resend in {seconds}s",
+  "@resendIn": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "resendOtp": "Resend",
+  "verifyButton": "Verify",
+  "profileSetupTitle": "Profile",
+  "fullNameHint": "Full name",
+  "saveButton": "Save",
+  "welcomeMessage": "Welcome {fullName}",
+  "@welcomeMessage": {
+    "placeholders": {
+      "fullName": {}
+    }
+  },
+  "signOut": "Sign out",
+  "errorGeneric": "Something went wrong. Please try again.",
+  "errorNetwork": "Please check your internet connection and try again.",
+  "errorInvalidOtp": "Invalid code. Please try again.",
+  "errorRateLimit": "Too many attempts. Please wait and try again.",
+  "errorOtpExpired": "The verification code has expired. Please resend.",
+  "errorEmailInvalid": "Enter a valid email address.",
+  "otpSentToEmail": "Verification code sent to {email}.",
+  "@otpSentToEmail": {
+    "placeholders": {
+      "email": {}
+    }
+  }
 }
 

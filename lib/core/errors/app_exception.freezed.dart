@@ -128,13 +128,13 @@ return unknown(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function()?  auth,TResult Function()?  validation,TResult Function()?  server,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  network,TResult Function( String? code,  String? messageKey)?  auth,TResult Function( String? code,  String? messageKey)?  validation,TResult Function( String? code,  String? messageKey)?  server,TResult Function()?  unknown,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Network() when network != null:
 return network();case _Auth() when auth != null:
-return auth();case _Validation() when validation != null:
-return validation();case _Server() when server != null:
-return server();case _Unknown() when unknown != null:
+return auth(_that.code,_that.messageKey);case _Validation() when validation != null:
+return validation(_that.code,_that.messageKey);case _Server() when server != null:
+return server(_that.code,_that.messageKey);case _Unknown() when unknown != null:
 return unknown();case _:
   return orElse();
 
@@ -153,13 +153,13 @@ return unknown();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function()  auth,required TResult Function()  validation,required TResult Function()  server,required TResult Function()  unknown,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  network,required TResult Function( String? code,  String? messageKey)  auth,required TResult Function( String? code,  String? messageKey)  validation,required TResult Function( String? code,  String? messageKey)  server,required TResult Function()  unknown,}) {final _that = this;
 switch (_that) {
 case _Network():
 return network();case _Auth():
-return auth();case _Validation():
-return validation();case _Server():
-return server();case _Unknown():
+return auth(_that.code,_that.messageKey);case _Validation():
+return validation(_that.code,_that.messageKey);case _Server():
+return server(_that.code,_that.messageKey);case _Unknown():
 return unknown();}
 }
 /// A variant of `when` that fallback to returning `null`
@@ -174,13 +174,13 @@ return unknown();}
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function()?  auth,TResult? Function()?  validation,TResult? Function()?  server,TResult? Function()?  unknown,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  network,TResult? Function( String? code,  String? messageKey)?  auth,TResult? Function( String? code,  String? messageKey)?  validation,TResult? Function( String? code,  String? messageKey)?  server,TResult? Function()?  unknown,}) {final _that = this;
 switch (_that) {
 case _Network() when network != null:
 return network();case _Auth() when auth != null:
-return auth();case _Validation() when validation != null:
-return validation();case _Server() when server != null:
-return server();case _Unknown() when unknown != null:
+return auth(_that.code,_that.messageKey);case _Validation() when validation != null:
+return validation(_that.code,_that.messageKey);case _Server() when server != null:
+return server(_that.code,_that.messageKey);case _Unknown() when unknown != null:
 return unknown();case _:
   return null;
 
@@ -225,97 +225,205 @@ String toString() {
 
 
 class _Auth extends AppException {
-  const _Auth(): super._();
+  const _Auth({this.code, this.messageKey}): super._();
   
 
+ final  String? code;
+ final  String? messageKey;
 
-
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$AuthCopyWith<_Auth> get copyWith => __$AuthCopyWithImpl<_Auth>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Auth);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Auth&&(identical(other.code, code) || other.code == code)&&(identical(other.messageKey, messageKey) || other.messageKey == messageKey));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,code,messageKey);
 
 @override
 String toString() {
-  return 'AppException.auth()';
+  return 'AppException.auth(code: $code, messageKey: $messageKey)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$AuthCopyWith<$Res> implements $AppExceptionCopyWith<$Res> {
+  factory _$AuthCopyWith(_Auth value, $Res Function(_Auth) _then) = __$AuthCopyWithImpl;
+@useResult
+$Res call({
+ String? code, String? messageKey
+});
 
 
+
+
+}
+/// @nodoc
+class __$AuthCopyWithImpl<$Res>
+    implements _$AuthCopyWith<$Res> {
+  __$AuthCopyWithImpl(this._self, this._then);
+
+  final _Auth _self;
+  final $Res Function(_Auth) _then;
+
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? code = freezed,Object? messageKey = freezed,}) {
+  return _then(_Auth(
+code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String?,messageKey: freezed == messageKey ? _self.messageKey : messageKey // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
 
 class _Validation extends AppException {
-  const _Validation(): super._();
+  const _Validation({this.code, this.messageKey}): super._();
   
 
+ final  String? code;
+ final  String? messageKey;
 
-
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ValidationCopyWith<_Validation> get copyWith => __$ValidationCopyWithImpl<_Validation>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Validation);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Validation&&(identical(other.code, code) || other.code == code)&&(identical(other.messageKey, messageKey) || other.messageKey == messageKey));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,code,messageKey);
 
 @override
 String toString() {
-  return 'AppException.validation()';
+  return 'AppException.validation(code: $code, messageKey: $messageKey)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$ValidationCopyWith<$Res> implements $AppExceptionCopyWith<$Res> {
+  factory _$ValidationCopyWith(_Validation value, $Res Function(_Validation) _then) = __$ValidationCopyWithImpl;
+@useResult
+$Res call({
+ String? code, String? messageKey
+});
 
 
+
+
+}
+/// @nodoc
+class __$ValidationCopyWithImpl<$Res>
+    implements _$ValidationCopyWith<$Res> {
+  __$ValidationCopyWithImpl(this._self, this._then);
+
+  final _Validation _self;
+  final $Res Function(_Validation) _then;
+
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? code = freezed,Object? messageKey = freezed,}) {
+  return _then(_Validation(
+code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String?,messageKey: freezed == messageKey ? _self.messageKey : messageKey // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
 
 class _Server extends AppException {
-  const _Server(): super._();
+  const _Server({this.code, this.messageKey}): super._();
   
 
+ final  String? code;
+ final  String? messageKey;
 
-
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$ServerCopyWith<_Server> get copyWith => __$ServerCopyWithImpl<_Server>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Server);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Server&&(identical(other.code, code) || other.code == code)&&(identical(other.messageKey, messageKey) || other.messageKey == messageKey));
 }
 
 
 @override
-int get hashCode => runtimeType.hashCode;
+int get hashCode => Object.hash(runtimeType,code,messageKey);
 
 @override
 String toString() {
-  return 'AppException.server()';
+  return 'AppException.server(code: $code, messageKey: $messageKey)';
 }
 
 
 }
 
+/// @nodoc
+abstract mixin class _$ServerCopyWith<$Res> implements $AppExceptionCopyWith<$Res> {
+  factory _$ServerCopyWith(_Server value, $Res Function(_Server) _then) = __$ServerCopyWithImpl;
+@useResult
+$Res call({
+ String? code, String? messageKey
+});
 
 
+
+
+}
+/// @nodoc
+class __$ServerCopyWithImpl<$Res>
+    implements _$ServerCopyWith<$Res> {
+  __$ServerCopyWithImpl(this._self, this._then);
+
+  final _Server _self;
+  final $Res Function(_Server) _then;
+
+/// Create a copy of AppException
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? code = freezed,Object? messageKey = freezed,}) {
+  return _then(_Server(
+code: freezed == code ? _self.code : code // ignore: cast_nullable_to_non_nullable
+as String?,messageKey: freezed == messageKey ? _self.messageKey : messageKey // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+
+}
 
 /// @nodoc
 
