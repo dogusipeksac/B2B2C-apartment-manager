@@ -1,0 +1,49 @@
+Bu proje Türkiye pazarına yönelik Flutter apartman yönetim app'idir.
+
+# CODE STYLE
+- Lint: very_good_analysis + flutter_lints
+- prefer single quotes; always const where possible
+- snake_case dosya, PascalCase class, _ ile başlayan private üye
+
+# ARCHITECTURE
+- Feature-first: features/<name>/{data,domain,presentation}
+- Riverpod 2.x, manuel provider (code-gen YOK)
+- Repository pattern; data layer Supabase'i sarar
+- Async fonksiyonlar AppException fırlatır
+- UI state AsyncValue<T>; ortak ErrorView widget
+
+# NAMING
+- <feature>Provider, <Feature>Notifier, <Feature>State (freezed)
+- Screen: <Feature>Screen; ekran-içi widget'lar private (_Header gibi)
+
+# TÜRKÇE & i18N
+- Tüm UI metni l10n/tr.arb içinde
+- Kod yorumları İngilizce
+- Para: NumberFormat.currency(locale: 'tr_TR', symbol: '₺')
+- Tarih: DateFormat.yMMMMd('tr_TR')
+
+# SUPABASE
+- Tablo erişimi sadece data layer
+- RLS'e güven, client-side ek filtre yok
+- Storage buckets: building_files, issue_photos, receipts, documents
+
+# TEST
+- Yeni use-case için unit test (mocktail)
+- Critical screen widget test
+
+# GÜVENLİK
+- Hardcoded secret YOK — flutter_dotenv + flavors
+- PII (TC, telefon) log'a yazma
+- Release build'de logger kapalı
+
+# PERFORMANS
+- ListView pagination (Supabase range)
+- Image: cached_network_image
+- Heavy json: compute() ile isolate
+
+# HATA YÖNETİMİ
+- AppException sealed: network, auth, validation, server, unknown
+- UI'da Türkçe kullanıcı dostu mesaj; teknik detay sadece log/Sentry
+
+# PARA HASSASIYETI
+- Tüm finansal hesaplamalarda Decimal veya integer kuruş; double ASLA
