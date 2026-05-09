@@ -133,8 +133,7 @@ class _AnnouncementsListScreenState
                         row: row,
                         l10n: l10n,
                         isPinned: isPinned,
-                        onTap: () =>
-                            context.push('/announcements/${row.id}'),
+                        onTap: () => context.push('/announcements/${row.id}'),
                       ),
                     );
                   },
@@ -169,8 +168,7 @@ class _AnnouncementsListScreenState
             .where(
               (r) =>
                   r.category == AnnouncementUiCategory.maintenance ||
-                  r.secondaryCategory ==
-                      AnnouncementUiCategory.maintenance,
+                  r.secondaryCategory == AnnouncementUiCategory.maintenance,
             )
             .toList();
       default:
@@ -194,132 +192,155 @@ class _AnnouncementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
+    final outer = Theme.of(context);
+    // Cards use a fixed light surface; in dark mode inherited TextTheme colors
+    // stay light-on-dark — text becomes invisible on white unless we scope a
+    // light text theme here.
+    final theme = outer.brightness == Brightness.dark
+        ? outer.copyWith(textTheme: AppTheme.light().textTheme)
+        : outer;
     final timeLine = row.read
         ? '${row.relativeTime} · ${l10n.announcementsReadLabel}'
         : row.relativeTime;
 
     // Avoid `Ink` here: inside sliver lists it can size to zero and show an
     // empty white box while decoration still paints.
-    return Material(
-      color: Colors.transparent,
-      borderRadius: BorderRadius.circular(12),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
+    return Theme(
+      data: theme,
+      child: Material(
+        color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
-        child: DecoratedBox(
-          decoration: BoxDecoration(
-            color: AppTheme.surface,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: AppTheme.cardShadow,
-            border: Border(
-              left: BorderSide(
-                width: isPinned ? 3 : 1,
-                color: isPinned ? AppTheme.secondary : AppTheme.outlineMuted,
-              ),
-              top: const BorderSide(color: AppTheme.outlineMuted),
-              right: const BorderSide(color: AppTheme.outlineMuted),
-              bottom: const BorderSide(color: AppTheme.outlineMuted),
+        clipBehavior: Clip.antiAlias,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              color: AppTheme.surface,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: AppTheme.cardShadow,
+              // Uniform border color required when using borderRadius (Flutter
+              // assertion). Pinned accent is drawn as a separate strip below.
+              border: Border.all(color: AppTheme.outlineMuted),
             ),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: _CategoryChip(
-                        l10n: l10n,
-                        category: row.category,
-                      ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: Stack(
+                children: [
+                  if (isPinned)
+                    const Positioned(
+                      left: 0,
+                      top: 0,
+                      bottom: 0,
+                      width: 3,
+                      child: ColoredBox(color: AppTheme.secondary),
                     ),
-                    const SizedBox(width: 8),
-                    Text(
-                      timeLine,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppTheme.onSurfaceTertiary,
-                      ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(
+                      isPinned ? 17 : 14,
+                      14,
+                      16,
+                      14,
                     ),
-                  ],
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  row.title,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    fontSize: isPinned ? 16 : 15,
-                    height: 1.25,
-                    color: row.read
-                        ? AppTheme.onSurfaceVariant
-                        : const Color(0xFF1A1A1A),
-                  ),
-                ),
-                if (row.snippet.isNotEmpty) ...[
-                  const SizedBox(height: 6),
-                  Text(
-                    row.snippet,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.bodySmall?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
-                      height: 1.35,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Flexible(
+                              child: _CategoryChip(
+                                l10n: l10n,
+                                category: row.category,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              timeLine,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: AppTheme.onSurfaceTertiary,
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          row.title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontSize: isPinned ? 16 : 15,
+                            height: 1.25,
+                            color: row.read
+                                ? AppTheme.onSurfaceVariant
+                                : const Color(0xFF1A1A1A),
+                          ),
+                        ),
+                        if (row.snippet.isNotEmpty) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            row.snippet,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: AppTheme.onSurfaceVariant,
+                              height: 1.35,
+                            ),
+                          ),
+                        ],
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            _AuthorAvatar(
+                              name: row.authorName,
+                              category: row.category,
+                              size: isPinned ? 24 : 22,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                '${row.authorName} · ${row.roleLabel}',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppTheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const Icon(
+                              Icons.visibility_outlined,
+                              size: 15,
+                              color: AppTheme.onSurfaceTertiary,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${row.viewCount}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: AppTheme.onSurfaceTertiary,
+                              ),
+                            ),
+                            if (row.commentCount > 0) ...[
+                              const SizedBox(width: 12),
+                              const Icon(
+                                Icons.chat_bubble_outline_rounded,
+                                size: 14,
+                                color: AppTheme.onSurfaceTertiary,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                '${row.commentCount}',
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: AppTheme.onSurfaceTertiary,
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ],
-                const SizedBox(height: 12),
-                Row(
-                  children: [
-                    _AuthorAvatar(
-                      name: row.authorName,
-                      category: row.category,
-                      size: isPinned ? 24 : 22,
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: Text(
-                        '${row.authorName} · ${row.roleLabel}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceVariant,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ),
-                    const Icon(
-                      Icons.visibility_outlined,
-                      size: 15,
-                      color: AppTheme.onSurfaceTertiary,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${row.viewCount}',
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppTheme.onSurfaceTertiary,
-                      ),
-                    ),
-                    if (row.commentCount > 0) ...[
-                      const SizedBox(width: 12),
-                      const Icon(
-                        Icons.chat_bubble_outline_rounded,
-                        size: 14,
-                        color: AppTheme.onSurfaceTertiary,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '${row.commentCount}',
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceTertiary,
-                        ),
-                      ),
-                    ],
-                  ],
-                ),
-              ],
+              ),
             ),
           ),
         ),
@@ -341,25 +362,25 @@ class _CategoryChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final (fg, bg, label) = switch (category) {
       AnnouncementUiCategory.pinned => (
-          const Color(0xFFB57400),
-          AppTheme.secondaryContainer,
-          '⭐ ${l10n.announcementCatPinned}',
-        ),
+        const Color(0xFFB57400),
+        AppTheme.secondaryContainer,
+        '⭐ ${l10n.announcementCatPinned}',
+      ),
       AnnouncementUiCategory.info => (
-          AppTheme.info,
-          AppTheme.infoContainer,
-          l10n.homeAnnouncementTagInfo,
-        ),
+        AppTheme.info,
+        AppTheme.infoContainer,
+        l10n.homeAnnouncementTagInfo,
+      ),
       AnnouncementUiCategory.maintenance => (
-          AppTheme.warning,
-          AppTheme.warningContainer,
-          l10n.announcementCatMaintenance,
-        ),
+        AppTheme.warning,
+        AppTheme.warningContainer,
+        l10n.announcementCatMaintenance,
+      ),
       AnnouncementUiCategory.urgent => (
-          AppTheme.error,
-          AppTheme.errorContainer,
-          l10n.announcementCatUrgent,
-        ),
+        AppTheme.error,
+        AppTheme.errorContainer,
+        l10n.announcementCatUrgent,
+      ),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -408,11 +429,11 @@ class _AuthorAvatar extends StatelessWidget {
   Widget build(BuildContext context) {
     final initials = name.isNotEmpty
         ? name
-            .split(' ')
-            .take(2)
-            .map((w) => w.isNotEmpty ? w[0] : '')
-            .join()
-            .toUpperCase()
+              .split(' ')
+              .take(2)
+              .map((w) => w.isNotEmpty ? w[0] : '')
+              .join()
+              .toUpperCase()
         : '?';
     return Container(
       width: size,

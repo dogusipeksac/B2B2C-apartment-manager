@@ -1940,6 +1940,60 @@ abstract class AppLocalizations {
   /// **'Arıza panosu'**
   String get issuesKanbanTitle;
 
+  /// No description provided for @issuesChipAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü · {count}'**
+  String issuesChipAll(Object count);
+
+  /// No description provided for @issuesChipOpen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık · {count}'**
+  String issuesChipOpen(Object count);
+
+  /// No description provided for @issuesChipInProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemde · {count}'**
+  String issuesChipInProgress(Object count);
+
+  /// No description provided for @issuesChipResolved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çözüldü · {count}'**
+  String issuesChipResolved(Object count);
+
+  /// No description provided for @issuesBadgeOpen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get issuesBadgeOpen;
+
+  /// No description provided for @issuesBadgeInProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemde'**
+  String get issuesBadgeInProgress;
+
+  /// No description provided for @issuesBadgeResolved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çözüldü'**
+  String get issuesBadgeResolved;
+
+  /// No description provided for @issuesFooterOwnReport.
+  ///
+  /// In tr, this message translates to:
+  /// **'Senin bildirim'**
+  String get issuesFooterOwnReport;
+
+  /// No description provided for @issuesFooterTracking.
+  ///
+  /// In tr, this message translates to:
+  /// **'{name} takipte'**
+  String issuesFooterTracking(Object name);
+
   /// No description provided for @profileMenuTitle.
   ///
   /// In tr, this message translates to:

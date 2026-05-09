@@ -998,6 +998,43 @@ class AppLocalizationsTr extends AppLocalizations {
   String get issuesKanbanTitle => 'Arıza panosu';
 
   @override
+  String issuesChipAll(Object count) {
+    return 'Tümü · $count';
+  }
+
+  @override
+  String issuesChipOpen(Object count) {
+    return 'Açık · $count';
+  }
+
+  @override
+  String issuesChipInProgress(Object count) {
+    return 'İşlemde · $count';
+  }
+
+  @override
+  String issuesChipResolved(Object count) {
+    return 'Çözüldü · $count';
+  }
+
+  @override
+  String get issuesBadgeOpen => 'Açık';
+
+  @override
+  String get issuesBadgeInProgress => 'İşlemde';
+
+  @override
+  String get issuesBadgeResolved => 'Çözüldü';
+
+  @override
+  String get issuesFooterOwnReport => 'Senin bildirim';
+
+  @override
+  String issuesFooterTracking(Object name) {
+    return '$name takipte';
+  }
+
+  @override
   String get profileMenuTitle => 'Profil';
 
   @override

@@ -1000,6 +1000,43 @@ class AppLocalizationsEn extends AppLocalizations {
   String get issuesKanbanTitle => 'Issue board';
 
   @override
+  String issuesChipAll(Object count) {
+    return 'All · $count';
+  }
+
+  @override
+  String issuesChipOpen(Object count) {
+    return 'Open · $count';
+  }
+
+  @override
+  String issuesChipInProgress(Object count) {
+    return 'In progress · $count';
+  }
+
+  @override
+  String issuesChipResolved(Object count) {
+    return 'Resolved · $count';
+  }
+
+  @override
+  String get issuesBadgeOpen => 'Open';
+
+  @override
+  String get issuesBadgeInProgress => 'In progress';
+
+  @override
+  String get issuesBadgeResolved => 'Resolved';
+
+  @override
+  String get issuesFooterOwnReport => 'Your report';
+
+  @override
+  String issuesFooterTracking(Object name) {
+    return '$name on it';
+  }
+
+  @override
   String get profileMenuTitle => 'Profile';
 
   @override

@@ -435,6 +435,40 @@
   "issueDetailTitle": "Issue detail",
   "issueSubmit": "Submit report",
   "issuesKanbanTitle": "Issue board",
+  "issuesChipAll": "All · {count}",
+  "@issuesChipAll": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipOpen": "Open · {count}",
+  "@issuesChipOpen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipInProgress": "In progress · {count}",
+  "@issuesChipInProgress": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipResolved": "Resolved · {count}",
+  "@issuesChipResolved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesBadgeOpen": "Open",
+  "issuesBadgeInProgress": "In progress",
+  "issuesBadgeResolved": "Resolved",
+  "issuesFooterOwnReport": "Your report",
+  "issuesFooterTracking": "{name} on it",
+  "@issuesFooterTracking": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "profileMenuTitle": "Profile",
   "profileSwitchToManager": "Switch to manager view",
   "profileSwitchToResident": "Switch to resident view",

@@ -435,6 +435,40 @@
   "issueDetailTitle": "Arıza detayı",
   "issueSubmit": "Bildirimi gönder",
   "issuesKanbanTitle": "Arıza panosu",
+  "issuesChipAll": "Tümü · {count}",
+  "@issuesChipAll": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipOpen": "Açık · {count}",
+  "@issuesChipOpen": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipInProgress": "İşlemde · {count}",
+  "@issuesChipInProgress": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesChipResolved": "Çözüldü · {count}",
+  "@issuesChipResolved": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "issuesBadgeOpen": "Açık",
+  "issuesBadgeInProgress": "İşlemde",
+  "issuesBadgeResolved": "Çözüldü",
+  "issuesFooterOwnReport": "Senin bildirim",
+  "issuesFooterTracking": "{name} takipte",
+  "@issuesFooterTracking": {
+    "placeholders": {
+      "name": {}
+    }
+  },
   "profileMenuTitle": "Profil",
   "profileSwitchToManager": "Yönetici görünümüne geç",
   "profileSwitchToResident": "Sakin görünümüne geç",

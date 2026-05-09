@@ -31,6 +31,9 @@ class IssueUi {
     required this.assigneeLabel,
     required this.description,
     required this.photoCount,
+    required this.isOwnReport,
+    required this.avatarInitials,
+    required this.footerAssigneeName,
   });
 
   final String id;
@@ -45,4 +48,13 @@ class IssueUi {
   final String assigneeLabel;
   final String description;
   final int photoCount;
+
+  /// List row: "Senin bildirim" vs "{name} takipte".
+  final bool isOwnReport;
+
+  /// Two-letter avatar on list cards.
+  final String avatarInitials;
+
+  /// Short name for "takipte" footer (e.g. `Ayşe D.`). Empty if not shown.
+  final String footerAssigneeName;
 }
