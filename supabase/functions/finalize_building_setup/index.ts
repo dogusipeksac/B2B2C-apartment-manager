@@ -197,7 +197,36 @@ serve(async (req: Request): Promise<Response> => {
     return jsonResponse(404, { success: false, error: "device_not_found" });
   }
 
-  if (deviceRow.session_token !== sessionToken) {
+  const clientTok = sessionToken.trim();
+  let dbTok = String(deviceRow.session_token ?? "").trim();
+
+  // Heal legacy rows where redeem ran before session_token was persisted correctly.
+  if (dbTok !== clientTok) {
+    const roleOk = deviceRow.role === "building_admin";
+    const noBuilding =
+      deviceRow.building_id === null ||
+      String(deviceRow.building_id).length === 0;
+    const dbEmpty = dbTok.length === 0;
+
+    if (roleOk && noBuilding && dbEmpty && clientTok.length > 0) {
+      const healIso = new Date().toISOString();
+      const { error: healErr } = await supabase
+        .from("devices")
+        .update({
+          session_token: clientTok,
+          last_seen_at: healIso,
+        })
+        .eq("device_id", deviceId);
+
+      if (!healErr) {
+        dbTok = clientTok;
+      } else {
+        console.error("devices heal session_token", healErr);
+      }
+    }
+  }
+
+  if (dbTok !== clientTok) {
     return jsonResponse(401, { success: false, error: "invalid_session" });
   }
 
@@ -205,10 +234,34 @@ serve(async (req: Request): Promise<Response> => {
     return jsonResponse(403, { success: false, error: "not_building_admin" });
   }
 
+  // Idempotent: prior run may have committed DB but app crashed before saving
+  // LocalSession — return existing ids so the client can sync and open home.
   if (deviceRow.building_id) {
-    return jsonResponse(409, {
-      success: false,
-      error: "building_already_created",
+    const buildingIdExisting = String(deviceRow.building_id);
+    const profileIdRaw = deviceRow.profile_id;
+    if (!profileIdRaw || String(profileIdRaw).length === 0) {
+      return jsonResponse(409, {
+        success: false,
+        error: "building_already_created_inconsistent",
+      });
+    }
+    const profileIdExisting = String(profileIdRaw);
+    const { count: unitCount, error: cntErr } = await supabase
+      .from("units")
+      .select("*", { count: "exact", head: true })
+      .eq("building_id", buildingIdExisting);
+
+    if (cntErr) {
+      console.error("units count", cntErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    return jsonResponse(200, {
+      success: true,
+      building_id: buildingIdExisting,
+      profile_id: profileIdExisting,
+      unit_count: typeof unitCount === "number" ? unitCount : 0,
+      resumed: true,
     });
   }
 

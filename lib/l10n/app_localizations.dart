@@ -2863,6 +2863,12 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene.'**
   String get setupFinalizeFailed;
+
+  /// No description provided for @setupFinalizeBuildingNameRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kurulumu tamamlamak için bina adı gerekli.'**
+  String get setupFinalizeBuildingNameRequired;
 }
 
 class _AppLocalizationsDelegate

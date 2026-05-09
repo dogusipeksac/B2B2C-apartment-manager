@@ -13,11 +13,12 @@ import 'package:intl/intl.dart';
 /// Manager role home (design preview; demo data only until backend exists).
 class ManagerHomeView extends StatelessWidget {
   const ManagerHomeView({
-    required this.onSwitchToResident,
     super.key,
+    this.onSwitchToResident,
   });
 
-  final VoidCallback onSwitchToResident;
+  /// When null (production invite admin), demo-only switch controls are hidden.
+  final VoidCallback? onSwitchToResident;
 
   List<String> _chartMonths(BuildContext context) {
     final code = Localizations.localeOf(context).languageCode;
@@ -58,27 +59,34 @@ class ManagerHomeView extends StatelessWidget {
     final apart = context.apart;
     final scheme = theme.colorScheme;
 
+    final showDemoSwitcher = onSwitchToResident != null;
+
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
-      drawer: Drawer(
-        child: SafeArea(
-          child: ListTile(
-            leading: const Icon(Icons.apartment_outlined),
-            title: Text(l10n.homeDemoSwitchResident),
-            onTap: () {
-              Navigator.of(context).pop();
-              onSwitchToResident();
-            },
-          ),
-        ),
-      ),
+      drawer: showDemoSwitcher
+          ? Drawer(
+              child: SafeArea(
+                child: ListTile(
+                  leading: const Icon(Icons.apartment_outlined),
+                  title: Text(l10n.homeDemoSwitchResident),
+                  onTap: () {
+                    Navigator.of(context).pop();
+                    onSwitchToResident!();
+                  },
+                ),
+              ),
+            )
+          : null,
       appBar: AppBar(
-        leading: Builder(
-          builder: (ctx) => IconButton(
-            icon: const Icon(Icons.menu),
-            onPressed: () => Scaffold.of(ctx).openDrawer(),
-          ),
-        ),
+        automaticallyImplyLeading: false,
+        leading: showDemoSwitcher
+            ? Builder(
+                builder: (ctx) => IconButton(
+                  icon: const Icon(Icons.menu),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+              )
+            : null,
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,11 +104,12 @@ class ManagerHomeView extends StatelessWidget {
           ],
         ),
         actions: [
-          IconButton(
-            tooltip: l10n.homeDemoSwitchResident,
-            icon: const Icon(Icons.swap_horiz_outlined),
-            onPressed: onSwitchToResident,
-          ),
+          if (showDemoSwitcher)
+            IconButton(
+              tooltip: l10n.homeDemoSwitchResident,
+              icon: const Icon(Icons.swap_horiz_outlined),
+              onPressed: onSwitchToResident,
+            ),
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Stack(

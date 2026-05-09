@@ -660,5 +660,6 @@
   "adminInviteCodeNotFound": "Code not found or expired.",
   "adminInviteNotAdminCode": "This is not a manager code. Choose «I'm a resident» for a resident invite.",
   "adminInviteUnexpectedError": "Something went wrong. Please try again.",
-  "setupFinalizeFailed": "Setup could not be saved. Check your connection and try again."
+  "setupFinalizeFailed": "Setup could not be saved. Check your connection and try again.",
+  "setupFinalizeBuildingNameRequired": "Building name is required to complete setup."
 }

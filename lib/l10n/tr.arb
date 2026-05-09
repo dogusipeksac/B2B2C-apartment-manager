@@ -660,5 +660,6 @@
   "adminInviteCodeNotFound": "Kod bulunamadı veya süresi dolmuş.",
   "adminInviteNotAdminCode": "Bu kod yönetici kodu değil. Sakin kodu için başta «Sakinim» seç.",
   "adminInviteUnexpectedError": "Bir sorun oluştu. Lütfen tekrar deneyin.",
-  "setupFinalizeFailed": "Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene."
+  "setupFinalizeFailed": "Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene.",
+  "setupFinalizeBuildingNameRequired": "Kurulumu tamamlamak için bina adı gerekli."
 }

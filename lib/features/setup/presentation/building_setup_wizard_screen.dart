@@ -112,12 +112,21 @@ class _BuildingSetupWizardScreenState
       return;
     }
 
+    if (_name.text.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.setupFinalizeBuildingNameRequired)),
+      );
+      return;
+    }
+
     if (Env.demoMode) {
       _goHome(context);
       return;
     }
 
-    final session = await ref.read(localSessionProvider.future);
+    // Always read persisted session from disk (not cached FutureProvider).
+    final session =
+        await ref.read(localSessionRepositoryProvider).load();
     if (session == null ||
         session.role != UserRole.buildingAdmin ||
         session.sessionToken == null ||

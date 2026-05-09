@@ -1503,4 +1503,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setupFinalizeFailed =>
       'Setup could not be saved. Check your connection and try again.';
+
+  @override
+  String get setupFinalizeBuildingNameRequired =>
+      'Building name is required to complete setup.';
 }

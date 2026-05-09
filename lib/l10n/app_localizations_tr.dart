@@ -1501,4 +1501,8 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get setupFinalizeFailed =>
       'Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene.';
+
+  @override
+  String get setupFinalizeBuildingNameRequired =>
+      'Kurulumu tamamlamak için bina adı gerekli.';
 }
