@@ -15,6 +15,17 @@ String normalizeInviteCode(String raw) {
   return raw.trim().toUpperCase().replaceAll(RegExp('[^A-Z0-9]'), '');
 }
 
+/// Result of Edge `redeem_code` with `probe: true` (read-only for resume UI).
+class AdminInviteProbeResult {
+  const AdminInviteProbeResult({
+    required this.wouldResume,
+    this.buildingName,
+  });
+
+  final bool wouldResume;
+  final String? buildingName;
+}
+
 /// Validates invite codes via anon Supabase reads and redeems via Edge
 /// Function.
 class InviteCodeRepository {
@@ -105,6 +116,74 @@ class InviteCodeRepository {
       rethrow;
     } on Object {
       throw const AppException.unknown();
+    }
+  }
+
+  /// Whether this device can resume manager login without running setup again.
+  Future<AdminInviteProbeResult> probeAdminInvite(
+    String code,
+    String deviceId,
+  ) async {
+    if (_disabled) {
+      return const AdminInviteProbeResult(wouldResume: false);
+    }
+
+    final normalized = normalizeInviteCode(code);
+    final url = '${Env.supabaseUrl}/functions/v1/redeem_code';
+
+    try {
+      final response = await _dio.post<Map<String, dynamic>>(
+        url,
+        data: <String, dynamic>{
+          'code': normalized,
+          'device_id': deviceId,
+          'probe': true,
+        },
+        options: Options(
+          headers: <String, String>{
+            'Authorization': 'Bearer ${Env.supabaseAnonKey}',
+            'apikey': Env.supabaseAnonKey,
+            'Content-Type': 'application/json',
+          },
+          validateStatus: (_) => true,
+        ),
+      );
+
+      final status = response.statusCode ?? 0;
+      final body = response.data ?? <String, dynamic>{};
+
+      if (status >= 500 ||
+          status == 404 ||
+          status == 409 ||
+          status == 422) {
+        return const AdminInviteProbeResult(wouldResume: false);
+      }
+
+      if (status == 200 &&
+          body['success'] == true &&
+          body['probe'] == true) {
+        final resume = body['would_resume'] == true;
+        final bnRaw = body['building_name'];
+        final bn = bnRaw is String ? bnRaw.trim() : '';
+        return AdminInviteProbeResult(
+          wouldResume: resume,
+          buildingName: bn.isEmpty ? null : bn,
+        );
+      }
+
+      return const AdminInviteProbeResult(wouldResume: false);
+    } on DioException catch (e) {
+      if (e.type == DioExceptionType.connectionTimeout ||
+          e.type == DioExceptionType.connectionError ||
+          e.type == DioExceptionType.sendTimeout ||
+          e.type == DioExceptionType.receiveTimeout) {
+        throw const AppException.network();
+      }
+      return const AdminInviteProbeResult(wouldResume: false);
+    } on SocketException {
+      throw const AppException.network();
+    } on Object {
+      return const AdminInviteProbeResult(wouldResume: false);
     }
   }
 

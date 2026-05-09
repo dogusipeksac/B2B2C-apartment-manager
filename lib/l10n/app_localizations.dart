@@ -2882,6 +2882,36 @@ abstract class AppLocalizations {
   /// **'Apartman kurulumuna geç'**
   String get adminInvitePrimaryButton;
 
+  /// No description provided for @adminInviteResumeHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar hoş geldiniz'**
+  String get adminInviteResumeHeadline;
+
+  /// No description provided for @adminInviteResumeSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu apartman kaydını daha önce yapmıştık. Giriş yapalım.'**
+  String get adminInviteResumeSubtitle;
+
+  /// No description provided for @adminInviteResumeCardBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'KAYIT ZATEN VAR'**
+  String get adminInviteResumeCardBadge;
+
+  /// No description provided for @adminInviteResumeCardBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod ile apartman kurulumu tamamlanmış. Ana sayfadan yönetime devam edebilirsiniz.'**
+  String get adminInviteResumeCardBody;
+
+  /// No description provided for @adminInviteResumeSignIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş yap'**
+  String get adminInviteResumeSignIn;
+
   /// No description provided for @inviteFooterNoCode.
   ///
   /// In tr, this message translates to:

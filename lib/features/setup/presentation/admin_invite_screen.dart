@@ -25,6 +25,7 @@ enum _VerifyPhase {
   idle,
   loading,
   validAdmin,
+  resumePreview,
   invalidNotFound,
   invalidWrongType,
 }
@@ -52,6 +53,8 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
   Timer? _debounce;
   _VerifyPhase _phase = _VerifyPhase.idle;
   CodePreview? _verifiedPreview;
+  /// From Edge probe — existing manager registration for this device + code.
+  String? _resumeBuildingName;
   bool _busy = false;
 
   static const _otpLength = 8;
@@ -77,10 +80,18 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
     final raw = _otpController.text;
     _debounce?.cancel();
 
+    if (_phase == _VerifyPhase.resumePreview) {
+      setState(() {
+        _phase = _VerifyPhase.idle;
+        _resumeBuildingName = null;
+      });
+    }
+
     if (raw.length < _otpLength) {
       setState(() {
         _phase = _VerifyPhase.idle;
         _verifiedPreview = null;
+        _resumeBuildingName = null;
       });
       return;
     }
@@ -88,6 +99,7 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
     setState(() {
       _phase = _VerifyPhase.loading;
       _verifiedPreview = null;
+      _resumeBuildingName = null;
     });
 
     final code = normalizeInviteCode(raw);
@@ -101,16 +113,37 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
         if (!mounted || normalizeInviteCode(_otpController.text) != code) {
           return;
         }
-        setState(() {
-          if (preview == null) {
+        if (preview == null) {
+          setState(() {
             _phase = _VerifyPhase.invalidNotFound;
             _verifiedPreview = null;
-          } else if (preview.codeType == InviteCodeType.admin) {
-            _phase = _VerifyPhase.validAdmin;
-            _verifiedPreview = preview;
-          } else {
+          });
+          return;
+        }
+        if (preview.codeType != InviteCodeType.admin) {
+          setState(() {
             _phase = _VerifyPhase.invalidWrongType;
             _verifiedPreview = null;
+          });
+          return;
+        }
+
+        final deviceId = await ref.read(deviceIdProvider.future);
+        final probe = await repo.probeAdminInvite(code, deviceId);
+        if (!mounted || normalizeInviteCode(_otpController.text) != code) {
+          return;
+        }
+
+        setState(() {
+          _verifiedPreview = preview;
+          if (probe.wouldResume) {
+            _phase = _VerifyPhase.resumePreview;
+            final bn = probe.buildingName?.trim();
+            _resumeBuildingName =
+                (bn != null && bn.isNotEmpty) ? bn : null;
+          } else {
+            _phase = _VerifyPhase.validAdmin;
+            _resumeBuildingName = null;
           }
         });
       } on AppException {
@@ -146,7 +179,8 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
       return;
     }
 
-    if (_phase != _VerifyPhase.validAdmin) {
+    if (_phase != _VerifyPhase.validAdmin &&
+        _phase != _VerifyPhase.resumePreview) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -180,7 +214,16 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
       if (!mounted) {
         return;
       }
-      context.go('/setup/wizard');
+      final hasBuilding = session.buildingId != null &&
+          session.buildingId!.trim().isNotEmpty;
+      if (hasBuilding) {
+        if (!mounted) {
+          return;
+        }
+        context.go('/home');
+      } else {
+        context.go('/setup/wizard');
+      }
     } on AppException catch (e) {
       if (!mounted) {
         return;
@@ -208,9 +251,18 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
     final apart = context.apart;
     final theme = Theme.of(context);
     final code = _otpController.text;
-    final canContinue = _phase == _VerifyPhase.validAdmin &&
+    final isResumeUi = _phase == _VerifyPhase.resumePreview;
+    final canPrimary = (_phase == _VerifyPhase.validAdmin ||
+            _phase == _VerifyPhase.resumePreview) &&
         !_busy &&
         code.length == _otpLength;
+    final primaryEnabled = canPrimary;
+    final headline = isResumeUi
+        ? l10n.adminInviteResumeHeadline
+        : l10n.adminInviteHeadline;
+    final hint = isResumeUi
+        ? l10n.adminInviteResumeSubtitle
+        : l10n.adminInviteEightCharHint;
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
@@ -242,7 +294,7 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Text(
-                      l10n.adminInviteHeadline,
+                      headline,
                       style: theme.textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.w700,
                         letterSpacing: -0.4,
@@ -252,7 +304,7 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      l10n.adminInviteEightCharHint,
+                      hint,
                       style: theme.textTheme.bodyLarge?.copyWith(
                         color: apart.onSurfaceVariant,
                         height: 1.45,
@@ -282,6 +334,11 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                             ),
                           ),
                         ],
+                      ),
+                    if (_phase == _VerifyPhase.resumePreview)
+                      _AdminResumeCard(
+                        l10n: l10n,
+                        buildingTitle: _resumeBuildingName,
                       ),
                     if (_phase == _VerifyPhase.validAdmin)
                       _AdminVerifiedCard(
@@ -313,9 +370,8 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   FilledButton(
-                    onPressed: (!canContinue || _busy)
-                        ? null
-                        : () => unawaited(_submit()),
+                    onPressed:
+                        !primaryEnabled ? null : () => unawaited(_submit()),
                     style: FilledButton.styleFrom(
                       minimumSize: const Size(double.infinity, 52),
                       backgroundColor: AppTheme.primary,
@@ -336,7 +392,9 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                             ),
                           )
                         : Text(
-                            l10n.adminInvitePrimaryButton,
+                            isResumeUi
+                                ? l10n.adminInviteResumeSignIn
+                                : l10n.adminInvitePrimaryButton,
                             style: const TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
@@ -496,6 +554,103 @@ class _OtpCell extends StatelessWidget {
                 ),
         );
       },
+    );
+  }
+}
+
+class _AdminResumeCard extends StatelessWidget {
+  const _AdminResumeCard({
+    required this.l10n,
+    this.buildingTitle,
+  });
+
+  final AppLocalizations l10n;
+  final String? buildingTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final apart = context.apart;
+    final theme = Theme.of(context);
+    final name = buildingTitle?.trim();
+    final title = (name != null && name.isNotEmpty)
+        ? name
+        : l10n.adminInviteVerifiedCardTitle;
+
+    return Container(
+      margin: const EdgeInsets.only(top: 4),
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: AppTheme.primaryContainer.withValues(alpha: 0.85),
+        borderRadius: BorderRadius.circular(14),
+        border: Border.all(
+          color: AppTheme.primary.withValues(alpha: 0.22),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(
+                Icons.verified_rounded,
+                color: AppTheme.success,
+                size: 20,
+              ),
+              const SizedBox(width: 8),
+              Text(
+                l10n.adminInviteResumeCardBadge,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: AppTheme.success,
+                  fontWeight: FontWeight.w800,
+                  letterSpacing: 0.35,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 14),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppTheme.primary,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: const Icon(
+                  Icons.apartment_rounded,
+                  color: Colors.white,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.adminInviteResumeCardBody,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: apart.onSurfaceVariant,
+                        height: 1.35,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

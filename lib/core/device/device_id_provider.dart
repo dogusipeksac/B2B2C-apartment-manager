@@ -1,12 +1,20 @@
+import 'dart:convert';
 import 'dart:io';
 
+import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 
-/// Stable device id for invite redemption (stored in secure storage).
+/// Opaque device id for Edge calls — stable across app reinstalls on mobile.
+///
+/// Android: Settings.Secure Android ID (survives reinstall).
+/// iOS: identifierForVendor (stable until all vendor apps removed).
+/// Web/desktop: random UUID in secure storage (cleared on uninstall if any).
+///
+/// Raw OS ids are not sent to the API; we use SHA-256 and Base64URL.
 class DeviceIdRepository {
   DeviceIdRepository(
     this._storage, {
@@ -19,6 +27,39 @@ class DeviceIdRepository {
   final DeviceInfoPlugin _deviceInfo;
 
   Future<String> getOrCreate() async {
+    if (kIsWeb) {
+      return _legacyStoredUuid();
+    }
+
+    try {
+      if (Platform.isAndroid) {
+        final info = await _deviceInfo.androidInfo;
+        final raw = info.id.trim();
+        if (raw.isNotEmpty) {
+          return _opaqueFromHardwareRaw(raw);
+        }
+      } else if (Platform.isIOS) {
+        final info = await _deviceInfo.iosInfo;
+        final raw = info.identifierForVendor?.trim();
+        if (raw != null && raw.isNotEmpty) {
+          return _opaqueFromHardwareRaw(raw);
+        }
+      }
+    } on Object {
+      // Fall back to stored UUID (desktop, unusual devices).
+    }
+
+    return _legacyStoredUuid();
+  }
+
+  /// Deterministic opaque token — URL-safe, fixed length.
+  String _opaqueFromHardwareRaw(String rawOsId) {
+    final bytes = utf8.encode('apartment_manager.device.v1|$rawOsId');
+    final digest = sha256.convert(bytes);
+    return base64Url.encode(digest.bytes).replaceAll('=', '');
+  }
+
+  Future<String> _legacyStoredUuid() async {
     final existing = await _storage.read(key: _storageKey);
     if (existing != null && existing.isNotEmpty) {
       return existing;
@@ -58,7 +99,7 @@ final deviceIdRepositoryProvider = Provider<DeviceIdRepository>(
   (ref) => DeviceIdRepository(ref.watch(flutterSecureStorageProvider)),
 );
 
-/// Device id string (creates and persists on first use).
+/// Device id string for invite redemption and Edge session pairing.
 final deviceIdProvider = FutureProvider<String>((ref) async {
   return ref.watch(deviceIdRepositoryProvider).getOrCreate();
 });

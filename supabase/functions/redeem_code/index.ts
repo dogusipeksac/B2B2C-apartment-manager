@@ -2,7 +2,11 @@
  * Redeem invite code (admin or unit). Uses service role — bypasses RLS.
  *
  * POST body JSON:
- * { "code": string, "device_id": string, "full_name"?: string }
+ * { "code": string, "device_id": string, "full_name"?: string, "probe"?: boolean }
+ *
+ * probe=true (admin codes only): read-only — returns would_resume + building_name for UI,
+ * no invite consume and no device upsert.
+ * Reinstall: new device_id but same invite row — singleton completed admin row is rebound.
  *
  * Admin (8-char): full_name optional — creates device row, building wizard fills building later.
  * Unit (5-char): full_name required (≥3 chars) — creates profile + membership + device.
@@ -34,30 +38,68 @@ function normalizeCode(raw: string): string {
   return raw.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
 }
 
-type DeviceUpsertRow = {
-  device_id: string;
-  profile_id: string | null;
-  building_id: string | null;
-  unit_id: string | null;
-  role: string;
-  session_token: string;
-  last_seen_at: string;
-};
-
-async function upsertDeviceForgivingMissingSessionColumn(
+/** Upsert devices row; omits unknown columns for older DBs (session_token, admin_invite_code_id). */
+async function upsertDeviceWithLegacyColumns(
   supabase: ReturnType<typeof createClient>,
-  row: DeviceUpsertRow,
+  row: Record<string, unknown>,
 ): Promise<{ error: { message?: string } | null }> {
-  let res = await supabase.from("devices").upsert(row, {
-    onConflict: "device_id",
-  });
-  if (!res.error) return res;
-  if (!isMissingColumn(res.error, "session_token")) return res;
-  const { session_token: _st, ...legacy } = row;
-  void _st;
-  return await supabase.from("devices").upsert(legacy, {
-    onConflict: "device_id",
-  });
+  let payload: Record<string, unknown> = { ...row };
+  for (;;) {
+    const res = await supabase.from("devices").upsert(payload, {
+      onConflict: "device_id",
+    });
+    if (!res.error) return res;
+    const err = res.error;
+    if (isMissingColumn(err, "session_token") && "session_token" in payload) {
+      const { session_token: _s, ...rest } = payload;
+      void _s;
+      payload = rest;
+      continue;
+    }
+    if (
+      isMissingColumn(err, "admin_invite_code_id") &&
+      "admin_invite_code_id" in payload
+    ) {
+      const { admin_invite_code_id: _a, ...rest } = payload;
+      void _a;
+      payload = rest;
+      continue;
+    }
+    return res;
+  }
+}
+
+/** Exactly one completed admin device row for this invite — reinstall / device_id change. */
+async function findSingletonCompletedAdminForInvite(
+  supabase: ReturnType<typeof createClient>,
+  inviteRowId: string,
+): Promise<{ row: Record<string, unknown>; pk: string } | null> {
+  const sel = await supabase
+    .from("devices")
+    .select(
+      "id, device_id, building_id, profile_id, unit_id, role, admin_invite_code_id",
+    )
+    .eq("admin_invite_code_id", inviteRowId)
+    .eq("role", "building_admin")
+    .not("building_id", "is", null);
+
+  if (sel.error && isMissingColumn(sel.error, "admin_invite_code_id")) {
+    return null;
+  }
+  if (sel.error) {
+    console.error("devices singleton admin lookup", sel.error);
+    return null;
+  }
+  const rows = sel.data as Record<string, unknown>[] | null;
+  if (!rows || rows.length !== 1) {
+    return null;
+  }
+  const r = rows[0]!;
+  const pk = String(r.id ?? "");
+  if (!pk) {
+    return null;
+  }
+  return { row: r, pk };
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -80,12 +122,19 @@ serve(async (req: Request): Promise<Response> => {
 
   const supabase = createClient(supabaseUrl, serviceKey);
 
-  let payload: { code?: string; device_id?: string; full_name?: string };
+  let payload: {
+    code?: string;
+    device_id?: string;
+    full_name?: string;
+    probe?: boolean;
+  };
   try {
     payload = await req.json();
   } catch {
     return jsonResponse(400, { success: false, error: "invalid_json" });
   }
+
+  const probeOnly = payload.probe === true;
 
   const codeRaw = payload.code;
   const deviceId = payload.device_id?.trim();
@@ -109,19 +158,24 @@ serve(async (req: Request): Promise<Response> => {
   if (superAccess && superAccess.length >= 4) {
     const secretNorm = normalizeCode(superAccess);
     if (secretNorm.length >= 4 && code === secretNorm) {
-      const nowIso = new Date().toISOString();
-      const { error: devErr } = await upsertDeviceForgivingMissingSessionColumn(
-        supabase,
-        {
-          device_id: deviceId,
-          profile_id: null,
-          building_id: null,
-          unit_id: null,
+      if (probeOnly) {
+        return jsonResponse(200, {
+          success: true,
+          probe: true,
+          would_resume: false,
           role: "super_admin",
-          session_token: sessionToken,
-          last_seen_at: nowIso,
-        },
-      );
+        });
+      }
+      const nowIso = new Date().toISOString();
+      const { error: devErr } = await upsertDeviceWithLegacyColumns(supabase, {
+        device_id: deviceId,
+        profile_id: null,
+        building_id: null,
+        unit_id: null,
+        role: "super_admin",
+        session_token: sessionToken,
+        last_seen_at: nowIso,
+      });
 
       if (devErr) {
         console.error("devices upsert super_admin", devErr);
@@ -203,6 +257,13 @@ serve(async (req: Request): Promise<Response> => {
       ? "reusable"
       : "single_use";
 
+  if (probeOnly && codeType !== "admin") {
+    return jsonResponse(400, {
+      success: false,
+      error: "probe_admin_only",
+    });
+  }
+
   if (codeType === "unit") {
     if (!fullName || fullName.length < 3) {
       return jsonResponse(422, {
@@ -216,6 +277,220 @@ serve(async (req: Request): Promise<Response> => {
   const nowIso = new Date().toISOString();
 
   if (codeType === "admin") {
+    const inviteRowId = String(row.id);
+
+    let devProbe = await supabase
+      .from("devices")
+      .select("building_id, profile_id, unit_id, role, admin_invite_code_id")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+
+    if (
+      devProbe.error &&
+      isMissingColumn(devProbe.error, "admin_invite_code_id")
+    ) {
+      devProbe = await supabase
+        .from("devices")
+        .select("building_id, profile_id, unit_id, role")
+        .eq("device_id", deviceId)
+        .maybeSingle();
+    }
+
+    if (devProbe.error) {
+      console.error("devices select admin resume", devProbe.error);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    const ex = devProbe.data as Record<string, unknown> | null;
+    const exBid = ex?.building_id;
+    const storedInvite = ex?.admin_invite_code_id;
+    const canResume =
+      ex?.role === "building_admin" &&
+      typeof exBid === "string" &&
+      exBid.length > 0 &&
+      storedInvite != null &&
+      String(storedInvite) === inviteRowId;
+
+    if (probeOnly) {
+      if (canResume && typeof exBid === "string") {
+        let buildingName = "";
+        const { data: bMetaProbe } = await supabase
+          .from("buildings")
+          .select("name")
+          .eq("id", exBid)
+          .maybeSingle();
+        if (typeof bMetaProbe?.name === "string") {
+          buildingName = (bMetaProbe.name as string).trim();
+        }
+        return jsonResponse(200, {
+          success: true,
+          probe: true,
+          would_resume: true,
+          building_id: exBid,
+          building_name: buildingName.length > 0 ? buildingName : null,
+        });
+      }
+      const probeSingleton = await findSingletonCompletedAdminForInvite(
+        supabase,
+        inviteRowId,
+      );
+      if (probeSingleton) {
+        const bid = probeSingleton.row.building_id;
+        if (typeof bid === "string" && bid.length > 0) {
+          let buildingName = "";
+          const { data: bMetaSg } = await supabase
+            .from("buildings")
+            .select("name")
+            .eq("id", bid)
+            .maybeSingle();
+          if (typeof bMetaSg?.name === "string") {
+            buildingName = (bMetaSg.name as string).trim();
+          }
+          return jsonResponse(200, {
+            success: true,
+            probe: true,
+            would_resume: true,
+            building_id: bid,
+            building_name: buildingName.length > 0 ? buildingName : null,
+          });
+        }
+      }
+      return jsonResponse(200, {
+        success: true,
+        probe: true,
+        would_resume: false,
+      });
+    }
+
+    if (canResume) {
+      let touchErr = (
+        await supabase
+          .from("devices")
+          .update({
+            session_token: sessionToken,
+            last_seen_at: nowIso,
+          })
+          .eq("device_id", deviceId)
+      ).error;
+
+      if (touchErr && isMissingColumn(touchErr, "session_token")) {
+        touchErr = (
+          await supabase
+            .from("devices")
+            .update({ last_seen_at: nowIso })
+            .eq("device_id", deviceId)
+        ).error;
+      }
+
+      if (touchErr) {
+        console.error("devices resume admin session", touchErr);
+        return jsonResponse(500, { success: false, error: "database_error" });
+      }
+
+      let buildingName = "";
+      const { data: bMeta } = await supabase
+        .from("buildings")
+        .select("name")
+        .eq("id", exBid)
+        .maybeSingle();
+      if (typeof bMeta?.name === "string") {
+        buildingName = (bMeta.name as string).trim();
+      }
+
+      return jsonResponse(200, {
+        success: true,
+        role: "building_admin",
+        building_id: exBid,
+        unit_id: ex?.unit_id ?? null,
+        profile_id: ex?.profile_id ?? null,
+        session_token: sessionToken,
+        building_name: buildingName.length > 0 ? buildingName : null,
+        resumed: true,
+      });
+    }
+
+    const reinstallSingleton = await findSingletonCompletedAdminForInvite(
+      supabase,
+      inviteRowId,
+    );
+    const reinstallBid =
+      reinstallSingleton &&
+      typeof reinstallSingleton.row.building_id === "string" &&
+      String(reinstallSingleton.row.building_id).length > 0
+        ? String(reinstallSingleton.row.building_id)
+        : null;
+
+    if (reinstallSingleton && reinstallBid) {
+      const prevDid = String(reinstallSingleton.row.device_id ?? "").trim();
+      if (prevDid !== deviceId) {
+        const clash = await supabase
+          .from("devices")
+          .select("id")
+          .eq("device_id", deviceId)
+          .maybeSingle();
+
+        const clashId = clash.data
+          ? String((clash.data as Record<string, unknown>).id ?? "")
+          : "";
+        if (clashId.length > 0 && clashId !== reinstallSingleton.pk) {
+          return jsonResponse(409, {
+            success: false,
+            error: "device_id_conflict",
+          });
+        }
+
+        let rebErr = (
+          await supabase
+            .from("devices")
+            .update({
+              device_id: deviceId,
+              session_token: sessionToken,
+              last_seen_at: nowIso,
+            })
+            .eq("id", reinstallSingleton.pk)
+        ).error;
+
+        if (rebErr && isMissingColumn(rebErr, "session_token")) {
+          rebErr = (
+            await supabase
+              .from("devices")
+              .update({
+                device_id: deviceId,
+                last_seen_at: nowIso,
+              })
+              .eq("id", reinstallSingleton.pk)
+          ).error;
+        }
+
+        if (rebErr) {
+          console.error("devices rebind reinstall admin", rebErr);
+          return jsonResponse(500, { success: false, error: "database_error" });
+        }
+
+        let rbName = "";
+        const { data: bMetaRb } = await supabase
+          .from("buildings")
+          .select("name")
+          .eq("id", reinstallBid)
+          .maybeSingle();
+        if (typeof bMetaRb?.name === "string") {
+          rbName = (bMetaRb.name as string).trim();
+        }
+
+        return jsonResponse(200, {
+          success: true,
+          role: "building_admin",
+          building_id: reinstallBid,
+          unit_id: reinstallSingleton.row.unit_id ?? null,
+          profile_id: reinstallSingleton.row.profile_id ?? null,
+          session_token: sessionToken,
+          building_name: rbName.length > 0 ? rbName : null,
+          resumed: true,
+          rebound: true,
+        });
+      }
+    }
+
     if (adminRedeemPolicy !== "reusable") {
       const { data: locked, error: updErr } = await supabase
         .from("invite_codes")
@@ -243,18 +518,16 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
-    const { error: devErr } = await upsertDeviceForgivingMissingSessionColumn(
-      supabase,
-      {
-        device_id: deviceId,
-        profile_id: null,
-        building_id: null,
-        unit_id: null,
-        role: "building_admin",
-        session_token: sessionToken,
-        last_seen_at: nowIso,
-      },
-    );
+    const { error: devErr } = await upsertDeviceWithLegacyColumns(supabase, {
+      device_id: deviceId,
+      profile_id: null,
+      building_id: null,
+      unit_id: null,
+      role: "building_admin",
+      session_token: sessionToken,
+      last_seen_at: nowIso,
+      admin_invite_code_id: inviteRowId,
+    });
 
     if (devErr) {
       console.error("devices upsert admin", devErr);
@@ -337,18 +610,15 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
-    const { error: dErr } = await upsertDeviceForgivingMissingSessionColumn(
-      supabase,
-      {
-        device_id: deviceId,
-        profile_id: profileId,
-        building_id: buildingId,
-        unit_id: unitId,
-        role: "resident",
-        session_token: sessionToken,
-        last_seen_at: nowIso,
-      },
-    );
+    const { error: dErr } = await upsertDeviceWithLegacyColumns(supabase, {
+      device_id: deviceId,
+      profile_id: profileId,
+      building_id: buildingId,
+      unit_id: unitId,
+      role: "resident",
+      session_token: sessionToken,
+      last_seen_at: nowIso,
+    });
 
     if (dErr) {
       console.error("devices upsert unit", dErr);

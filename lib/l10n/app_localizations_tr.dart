@@ -1514,6 +1514,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get adminInvitePrimaryButton => 'Apartman kurulumuna geç';
 
   @override
+  String get adminInviteResumeHeadline => 'Tekrar hoş geldiniz';
+
+  @override
+  String get adminInviteResumeSubtitle =>
+      'Bu apartman kaydını daha önce yapmıştık. Giriş yapalım.';
+
+  @override
+  String get adminInviteResumeCardBadge => 'KAYIT ZATEN VAR';
+
+  @override
+  String get adminInviteResumeCardBody =>
+      'Bu kod ile apartman kurulumu tamamlanmış. Ana sayfadan yönetime devam edebilirsiniz.';
+
+  @override
+  String get adminInviteResumeSignIn => 'Giriş yap';
+
+  @override
   String get inviteFooterNoCode => 'Kodum yok';
 
   @override

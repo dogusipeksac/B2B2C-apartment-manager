@@ -1515,6 +1515,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminInvitePrimaryButton => 'Continue to setup';
 
   @override
+  String get adminInviteResumeHeadline => 'Welcome back';
+
+  @override
+  String get adminInviteResumeSubtitle =>
+      'This building was already registered with this code. Sign in to continue.';
+
+  @override
+  String get adminInviteResumeCardBadge => 'ALREADY REGISTERED';
+
+  @override
+  String get adminInviteResumeCardBody =>
+      'Setup for this invite code is complete. Continue from the home screen.';
+
+  @override
+  String get adminInviteResumeSignIn => 'Sign in';
+
+  @override
   String get inviteFooterNoCode => 'I don\'t have a code';
 
   @override

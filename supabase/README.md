@@ -10,7 +10,8 @@ Bu klasör veritabanı tanımları ve `redeem_code` Edge Function kaynağını i
 | `schema_v2.sql` | Davet kodu modeli: `invite_codes`, `devices`, `profiles` gevşetme |
 | `schema_v5_votes_unit_fk.sql` | `votes.unit_id` → `ON DELETE SET NULL` (bina silinirken FK hatası önleme) |
 | `schema_v6_invite_admin_redeem_policy.sql` | `invite_codes.admin_redeem_policy` — yönetici kodu tek kullanımlı / yeniden kullanılabilir |
-| `schema_after_v2_bundle.sql` | **Tek çalıştırmada** `schema_v3` + `schema_v6` — sıfır DB’de süper yönetici panelinden kod üretimi için önerilir |
+| `schema_v7_devices_admin_invite_code.sql` | `devices.admin_invite_code_id` — aynı yönetici koduyla tekrar girişte apartman kurulumunu atlamak için |
+| `schema_after_v2_bundle.sql` | **Tek çalıştırmada** `schema_v3` + `schema_v6` + `schema_v7` — sıfır DB için önerilir |
 | `rls.sql` | Row Level Security politikaları (`schema.sql` sonrası uygulanır) |
 | `functions/redeem_code/index.ts` | Kod kullanımı (admin / unit) — **service role**; opsiyonel `SUPERADMIN_ACCESS_CODE` ile süper yönetici oturumu |
 | `functions/superadmin_ops/index.ts` | Süper yönetici: tüm binalar, yönetici/daire davet kodları — **service role** |
