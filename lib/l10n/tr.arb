@@ -129,6 +129,7 @@
   "demoWelcomeSlide3Body": "Duyurular, belgeler ve oylamalarla komşularınla bağlantıda kal.",
   "demoSkip": "Atla",
   "demoBuildingHeaderLine": "YEŞİL VADİ APT. · 3A",
+  "residentBuildingHeaderFallback": "SAKİN · Apartman",
   "demoHelloName": "Merhaba {name} 👋",
   "@demoHelloName": {
     "placeholders": {
@@ -520,6 +521,20 @@
   "announcementCatUrgent": "Acil",
   "profileBadgeResident": "Sakin",
   "profileBadgeManager": "Yönetici",
+  "profileCardSubtitleManager": "Bu cihaz apartman yönetimi için bağlı.",
+  "profileCardSubtitleResident": "Bu cihaz davet kodu ile bir daireye bağlı.",
+  "profileCardNoBuildingTitle": "Apartman bilgisi yok",
+  "profileCardNoBuildingBody": "Kurulum veya davet tamamlanınca burada görünür.",
+  "profileCardFetchingBuildingTitle": "Apartman bilgisi getiriliyor…",
+  "profileCardFetchingBuildingBody": "Sunucudan apartman adı alınıyor.",
+  "profileDemoCardTitle": "Demo ortamı",
+  "profileDemoCardSubtitle": "Gerçek apartman verisi için DEMO_MODE kapalı çalıştırın.",
+  "profileSectionAccount": "HESAP",
+  "profileSectionSupport": "DESTEK",
+  "profileMenuProfileInfo": "Profil bilgileri",
+  "profileMenuNotifications": "Bildirim ayarları",
+  "profileMenuSavedCards": "Kayıtlı kartlar",
+  "profileMenuHelpCenter": "Yardım merkezi",
   "profileVersionFooter": "Sürüm 1.0.0 · KVKK",
   "issueFieldTitle": "Başlık",
   "issueFieldDescription": "Açıklama",
@@ -686,6 +701,43 @@
   "managerInviteSelectedUnitHint": "Üretilen kod bu daireye bağlanır; sakine ilettiğinizde bu daireye kayıt olur.",
   "managerInviteNoSessionHint": "Oturum bulunamadı. Önce kurulum veya giriş yapın.",
   "managerInviteNoUnits": "Bu bina için kayıtlı daire yok. Apartman kurulumunda daireler oluşturulmalı.",
+  "managerInviteFilterAll": "Tümü",
+  "managerInviteFilterWithCode": "Kodu var",
+  "managerInviteFilterWithoutCode": "Kodu yok",
+  "managerInviteFilterEmpty": "Bu filtreye uygun daire yok.",
+  "managerInviteDetailHeadline": "Daire {unit} için davet",
+  "@managerInviteDetailHeadline": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "managerInviteDetailSubtitle": "Yeni sakin bu kodla apartmana ve bu daireye bağlanır.",
+  "managerInviteDavetCodeCaps": "DAVET KODU",
+  "managerInviteValidDays": "{days} gün geçerli",
+  "@managerInviteValidDays": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "managerInviteValidUntilDate": "{date} tarihine kadar",
+  "@managerInviteValidUntilDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "managerInviteGenerateAction": "Davet kodu oluştur",
+  "managerInviteBulkTitle": "Toplu davet gönder",
+  "managerInviteBulkSubtitle": "Boş daireler için tek seferde kod üret (yakında).",
+  "managerInviteShareBody": "Apartmana katılım kodum: {code}",
+  "@managerInviteShareBody": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "managerInviteShareWhatsapp": "WhatsApp",
+  "managerInviteShareEmail": "E-posta",
+  "managerInviteShareSms": "SMS",
+  "managerInviteShareMore": "Daha fazla",
   "residentInviteScreenBody": "Yöneticinin verdiği 5 karakterlik kod hangi daireye tanımlandıysa kayıt o daireye yapılır. «Apartmana katıl» için ad soyadınızı girin.",
   "residentInvitePreviewTitle": "Kod ile bağlantı",
   "residentInviteWrongCodeType": "Bu bir yönetici davet kodu. Sakin olarak girmek için yöneticiden daire kodu isteyin.",

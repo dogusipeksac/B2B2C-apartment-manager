@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.manager_invite]
 verify_jwt = false
+
+[functions.session_metadata]
+verify_jwt = false

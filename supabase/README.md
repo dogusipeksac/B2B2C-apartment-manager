@@ -34,6 +34,17 @@ supabase functions deploy redeem_code --project-ref <PROJECT_REF>
 2. Yönetici cihazı `finalize_building_setup` ile tamamlanmış olmalı — `devices.building_id` dolu; aksi halde Edge **`building_not_ready`** döner.
 3. Projede en az bir **aktif daire** (`units`) kaydı olmalı.
 
+### `list_units` yanıtı
+
+Her daire için sunucu, o birime bağlı **en güncel aktif** `invite_codes` satırını ekler (varsa):
+
+- `invite_code`: string veya `null`
+- `invite_expires_at`: ISO tarih veya `null`
+
+Birden fazla aktif kod varsa **en son oluşturulan** seçilir.
+
+**`create_invite`**: Aynı daire için süresi dolmamış aktif bir birim kodu zaten varsa **yeni satır eklenmez**; mevcut kod ve `expires_at` aynen döner (`reused: true`).
+
 ## Veritabanını güncelleme sırası
 
 Yeni bir projede:
@@ -80,7 +91,12 @@ SUPABASE_SERVICE_ROLE_KEY=eyJ...
 
 ```bash
 supabase functions deploy redeem_code --project-ref <PROJECT_REF>
+supabase functions deploy session_metadata --project-ref <PROJECT_REF>
 ```
+
+**`session_metadata`** — cihaz oturumu geçerliyse `buildings.name` döner; sakin ana sayfada apartman adını yerelde saklamak için uygulama bir kez çağırır (RLS ile doğrudan tablo okumaya gerek kalmaz).
+
+**`redeem_code`** birim kodu ile kayıtta artık **`building_name`** alanı da döner; istemci bunu `LocalSession.buildingName` olarak kaydeder.
 
 Supabase Dashboard → **Edge Functions** altında `redeem_code` görünür. Aşağıdaki ortam değişkenleri deploy sırasında projeye bağlıdır (hosted Edge’de genelde otomatik):
 

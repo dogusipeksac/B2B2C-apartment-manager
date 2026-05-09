@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
+import 'package:apartment_manager/features/auth/domain/user_role.dart';
+import 'package:apartment_manager/features/auth/presentation/building_name_hydrate.dart';
+import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Mockup **4.7** — Profil: koyu yeşil header, apartman kartı, ayar listesi.
-class ProfileHomeTab extends ConsumerWidget {
+class ProfileHomeTab extends ConsumerStatefulWidget {
   const ProfileHomeTab({
     required this.displayName,
     required this.onSignOut,
@@ -18,24 +23,93 @@ class ProfileHomeTab extends ConsumerWidget {
   final VoidCallback onSignOut;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<ProfileHomeTab> createState() => _ProfileHomeTabState();
+}
+
+class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
+  @override
+  void initState() {
+    super.initState();
+    if (!Env.demoMode) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        unawaited(_hydrateBuilding());
+      });
+    }
+  }
+
+  Future<void> _hydrateBuilding() async {
+    await hydrateBuildingNameFromEdge(ref);
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
     final apart = context.apart;
     final demo = Env.demoMode;
     final personaAsync = ref.watch(demoPersonaProvider);
+    final session = ref
+        .watch(localSessionProvider)
+        .maybeWhen(
+          data: (s) => s,
+          orElse: () => null,
+        );
 
-    final isManager =
-        demo && personaAsync.value == DemoPersona.manager;
+    final fn = session?.fullName?.trim();
+    final resolvedName = (!demo && fn != null && fn.isNotEmpty)
+        ? fn
+        : widget.displayName;
 
-    final initials = displayName.isNotEmpty
-        ? displayName
-            .split(' ')
-            .take(2)
-            .map((w) => w.isNotEmpty ? w[0] : '')
-            .join()
-            .toUpperCase()
+    final bn = session?.buildingName?.trim();
+    final hasBuildingName = bn != null && bn.isNotEmpty;
+
+    final isManager = demo
+        ? personaAsync.value == DemoPersona.manager
+        : (session?.role == UserRole.buildingAdmin);
+
+    final buildingIdTrimmed = session?.buildingId?.trim();
+    final hasBuildingId =
+        buildingIdTrimmed != null && buildingIdTrimmed.isNotEmpty;
+
+    String cardTitle() {
+      if (hasBuildingName) {
+        return bn;
+      }
+      if (demo) {
+        return l10n.profileDemoCardTitle;
+      }
+      if (hasBuildingId) {
+        return l10n.profileCardFetchingBuildingTitle;
+      }
+      return l10n.profileCardNoBuildingTitle;
+    }
+
+    String cardBody() {
+      if (hasBuildingName) {
+        return isManager
+            ? l10n.profileCardSubtitleManager
+            : l10n.profileCardSubtitleResident;
+      }
+      if (demo) {
+        return l10n.profileDemoCardSubtitle;
+      }
+      if (hasBuildingId) {
+        return l10n.profileCardFetchingBuildingBody;
+      }
+      return l10n.profileCardNoBuildingBody;
+    }
+
+    final initials = resolvedName.isNotEmpty
+        ? resolvedName
+              .split(' ')
+              .take(2)
+              .map((w) => w.isNotEmpty ? w[0] : '')
+              .join()
+              .toUpperCase()
         : '?';
 
     return Scaffold(
@@ -78,8 +152,8 @@ class ProfileHomeTab extends ConsumerWidget {
                             ),
                             onPressed: () =>
                                 ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(l10n.homeFeatureSoon)),
-                            ),
+                                  SnackBar(content: Text(l10n.homeFeatureSoon)),
+                                ),
                           ),
                         ],
                       ),
@@ -122,22 +196,26 @@ class ProfileHomeTab extends ConsumerWidget {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  displayName.isEmpty ? '—' : displayName,
-                                  style:
-                                      theme.textTheme.titleLarge?.copyWith(
+                                  resolvedName.isEmpty ? '—' : resolvedName,
+                                  style: theme.textTheme.titleLarge?.copyWith(
                                     color: Colors.white,
                                     fontWeight: FontWeight.w700,
                                     fontSize: 20,
                                   ),
                                 ),
-                                const SizedBox(height: 2),
-                                Text(
-                                  'mehmet.yilmaz@gmail.com',
-                                  style: const TextStyle(
-                                    color: Color(0xFFc9dccd),
-                                    fontSize: 13,
+                                if (hasBuildingName) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    bn,
+                                    style: const TextStyle(
+                                      color: Color(0xFFc9dccd),
+                                      fontSize: 13,
+                                      height: 1.3,
+                                    ),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
                                   ),
-                                ),
+                                ],
                                 const SizedBox(height: 8),
                                 Wrap(
                                   spacing: 6,
@@ -147,7 +225,6 @@ class ProfileHomeTab extends ConsumerWidget {
                                           ? l10n.profileBadgeManager
                                           : l10n.profileBadgeResident,
                                     ),
-                                    const _HeaderChip(label: 'Daire 3A'),
                                   ],
                                 ),
                               ],
@@ -192,15 +269,17 @@ class ProfileHomeTab extends ConsumerWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                l10n.demoInvitePreviewTitle,
+                                cardTitle(),
                                 style: theme.textTheme.titleSmall?.copyWith(
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
+                              const SizedBox(height: 2),
                               Text(
-                                l10n.demoInvitePreviewSubtitle,
+                                cardBody(),
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: apart.onSurfaceVariant,
+                                  height: 1.35,
                                 ),
                               ),
                             ],
@@ -219,7 +298,7 @@ class ProfileHomeTab extends ConsumerWidget {
                 if (demo)
                   personaAsync.when(
                     loading: () => const SizedBox.shrink(),
-                    error: (_, __) => const SizedBox.shrink(),
+                    error: (_, _) => const SizedBox.shrink(),
                     data: (persona) {
                       if (persona == null) return const SizedBox.shrink();
                       return Padding(
@@ -248,26 +327,26 @@ class ProfileHomeTab extends ConsumerWidget {
                   ),
 
                 const SizedBox(height: 12),
-                const _SectionLabel(label: 'HESAP'),
+                _SectionLabel(label: l10n.profileSectionAccount),
                 const SizedBox(height: 8),
                 Card(
                   child: Column(
                     children: [
                       _MenuRow(
                         icon: Icons.person_outline_rounded,
-                        label: 'Profil bilgileri',
+                        label: l10n.profileMenuProfileInfo,
                         onTap: () {},
                         showDivider: true,
                       ),
                       _MenuRow(
                         icon: Icons.notifications_outlined,
-                        label: 'Bildirim ayarları',
+                        label: l10n.profileMenuNotifications,
                         onTap: () {},
                         showDivider: true,
                       ),
                       _MenuRow(
                         icon: Icons.credit_card_outlined,
-                        label: 'Kayıtlı kartlar',
+                        label: l10n.profileMenuSavedCards,
                         badge: '1',
                         onTap: () {},
                         showDivider: false,
@@ -277,21 +356,21 @@ class ProfileHomeTab extends ConsumerWidget {
                 ),
 
                 const SizedBox(height: 12),
-                const _SectionLabel(label: 'DESTEK'),
+                _SectionLabel(label: l10n.profileSectionSupport),
                 const SizedBox(height: 8),
                 Card(
                   child: Column(
                     children: [
                       _MenuRow(
                         icon: Icons.help_outline_rounded,
-                        label: 'Yardım merkezi',
+                        label: l10n.profileMenuHelpCenter,
                         onTap: () {},
                         showDivider: true,
                       ),
                       _MenuRow(
                         icon: Icons.logout_rounded,
                         label: l10n.signOut,
-                        onTap: onSignOut,
+                        onTap: widget.onSignOut,
                         isDestructive: true,
                         showDivider: false,
                       ),
@@ -353,10 +432,10 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: context.apart.onSurfaceVariant,
-            letterSpacing: 0.6,
-            fontWeight: FontWeight.w500,
-          ),
+        color: context.apart.onSurfaceVariant,
+        letterSpacing: 0.6,
+        fontWeight: FontWeight.w500,
+      ),
     );
   }
 }
@@ -382,8 +461,7 @@ class _MenuRow extends StatelessWidget {
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
     final apart = context.apart;
-    final fg =
-        isDestructive ? AppTheme.error : scheme.onSurface;
+    final fg = isDestructive ? AppTheme.error : scheme.onSurface;
     return Column(
       children: [
         InkWell(

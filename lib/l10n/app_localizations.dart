@@ -692,6 +692,12 @@ abstract class AppLocalizations {
   /// **'YEŞİL VADİ APT. · 3A'**
   String get demoBuildingHeaderLine;
 
+  /// No description provided for @residentBuildingHeaderFallback.
+  ///
+  /// In tr, this message translates to:
+  /// **'SAKİN · Apartman'**
+  String get residentBuildingHeaderFallback;
+
   /// No description provided for @demoHelloName.
   ///
   /// In tr, this message translates to:
@@ -2210,6 +2216,90 @@ abstract class AppLocalizations {
   /// **'Yönetici'**
   String get profileBadgeManager;
 
+  /// No description provided for @profileCardSubtitleManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihaz apartman yönetimi için bağlı.'**
+  String get profileCardSubtitleManager;
+
+  /// No description provided for @profileCardSubtitleResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu cihaz davet kodu ile bir daireye bağlı.'**
+  String get profileCardSubtitleResident;
+
+  /// No description provided for @profileCardNoBuildingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman bilgisi yok'**
+  String get profileCardNoBuildingTitle;
+
+  /// No description provided for @profileCardNoBuildingBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kurulum veya davet tamamlanınca burada görünür.'**
+  String get profileCardNoBuildingBody;
+
+  /// No description provided for @profileCardFetchingBuildingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman bilgisi getiriliyor…'**
+  String get profileCardFetchingBuildingTitle;
+
+  /// No description provided for @profileCardFetchingBuildingBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sunucudan apartman adı alınıyor.'**
+  String get profileCardFetchingBuildingBody;
+
+  /// No description provided for @profileDemoCardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo ortamı'**
+  String get profileDemoCardTitle;
+
+  /// No description provided for @profileDemoCardSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gerçek apartman verisi için DEMO_MODE kapalı çalıştırın.'**
+  String get profileDemoCardSubtitle;
+
+  /// No description provided for @profileSectionAccount.
+  ///
+  /// In tr, this message translates to:
+  /// **'HESAP'**
+  String get profileSectionAccount;
+
+  /// No description provided for @profileSectionSupport.
+  ///
+  /// In tr, this message translates to:
+  /// **'DESTEK'**
+  String get profileSectionSupport;
+
+  /// No description provided for @profileMenuProfileInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil bilgileri'**
+  String get profileMenuProfileInfo;
+
+  /// No description provided for @profileMenuNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirim ayarları'**
+  String get profileMenuNotifications;
+
+  /// No description provided for @profileMenuSavedCards.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıtlı kartlar'**
+  String get profileMenuSavedCards;
+
+  /// No description provided for @profileMenuHelpCenter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yardım merkezi'**
+  String get profileMenuHelpCenter;
+
   /// No description provided for @profileVersionFooter.
   ///
   /// In tr, this message translates to:
@@ -3013,6 +3103,108 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Bu bina için kayıtlı daire yok. Apartman kurulumunda daireler oluşturulmalı.'**
   String get managerInviteNoUnits;
+
+  /// No description provided for @managerInviteFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get managerInviteFilterAll;
+
+  /// No description provided for @managerInviteFilterWithCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu var'**
+  String get managerInviteFilterWithCode;
+
+  /// No description provided for @managerInviteFilterWithoutCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu yok'**
+  String get managerInviteFilterWithoutCode;
+
+  /// No description provided for @managerInviteFilterEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu filtreye uygun daire yok.'**
+  String get managerInviteFilterEmpty;
+
+  /// No description provided for @managerInviteDetailHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire {unit} için davet'**
+  String managerInviteDetailHeadline(Object unit);
+
+  /// No description provided for @managerInviteDetailSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni sakin bu kodla apartmana ve bu daireye bağlanır.'**
+  String get managerInviteDetailSubtitle;
+
+  /// No description provided for @managerInviteDavetCodeCaps.
+  ///
+  /// In tr, this message translates to:
+  /// **'DAVET KODU'**
+  String get managerInviteDavetCodeCaps;
+
+  /// No description provided for @managerInviteValidDays.
+  ///
+  /// In tr, this message translates to:
+  /// **'{days} gün geçerli'**
+  String managerInviteValidDays(Object days);
+
+  /// No description provided for @managerInviteValidUntilDate.
+  ///
+  /// In tr, this message translates to:
+  /// **'{date} tarihine kadar'**
+  String managerInviteValidUntilDate(Object date);
+
+  /// No description provided for @managerInviteGenerateAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu oluştur'**
+  String get managerInviteGenerateAction;
+
+  /// No description provided for @managerInviteBulkTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplu davet gönder'**
+  String get managerInviteBulkTitle;
+
+  /// No description provided for @managerInviteBulkSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boş daireler için tek seferde kod üret (yakında).'**
+  String get managerInviteBulkSubtitle;
+
+  /// No description provided for @managerInviteShareBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmana katılım kodum: {code}'**
+  String managerInviteShareBody(Object code);
+
+  /// No description provided for @managerInviteShareWhatsapp.
+  ///
+  /// In tr, this message translates to:
+  /// **'WhatsApp'**
+  String get managerInviteShareWhatsapp;
+
+  /// No description provided for @managerInviteShareEmail.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-posta'**
+  String get managerInviteShareEmail;
+
+  /// No description provided for @managerInviteShareSms.
+  ///
+  /// In tr, this message translates to:
+  /// **'SMS'**
+  String get managerInviteShareSms;
+
+  /// No description provided for @managerInviteShareMore.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha fazla'**
+  String get managerInviteShareMore;
 
   /// No description provided for @residentInviteScreenBody.
   ///

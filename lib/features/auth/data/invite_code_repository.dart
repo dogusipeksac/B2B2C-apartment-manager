@@ -163,6 +163,8 @@ class InviteCodeRepository {
       if (status == 200 &&
           body['success'] == true &&
           body['role'] is String) {
+        final bnRaw = body['building_name'];
+        final bn = bnRaw is String ? bnRaw.trim() : '';
         return LocalSession(
           deviceId: deviceId,
           role: UserRole.fromWire(body['role'] as String),
@@ -172,6 +174,7 @@ class InviteCodeRepository {
           profileId: body['profile_id'] as String?,
           fullName: fullName?.trim(),
           sessionToken: body['session_token'] as String?,
+          buildingName: bn.isEmpty ? null : bn,
         );
       }
 

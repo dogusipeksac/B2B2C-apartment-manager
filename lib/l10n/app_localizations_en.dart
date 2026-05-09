@@ -327,6 +327,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get demoBuildingHeaderLine => 'GREEN VALLEY APT · 3A';
 
   @override
+  String get residentBuildingHeaderFallback => 'RESIDENT · Building';
+
+  @override
   String demoHelloName(Object name) {
     return 'Hello $name 👋';
   }
@@ -1152,6 +1155,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileBadgeManager => 'Manager';
 
   @override
+  String get profileCardSubtitleManager =>
+      'This device is linked for building administration.';
+
+  @override
+  String get profileCardSubtitleResident =>
+      'This device is linked to a unit via invite code.';
+
+  @override
+  String get profileCardNoBuildingTitle => 'No building info yet';
+
+  @override
+  String get profileCardNoBuildingBody =>
+      'Shows here after setup or invite completes.';
+
+  @override
+  String get profileCardFetchingBuildingTitle => 'Loading building info…';
+
+  @override
+  String get profileCardFetchingBuildingBody =>
+      'Fetching building name from the server.';
+
+  @override
+  String get profileDemoCardTitle => 'Demo environment';
+
+  @override
+  String get profileDemoCardSubtitle =>
+      'Turn off DEMO_MODE for real building data.';
+
+  @override
+  String get profileSectionAccount => 'ACCOUNT';
+
+  @override
+  String get profileSectionSupport => 'SUPPORT';
+
+  @override
+  String get profileMenuProfileInfo => 'Profile details';
+
+  @override
+  String get profileMenuNotifications => 'Notification settings';
+
+  @override
+  String get profileMenuSavedCards => 'Saved cards';
+
+  @override
+  String get profileMenuHelpCenter => 'Help center';
+
+  @override
   String get profileVersionFooter => 'Version 1.0.0';
 
   @override
@@ -1589,6 +1639,67 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get managerInviteNoUnits =>
       'There are no units for this building yet. Complete building setup first.';
+
+  @override
+  String get managerInviteFilterAll => 'All';
+
+  @override
+  String get managerInviteFilterWithCode => 'Has code';
+
+  @override
+  String get managerInviteFilterWithoutCode => 'No code';
+
+  @override
+  String get managerInviteFilterEmpty => 'No units match this filter.';
+
+  @override
+  String managerInviteDetailHeadline(Object unit) {
+    return 'Invitation for unit $unit';
+  }
+
+  @override
+  String get managerInviteDetailSubtitle =>
+      'The new resident joins this apartment using this code.';
+
+  @override
+  String get managerInviteDavetCodeCaps => 'INVITE CODE';
+
+  @override
+  String managerInviteValidDays(Object days) {
+    return 'Valid $days days';
+  }
+
+  @override
+  String managerInviteValidUntilDate(Object date) {
+    return 'until $date';
+  }
+
+  @override
+  String get managerInviteGenerateAction => 'Generate invite code';
+
+  @override
+  String get managerInviteBulkTitle => 'Bulk invitations';
+
+  @override
+  String get managerInviteBulkSubtitle =>
+      'Generate codes for all empty units at once (coming soon).';
+
+  @override
+  String managerInviteShareBody(Object code) {
+    return 'My building invite code: $code';
+  }
+
+  @override
+  String get managerInviteShareWhatsapp => 'WhatsApp';
+
+  @override
+  String get managerInviteShareEmail => 'Email';
+
+  @override
+  String get managerInviteShareSms => 'SMS';
+
+  @override
+  String get managerInviteShareMore => 'More';
 
   @override
   String get residentInviteScreenBody =>

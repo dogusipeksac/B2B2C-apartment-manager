@@ -58,7 +58,9 @@ dependencies:
   pin_code_fields: ^9.3.0
   postgrest: ^2.7.0
   printing: ^5.14.3
+  qr_flutter: ^4.1.0
   reactive_forms: ^18.2.2
+  share_plus: ^10.1.4
   shared_preferences: ^2.5.5
   supabase_flutter: ^2.12.4
   uuid: ^4.5.2

@@ -247,6 +247,19 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
+    let buildingName = "";
+    const { data: bMeta, error: bNameErr } = await supabase
+      .from("buildings")
+      .select("name")
+      .eq("id", buildingId)
+      .maybeSingle();
+
+    if (bNameErr) {
+      console.error("buildings name for redeem", bNameErr);
+    } else if (typeof bMeta?.name === "string") {
+      buildingName = (bMeta.name as string).trim();
+    }
+
     return jsonResponse(200, {
       success: true,
       role: "resident",
@@ -254,6 +267,7 @@ serve(async (req: Request): Promise<Response> => {
       unit_id: unitId,
       profile_id: profileId,
       session_token: sessionToken,
+      building_name: buildingName.length > 0 ? buildingName : null,
     });
   }
 

@@ -198,12 +198,64 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
-    const rows = (units ?? []).map((u: Record<string, unknown>) => ({
+    const unitRows = (units ?? []).map((u: Record<string, unknown>) => ({
       id: u.id as string,
       floor: u.floor as number | null,
       door_number: String(u.door_number ?? ""),
       block: typeof u.block === "string" ? u.block.trim() : "",
     }));
+
+    type InvitePick = {
+      code: string;
+      expires_at: string | null;
+      created_at: number;
+    };
+    const inviteByUnit = new Map<string, InvitePick>();
+
+    const ids = unitRows.map((r) => r.id);
+    if (ids.length > 0) {
+      const { data: invs, error: invErr } = await supabase
+        .from("invite_codes")
+        .select("unit_id, code, expires_at, created_at")
+        .eq("building_id", buildingId)
+        .eq("code_type", "unit")
+        .eq("status", "active")
+        .in("unit_id", ids);
+
+      if (invErr) {
+        console.error("invite_codes list", invErr);
+        return jsonResponse(500, { success: false, error: "database_error" });
+      }
+
+      const now = Date.now();
+      for (const row of invs ?? []) {
+        const uid = row.unit_id as string | null;
+        if (!uid) continue;
+        const expMs = row.expires_at
+          ? new Date(row.expires_at as string).getTime()
+          : null;
+        if (expMs !== null && expMs < now) continue;
+
+        const ca = new Date(row.created_at as string).getTime();
+        const prev = inviteByUnit.get(uid);
+        if (!prev || ca > prev.created_at) {
+          inviteByUnit.set(uid, {
+            code: row.code as string,
+            expires_at: row.expires_at ? String(row.expires_at) : null,
+            created_at: ca,
+          });
+        }
+      }
+    }
+
+    const rows = unitRows.map((u) => {
+      const inv = inviteByUnit.get(u.id);
+      return {
+        ...u,
+        invite_code: inv?.code ?? null,
+        invite_expires_at: inv?.expires_at ?? null,
+      };
+    });
 
     return jsonResponse(200, {
       success: true,
@@ -258,6 +310,42 @@ serve(async (req: Request): Promise<Response> => {
 
   const createdBy = gate.device.profile_id;
 
+  // Reuse newest non-expired active unit invite instead of inserting duplicates.
+  const { data: existingRows, error: exErr } = await supabase
+    .from("invite_codes")
+    .select("code, expires_at, created_at")
+    .eq("building_id", buildingId)
+    .eq("unit_id", unitId)
+    .eq("code_type", "unit")
+    .eq("status", "active")
+    .order("created_at", { ascending: false });
+
+  if (exErr) {
+    console.error("invite_codes existing select", exErr);
+    return jsonResponse(500, { success: false, error: "database_error" });
+  }
+
+  const nowMs = Date.now();
+  for (const row of existingRows ?? []) {
+    const expMs = row.expires_at
+      ? new Date(row.expires_at as string).getTime()
+      : null;
+    if (expMs !== null && expMs < nowMs) {
+      continue;
+    }
+    const codeReuse = String(row.code ?? "").trim();
+    if (codeReuse.length === 0) {
+      continue;
+    }
+    return jsonResponse(200, {
+      success: true,
+      code: codeReuse,
+      unit_id: unitId,
+      expires_at: row.expires_at ?? null,
+      reused: true,
+    });
+  }
+
   for (let attempt = 0; attempt < 16; attempt++) {
     const code = randomUnitCode();
     const { data: row, error: insErr } = await supabase
@@ -279,6 +367,7 @@ serve(async (req: Request): Promise<Response> => {
         code,
         unit_id: unitId,
         expires_at: row.expires_at ?? null,
+        reused: false,
       });
     }
 

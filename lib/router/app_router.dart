@@ -12,9 +12,11 @@ import 'package:apartment_manager/features/home/presentation/home_screen.dart';
 import 'package:apartment_manager/features/issues/presentation/issue_create_screen.dart';
 import 'package:apartment_manager/features/issues/presentation/issue_detail_screen.dart';
 import 'package:apartment_manager/features/issues/presentation/issues_kanban_screen.dart';
+import 'package:apartment_manager/features/manager/data/manager_invite_repository.dart';
 import 'package:apartment_manager/features/manager/presentation/expense_new_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/invite_resident_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/periods_screen.dart';
+import 'package:apartment_manager/features/manager/presentation/unit_invite_detail_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/units_screen.dart';
 import 'package:apartment_manager/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/account_role_screen.dart';
@@ -112,6 +114,21 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/manager/invite',
         builder: (context, state) => const InviteResidentScreen(),
+      ),
+      GoRoute(
+        path: '/manager/invite/unit/:unitId',
+        builder: (context, state) {
+          final unitId = state.pathParameters['unitId'] ?? '';
+          final extra = state.extra;
+          ManagerUnitOption? initial;
+          if (extra is ManagerUnitOption) {
+            initial = extra;
+          }
+          return UnitInviteDetailScreen(
+            unitId: unitId,
+            initialUnit: initial,
+          );
+        },
       ),
       GoRoute(
         path: '/manager/periods',

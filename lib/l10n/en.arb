@@ -129,6 +129,7 @@
   "demoWelcomeSlide3Body": "Stay connected with news, documents, and polls.",
   "demoSkip": "Skip",
   "demoBuildingHeaderLine": "GREEN VALLEY APT · 3A",
+  "residentBuildingHeaderFallback": "RESIDENT · Building",
   "demoHelloName": "Hello {name} 👋",
   "@demoHelloName": {
     "placeholders": {
@@ -520,6 +521,20 @@
   "announcementCatUrgent": "Urgent",
   "profileBadgeResident": "Resident",
   "profileBadgeManager": "Manager",
+  "profileCardSubtitleManager": "This device is linked for building administration.",
+  "profileCardSubtitleResident": "This device is linked to a unit via invite code.",
+  "profileCardNoBuildingTitle": "No building info yet",
+  "profileCardNoBuildingBody": "Shows here after setup or invite completes.",
+  "profileCardFetchingBuildingTitle": "Loading building info…",
+  "profileCardFetchingBuildingBody": "Fetching building name from the server.",
+  "profileDemoCardTitle": "Demo environment",
+  "profileDemoCardSubtitle": "Turn off DEMO_MODE for real building data.",
+  "profileSectionAccount": "ACCOUNT",
+  "profileSectionSupport": "SUPPORT",
+  "profileMenuProfileInfo": "Profile details",
+  "profileMenuNotifications": "Notification settings",
+  "profileMenuSavedCards": "Saved cards",
+  "profileMenuHelpCenter": "Help center",
   "profileVersionFooter": "Version 1.0.0",
   "issueFieldTitle": "Title",
   "issueFieldDescription": "Description",
@@ -687,6 +702,43 @@
   "managerInviteSelectedUnitHint": "The generated code is tied to this unit; residents who use it register for this apartment.",
   "managerInviteNoSessionHint": "No session found. Complete setup or sign in first.",
   "managerInviteNoUnits": "There are no units for this building yet. Complete building setup first.",
+  "managerInviteFilterAll": "All",
+  "managerInviteFilterWithCode": "Has code",
+  "managerInviteFilterWithoutCode": "No code",
+  "managerInviteFilterEmpty": "No units match this filter.",
+  "managerInviteDetailHeadline": "Invitation for unit {unit}",
+  "@managerInviteDetailHeadline": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "managerInviteDetailSubtitle": "The new resident joins this apartment using this code.",
+  "managerInviteDavetCodeCaps": "INVITE CODE",
+  "managerInviteValidDays": "Valid {days} days",
+  "@managerInviteValidDays": {
+    "placeholders": {
+      "days": {}
+    }
+  },
+  "managerInviteValidUntilDate": "until {date}",
+  "@managerInviteValidUntilDate": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "managerInviteGenerateAction": "Generate invite code",
+  "managerInviteBulkTitle": "Bulk invitations",
+  "managerInviteBulkSubtitle": "Generate codes for all empty units at once (coming soon).",
+  "managerInviteShareBody": "My building invite code: {code}",
+  "@managerInviteShareBody": {
+    "placeholders": {
+      "code": {}
+    }
+  },
+  "managerInviteShareWhatsapp": "WhatsApp",
+  "managerInviteShareEmail": "Email",
+  "managerInviteShareSms": "SMS",
+  "managerInviteShareMore": "More",
   "residentInvitePreviewTitle": "Linked with this code",
   "residentInviteWrongCodeType": "This is a manager invite code. Ask your manager for a unit code to join as a resident.",
   "residentInvitePreviewDemo": "Demo mode has no server validation; run with DEMO_MODE off for the real flow.",

@@ -31,17 +31,9 @@ class ManagerInviteRepository {
 
   Future<ManagerInviteListResult> listUnits(LocalSession session) async {
     if (_disabled) {
-      return const ManagerInviteListResult(
-        units: [
-          ManagerUnitOption(
-            id: 'demo-unit',
-            floor: 3,
-            doorNumber: 'A',
-            block: '',
-            label: '3. kat · 3A',
-          ),
-        ],
-        buildingName: null,
+      return ManagerInviteListResult(
+        units: _demoUnits(),
+        buildingName: 'Demo Apartman',
       );
     }
 
@@ -108,12 +100,23 @@ class ManagerInviteRepository {
           doorNumber: door,
           block: block,
         );
+        final invRaw = m['invite_code'];
+        final inviteCode = invRaw is String && invRaw.trim().isNotEmpty
+            ? invRaw.trim()
+            : null;
+        DateTime? inviteExpires;
+        final expRaw = m['invite_expires_at'];
+        if (expRaw is String && expRaw.trim().isNotEmpty) {
+          inviteExpires = DateTime.tryParse(expRaw.trim());
+        }
         return ManagerUnitOption(
           id: id,
           floor: floor,
           doorNumber: door,
           block: block,
           label: label,
+          inviteCode: inviteCode,
+          inviteExpiresAt: inviteExpires,
         );
       }).toList();
       return ManagerInviteListResult(
@@ -136,7 +139,11 @@ class ManagerInviteRepository {
       for (var i = 0; i < 5; i++) {
         buf.write(alphabet[rnd.nextInt(alphabet.length)]);
       }
-      return CreatedUnitInvite(code: buf.toString(), unitId: 'demo-unit');
+      return CreatedUnitInvite(
+        code: buf.toString(),
+        unitId: unitId ?? 'demo-u1',
+        expiresAt: DateTime.now().add(const Duration(days: 90)),
+      );
     }
 
     final token = session.sessionToken;
@@ -190,9 +197,15 @@ class ManagerInviteRepository {
         body['success'] == true &&
         body['code'] is String &&
         body['unit_id'] is String) {
+      DateTime? exp;
+      final expRaw = body['expires_at'];
+      if (expRaw is String && expRaw.trim().isNotEmpty) {
+        exp = DateTime.tryParse(expRaw.trim());
+      }
       return CreatedUnitInvite(
         code: body['code']! as String,
         unitId: body['unit_id']! as String,
+        expiresAt: exp,
       );
     }
 
@@ -224,6 +237,44 @@ class ManagerInviteRepository {
     }
   }
 
+  static List<ManagerUnitOption> _demoUnits() {
+    ManagerUnitOption u(
+      String id,
+      int floor,
+      String door,
+      String block,
+      String? code,
+    ) {
+      return ManagerUnitOption(
+        id: id,
+        floor: floor,
+        doorNumber: door,
+        block: block,
+        label: formatUnitLabel(
+          floor: floor,
+          doorNumber: door,
+          block: block,
+        ),
+        inviteCode: code,
+        inviteExpiresAt: code != null
+            ? DateTime.now().add(const Duration(days: 7))
+            : null,
+      );
+    }
+
+    return [
+      u('demo-u1', 6, 'A', '', 'K7P29'),
+      u('demo-u2', 6, 'B', '', null),
+      u('demo-u3', 6, 'C', '', null),
+      u('demo-u4', 5, 'A', '', 'X3N82'),
+      u('demo-u5', 5, 'B', '', null),
+      u('demo-u6', 5, 'C', '', null),
+      u('demo-u7', 4, 'A', '', null),
+      u('demo-u8', 4, 'B', '', null),
+      u('demo-u9', 4, 'C', '', null),
+    ];
+  }
+
   /// Backend JSON `error` field; fallback when Supabase returns HTML/plain.
   String _errorCode(Map<String, dynamic> body) {
     final raw = body['error'];
@@ -251,6 +302,8 @@ class ManagerUnitOption {
     required this.doorNumber,
     required this.block,
     required this.label,
+    this.inviteCode,
+    this.inviteExpiresAt,
   });
 
   final String id;
@@ -258,16 +311,22 @@ class ManagerUnitOption {
   final String doorNumber;
   final String block;
   final String label;
+
+  /// Active unit invite code from server, if any.
+  final String? inviteCode;
+  final DateTime? inviteExpiresAt;
 }
 
 class CreatedUnitInvite {
   const CreatedUnitInvite({
     required this.code,
     required this.unitId,
+    this.expiresAt,
   });
 
   final String code;
   final String unitId;
+  final DateTime? expiresAt;
 }
 
 final managerInviteRepositoryProvider = Provider<ManagerInviteRepository>(

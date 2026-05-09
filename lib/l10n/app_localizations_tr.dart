@@ -326,6 +326,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get demoBuildingHeaderLine => 'YEŞİL VADİ APT. · 3A';
 
   @override
+  String get residentBuildingHeaderFallback => 'SAKİN · Apartman';
+
+  @override
   String demoHelloName(Object name) {
     return 'Merhaba $name 👋';
   }
@@ -1150,6 +1153,54 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profileBadgeManager => 'Yönetici';
 
   @override
+  String get profileCardSubtitleManager =>
+      'Bu cihaz apartman yönetimi için bağlı.';
+
+  @override
+  String get profileCardSubtitleResident =>
+      'Bu cihaz davet kodu ile bir daireye bağlı.';
+
+  @override
+  String get profileCardNoBuildingTitle => 'Apartman bilgisi yok';
+
+  @override
+  String get profileCardNoBuildingBody =>
+      'Kurulum veya davet tamamlanınca burada görünür.';
+
+  @override
+  String get profileCardFetchingBuildingTitle =>
+      'Apartman bilgisi getiriliyor…';
+
+  @override
+  String get profileCardFetchingBuildingBody =>
+      'Sunucudan apartman adı alınıyor.';
+
+  @override
+  String get profileDemoCardTitle => 'Demo ortamı';
+
+  @override
+  String get profileDemoCardSubtitle =>
+      'Gerçek apartman verisi için DEMO_MODE kapalı çalıştırın.';
+
+  @override
+  String get profileSectionAccount => 'HESAP';
+
+  @override
+  String get profileSectionSupport => 'DESTEK';
+
+  @override
+  String get profileMenuProfileInfo => 'Profil bilgileri';
+
+  @override
+  String get profileMenuNotifications => 'Bildirim ayarları';
+
+  @override
+  String get profileMenuSavedCards => 'Kayıtlı kartlar';
+
+  @override
+  String get profileMenuHelpCenter => 'Yardım merkezi';
+
+  @override
   String get profileVersionFooter => 'Sürüm 1.0.0 · KVKK';
 
   @override
@@ -1587,6 +1638,67 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get managerInviteNoUnits =>
       'Bu bina için kayıtlı daire yok. Apartman kurulumunda daireler oluşturulmalı.';
+
+  @override
+  String get managerInviteFilterAll => 'Tümü';
+
+  @override
+  String get managerInviteFilterWithCode => 'Kodu var';
+
+  @override
+  String get managerInviteFilterWithoutCode => 'Kodu yok';
+
+  @override
+  String get managerInviteFilterEmpty => 'Bu filtreye uygun daire yok.';
+
+  @override
+  String managerInviteDetailHeadline(Object unit) {
+    return 'Daire $unit için davet';
+  }
+
+  @override
+  String get managerInviteDetailSubtitle =>
+      'Yeni sakin bu kodla apartmana ve bu daireye bağlanır.';
+
+  @override
+  String get managerInviteDavetCodeCaps => 'DAVET KODU';
+
+  @override
+  String managerInviteValidDays(Object days) {
+    return '$days gün geçerli';
+  }
+
+  @override
+  String managerInviteValidUntilDate(Object date) {
+    return '$date tarihine kadar';
+  }
+
+  @override
+  String get managerInviteGenerateAction => 'Davet kodu oluştur';
+
+  @override
+  String get managerInviteBulkTitle => 'Toplu davet gönder';
+
+  @override
+  String get managerInviteBulkSubtitle =>
+      'Boş daireler için tek seferde kod üret (yakında).';
+
+  @override
+  String managerInviteShareBody(Object code) {
+    return 'Apartmana katılım kodum: $code';
+  }
+
+  @override
+  String get managerInviteShareWhatsapp => 'WhatsApp';
+
+  @override
+  String get managerInviteShareEmail => 'E-posta';
+
+  @override
+  String get managerInviteShareSms => 'SMS';
+
+  @override
+  String get managerInviteShareMore => 'Daha fazla';
 
   @override
   String get residentInviteScreenBody =>
