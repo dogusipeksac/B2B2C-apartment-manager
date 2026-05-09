@@ -20,6 +20,8 @@ class AnnouncementUi {
     required this.body,
     required this.attachmentName,
     required this.attachmentSizeLabel,
+    this.secondaryCategory,
+    this.detailMetaLine,
   });
 
   final String id;
@@ -35,4 +37,10 @@ class AnnouncementUi {
   final String body;
   final String? attachmentName;
   final String? attachmentSizeLabel;
+
+  /// Second tag on detail (e.g. pin + maintenance → "SABİT · BAKIM").
+  final AnnouncementUiCategory? secondaryCategory;
+
+  /// Optional subtitle under author ("10 Mart, 14:32 · 24 görüntülenme").
+  final String? detailMetaLine;
 }

@@ -945,6 +945,44 @@ class AppLocalizationsTr extends AppLocalizations {
   String get announcementDetailTitle => 'Duyuru';
 
   @override
+  String announcementsChipAll(Object count) {
+    return 'Tümü · $count';
+  }
+
+  @override
+  String announcementsChipPinned(Object count) {
+    return '📌 Sabit · $count';
+  }
+
+  @override
+  String get announcementsChipUrgent => '⚠️ Acil';
+
+  @override
+  String get announcementsChipInfo => 'Bilgi';
+
+  @override
+  String get announcementsChipMaintenance => 'Bakım';
+
+  @override
+  String get announcementsReadLabel => 'Okundu';
+
+  @override
+  String announcementCommentPlaceholder(Object count) {
+    return 'Yorum yaz... ($count yorum)';
+  }
+
+  @override
+  String get announcementDetailTagPinnedMaintenance => '⭐ SABİT · BAKIM';
+
+  @override
+  String get announcementDownloadComingSoon => 'İndirme yakında';
+
+  @override
+  String announcementViewsFallback(Object count) {
+    return '$count görüntülenme';
+  }
+
+  @override
   String get issuesTitle => 'Arızalar';
 
   @override
@@ -978,7 +1016,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get setupWizardTitle => 'Bina kurulumu';
 
   @override
+  String get setupWizardStepUnitsPlaceholder => 'Daireler · özet';
+
+  @override
+  String get setupWizardStepDuesPlaceholder => 'Aidat planı';
+
+  @override
   String get managerUnitsTitle => 'Daireler';
+
+  @override
+  String managerFloorHeading(Object floor) {
+    return 'KAT $floor';
+  }
+
+  @override
+  String managerFloorUnitCount(Object count) {
+    return '$count daire';
+  }
 
   @override
   String get managerInviteTitle => 'Sakin daveti';
@@ -1066,6 +1120,99 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get issueFieldDescription => 'Açıklama';
+
+  @override
+  String get issueCreateAppBarTitle => 'Yeni arıza bildirimi';
+
+  @override
+  String get issueCategorySection => 'KATEGORİ';
+
+  @override
+  String get issueCategoryWater => 'Su';
+
+  @override
+  String get issueCategoryElectric => 'Elektrik';
+
+  @override
+  String get issueCategoryMechanical => 'Mekanik';
+
+  @override
+  String get issueCategoryOther => 'Diğer';
+
+  @override
+  String get issueLocationSection => 'KONUM';
+
+  @override
+  String get issueLocationApartment => 'Daire içi';
+
+  @override
+  String get issueLocationParking => 'Otopark';
+
+  @override
+  String get issueLocationRoof => 'Çatı';
+
+  @override
+  String get issueLocationGarden => 'Bahçe';
+
+  @override
+  String get issueLocationElevator => 'Asansör';
+
+  @override
+  String get issuePrioritySection => 'ÖNCELİK';
+
+  @override
+  String get issuePriorityLow => 'Düşük';
+
+  @override
+  String get issuePriorityMedium => 'Orta';
+
+  @override
+  String get issuePriorityHigh => 'Yüksek';
+
+  @override
+  String get issueDescriptionPlaceholder => 'Sorunu detaylı açıkla...';
+
+  @override
+  String get issuePhotoAdd => 'Foto';
+
+  @override
+  String get issuePhotoComingSoon => 'Foto ekleme yakında';
+
+  @override
+  String get issueSubmittedDemo => 'Demo: bildirim kaydedildi.';
+
+  @override
+  String get issueTimelineSection => 'SÜREÇ';
+
+  @override
+  String get issueTimelineReported => 'Bildirildi';
+
+  @override
+  String get issueTimelineSeen => 'Görüldü';
+
+  @override
+  String get issueTimelineInProgress => 'İşlemde';
+
+  @override
+  String get issueTimelineResolved => 'Çözüldü';
+
+  @override
+  String get issueTimelinePending => '—';
+
+  @override
+  String get issueDemoReportedBy => 'Mehmet Y. (3A) tarafından bildirildi';
+
+  @override
+  String issueTimelineSeenBody(Object assignee) {
+    return '$assignee (yönetici) görevi aldı';
+  }
+
+  @override
+  String get issueDemoInProgressNote =>
+      'Tesisatçı çağrıldı, yarın 10:00\'da gelecek.';
+
+  @override
+  String get issueDemoManagerName => 'Ayşe Demir';
 
   @override
   String get navBack => 'Geri';

@@ -15,7 +15,7 @@ class IssuesListScreen extends ConsumerWidget {
     final async = ref.watch(issuesListProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppTheme.scaffoldBg,
       appBar: AppBar(
         title: Text(l10n.issuesTitle),
         actions: [
@@ -31,7 +31,7 @@ class IssuesListScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.secondary,
-        onPressed: () => context.push('/issues/new'),
+        onPressed: () => context.push('/issues/create'),
         child: const Icon(Icons.add),
       ),
       body: async.when(

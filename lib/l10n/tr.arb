@@ -400,6 +400,36 @@
   "paymentSuccessBody": "Aidatın ödendi. Makbuzu e-posta ile gönderdik.",
   "announcementsTitle": "Duyurular",
   "announcementDetailTitle": "Duyuru",
+  "announcementsChipAll": "Tümü · {count}",
+  "@announcementsChipAll": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementsChipPinned": "📌 Sabit · {count}",
+  "@announcementsChipPinned": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementsChipUrgent": "⚠️ Acil",
+  "announcementsChipInfo": "Bilgi",
+  "announcementsChipMaintenance": "Bakım",
+  "announcementsReadLabel": "Okundu",
+  "announcementCommentPlaceholder": "Yorum yaz... ({count} yorum)",
+  "@announcementCommentPlaceholder": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementDetailTagPinnedMaintenance": "⭐ SABİT · BAKIM",
+  "announcementDownloadComingSoon": "İndirme yakında",
+  "announcementViewsFallback": "{count} görüntülenme",
+  "@announcementViewsFallback": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "issuesTitle": "Arızalar",
   "issueNewTitle": "Yeni arıza",
   "issueDetailTitle": "Arıza detayı",
@@ -411,7 +441,21 @@
   "setupInviteTitle": "Davet kodu",
   "setupInviteJoin": "Apartmana katıl",
   "setupWizardTitle": "Bina kurulumu",
+  "setupWizardStepUnitsPlaceholder": "Daireler · özet",
+  "setupWizardStepDuesPlaceholder": "Aidat planı",
   "managerUnitsTitle": "Daireler",
+  "managerFloorHeading": "KAT {floor}",
+  "@managerFloorHeading": {
+    "placeholders": {
+      "floor": {}
+    }
+  },
+  "managerFloorUnitCount": "{count} daire",
+  "@managerFloorUnitCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "managerInviteTitle": "Sakin daveti",
   "managerPeriodsTitle": "Aidat dönemleri",
   "managerExpenseTitle": "Yeni gider",
@@ -445,6 +489,41 @@
   "profileVersionFooter": "Sürüm 1.0.0 · KVKK",
   "issueFieldTitle": "Başlık",
   "issueFieldDescription": "Açıklama",
+  "issueCreateAppBarTitle": "Yeni arıza bildirimi",
+  "issueCategorySection": "KATEGORİ",
+  "issueCategoryWater": "Su",
+  "issueCategoryElectric": "Elektrik",
+  "issueCategoryMechanical": "Mekanik",
+  "issueCategoryOther": "Diğer",
+  "issueLocationSection": "KONUM",
+  "issueLocationApartment": "Daire içi",
+  "issueLocationParking": "Otopark",
+  "issueLocationRoof": "Çatı",
+  "issueLocationGarden": "Bahçe",
+  "issueLocationElevator": "Asansör",
+  "issuePrioritySection": "ÖNCELİK",
+  "issuePriorityLow": "Düşük",
+  "issuePriorityMedium": "Orta",
+  "issuePriorityHigh": "Yüksek",
+  "issueDescriptionPlaceholder": "Sorunu detaylı açıkla...",
+  "issuePhotoAdd": "Foto",
+  "issuePhotoComingSoon": "Foto ekleme yakında",
+  "issueSubmittedDemo": "Demo: bildirim kaydedildi.",
+  "issueTimelineSection": "SÜREÇ",
+  "issueTimelineReported": "Bildirildi",
+  "issueTimelineSeen": "Görüldü",
+  "issueTimelineInProgress": "İşlemde",
+  "issueTimelineResolved": "Çözüldü",
+  "issueTimelinePending": "—",
+  "issueDemoReportedBy": "Mehmet Y. (3A) tarafından bildirildi",
+  "issueTimelineSeenBody": "{assignee} (yönetici) görevi aldı",
+  "@issueTimelineSeenBody": {
+    "placeholders": {
+      "assignee": {}
+    }
+  },
+  "issueDemoInProgressNote": "Tesisatçı çağrıldı, yarın 10:00'da gelecek.",
+  "issueDemoManagerName": "Ayşe Demir",
   "navBack": "Geri",
   "setupInviteHeadline": "Apartmanına bağlan",
   "setupFloorCountLabel": "Kat sayısı",

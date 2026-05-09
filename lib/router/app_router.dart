@@ -112,8 +112,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           announcementId: state.pathParameters['id'] ?? '',
         ),
       ),
+      // Literal path must not overlap `/issues/:id` (e.g. id "new" → empty detail).
       GoRoute(
-        path: '/issues/new',
+        path: '/issues/create',
         builder: (context, state) => const IssueCreateScreen(),
       ),
       GoRoute(
@@ -153,6 +154,9 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
     redirect: (context, state) async {
       final location = state.matchedLocation;
+      if (location == '/issues/new') {
+        return '/issues/create';
+      }
       if (location == '/splash') {
         return null;
       }

@@ -1850,6 +1850,66 @@ abstract class AppLocalizations {
   /// **'Duyuru'**
   String get announcementDetailTitle;
 
+  /// No description provided for @announcementsChipAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü · {count}'**
+  String announcementsChipAll(Object count);
+
+  /// No description provided for @announcementsChipPinned.
+  ///
+  /// In tr, this message translates to:
+  /// **'📌 Sabit · {count}'**
+  String announcementsChipPinned(Object count);
+
+  /// No description provided for @announcementsChipUrgent.
+  ///
+  /// In tr, this message translates to:
+  /// **'⚠️ Acil'**
+  String get announcementsChipUrgent;
+
+  /// No description provided for @announcementsChipInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilgi'**
+  String get announcementsChipInfo;
+
+  /// No description provided for @announcementsChipMaintenance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bakım'**
+  String get announcementsChipMaintenance;
+
+  /// No description provided for @announcementsReadLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Okundu'**
+  String get announcementsReadLabel;
+
+  /// No description provided for @announcementCommentPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yorum yaz... ({count} yorum)'**
+  String announcementCommentPlaceholder(Object count);
+
+  /// No description provided for @announcementDetailTagPinnedMaintenance.
+  ///
+  /// In tr, this message translates to:
+  /// **'⭐ SABİT · BAKIM'**
+  String get announcementDetailTagPinnedMaintenance;
+
+  /// No description provided for @announcementDownloadComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'İndirme yakında'**
+  String get announcementDownloadComingSoon;
+
+  /// No description provided for @announcementViewsFallback.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} görüntülenme'**
+  String announcementViewsFallback(Object count);
+
   /// No description provided for @issuesTitle.
   ///
   /// In tr, this message translates to:
@@ -1916,11 +1976,35 @@ abstract class AppLocalizations {
   /// **'Bina kurulumu'**
   String get setupWizardTitle;
 
+  /// No description provided for @setupWizardStepUnitsPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daireler · özet'**
+  String get setupWizardStepUnitsPlaceholder;
+
+  /// No description provided for @setupWizardStepDuesPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat planı'**
+  String get setupWizardStepDuesPlaceholder;
+
   /// No description provided for @managerUnitsTitle.
   ///
   /// In tr, this message translates to:
   /// **'Daireler'**
   String get managerUnitsTitle;
+
+  /// No description provided for @managerFloorHeading.
+  ///
+  /// In tr, this message translates to:
+  /// **'KAT {floor}'**
+  String managerFloorHeading(Object floor);
+
+  /// No description provided for @managerFloorUnitCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} daire'**
+  String managerFloorUnitCount(Object count);
 
   /// No description provided for @managerInviteTitle.
   ///
@@ -2089,6 +2173,186 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Açıklama'**
   String get issueFieldDescription;
+
+  /// No description provided for @issueCreateAppBarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni arıza bildirimi'**
+  String get issueCreateAppBarTitle;
+
+  /// No description provided for @issueCategorySection.
+  ///
+  /// In tr, this message translates to:
+  /// **'KATEGORİ'**
+  String get issueCategorySection;
+
+  /// No description provided for @issueCategoryWater.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su'**
+  String get issueCategoryWater;
+
+  /// No description provided for @issueCategoryElectric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Elektrik'**
+  String get issueCategoryElectric;
+
+  /// No description provided for @issueCategoryMechanical.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mekanik'**
+  String get issueCategoryMechanical;
+
+  /// No description provided for @issueCategoryOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get issueCategoryOther;
+
+  /// No description provided for @issueLocationSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'KONUM'**
+  String get issueLocationSection;
+
+  /// No description provided for @issueLocationApartment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire içi'**
+  String get issueLocationApartment;
+
+  /// No description provided for @issueLocationParking.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otopark'**
+  String get issueLocationParking;
+
+  /// No description provided for @issueLocationRoof.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çatı'**
+  String get issueLocationRoof;
+
+  /// No description provided for @issueLocationGarden.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bahçe'**
+  String get issueLocationGarden;
+
+  /// No description provided for @issueLocationElevator.
+  ///
+  /// In tr, this message translates to:
+  /// **'Asansör'**
+  String get issueLocationElevator;
+
+  /// No description provided for @issuePrioritySection.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÖNCELİK'**
+  String get issuePrioritySection;
+
+  /// No description provided for @issuePriorityLow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düşük'**
+  String get issuePriorityLow;
+
+  /// No description provided for @issuePriorityMedium.
+  ///
+  /// In tr, this message translates to:
+  /// **'Orta'**
+  String get issuePriorityMedium;
+
+  /// No description provided for @issuePriorityHigh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek'**
+  String get issuePriorityHigh;
+
+  /// No description provided for @issueDescriptionPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sorunu detaylı açıkla...'**
+  String get issueDescriptionPlaceholder;
+
+  /// No description provided for @issuePhotoAdd.
+  ///
+  /// In tr, this message translates to:
+  /// **'Foto'**
+  String get issuePhotoAdd;
+
+  /// No description provided for @issuePhotoComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Foto ekleme yakında'**
+  String get issuePhotoComingSoon;
+
+  /// No description provided for @issueSubmittedDemo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo: bildirim kaydedildi.'**
+  String get issueSubmittedDemo;
+
+  /// No description provided for @issueTimelineSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'SÜREÇ'**
+  String get issueTimelineSection;
+
+  /// No description provided for @issueTimelineReported.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirildi'**
+  String get issueTimelineReported;
+
+  /// No description provided for @issueTimelineSeen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görüldü'**
+  String get issueTimelineSeen;
+
+  /// No description provided for @issueTimelineInProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemde'**
+  String get issueTimelineInProgress;
+
+  /// No description provided for @issueTimelineResolved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çözüldü'**
+  String get issueTimelineResolved;
+
+  /// No description provided for @issueTimelinePending.
+  ///
+  /// In tr, this message translates to:
+  /// **'—'**
+  String get issueTimelinePending;
+
+  /// No description provided for @issueDemoReportedBy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mehmet Y. (3A) tarafından bildirildi'**
+  String get issueDemoReportedBy;
+
+  /// No description provided for @issueTimelineSeenBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'{assignee} (yönetici) görevi aldı'**
+  String issueTimelineSeenBody(Object assignee);
+
+  /// No description provided for @issueDemoInProgressNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tesisatçı çağrıldı, yarın 10:00\'da gelecek.'**
+  String get issueDemoInProgressNote;
+
+  /// No description provided for @issueDemoManagerName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayşe Demir'**
+  String get issueDemoManagerName;
 
   /// No description provided for @navBack.
   ///

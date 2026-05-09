@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Mockup **4.5** — Duyuru feed: PIN/kategori chip, okundu durumu.
+/// Mockup **4.5** — Duyuru feed (filtre chip’leri, kart gölgesi, sol accent).
 class AnnouncementsListScreen extends ConsumerStatefulWidget {
   const AnnouncementsListScreen({super.key});
 
@@ -19,35 +19,52 @@ class _AnnouncementsListScreenState
     extends ConsumerState<AnnouncementsListScreen> {
   int _filterIdx = 0;
 
+  List<String> _chipLabels(AppLocalizations l10n, List<AnnouncementUi> all) {
+    final total = '${all.length}';
+    final pinned = all
+        .where((r) => r.category == AnnouncementUiCategory.pinned)
+        .length;
+    return [
+      l10n.announcementsChipAll(total),
+      l10n.announcementsChipPinned('$pinned'),
+      l10n.announcementsChipUrgent,
+      l10n.announcementsChipInfo,
+      l10n.announcementsChipMaintenance,
+    ];
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final async = ref.watch(announcementsListProvider);
 
-    final filterLabels = [
-      'Tümü',
-      '📌 Sabit',
-      '⚠️ Acil',
-      'Bilgi',
-      'Bakım',
-    ];
-
     return Scaffold(
+      backgroundColor: AppTheme.scaffoldBg,
       appBar: AppBar(
         title: Text(l10n.announcementsTitle),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.search_outlined),
-            onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(l10n.homeFeatureSoon)),
+          Padding(
+            padding: const EdgeInsets.only(right: 8),
+            child: Material(
+              color: AppTheme.surface,
+              elevation: 1,
+              shadowColor: Colors.black26,
+              shape: const CircleBorder(),
+              child: IconButton(
+                icon: const Icon(Icons.menu_rounded),
+                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.homeFeatureSoon)),
+                ),
+              ),
             ),
           ),
         ],
       ),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => Center(child: Text(l10n.catalogLoadError)),
+        error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
         data: (rows) {
+          final labels = _chipLabels(l10n, rows);
           final filtered = _applyFilter(rows, _filterIdx);
           return CustomScrollView(
             slivers: [
@@ -57,15 +74,16 @@ class _AnnouncementsListScreenState
                   child: SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: List.generate(filterLabels.length, (i) {
+                      children: List.generate(labels.length, (i) {
                         final active = _filterIdx == i;
                         return Padding(
                           padding: EdgeInsets.only(
-                            right: i < filterLabels.length - 1 ? 8 : 0,
+                            right: i < labels.length - 1 ? 8 : 0,
                           ),
                           child: GestureDetector(
                             onTap: () => setState(() => _filterIdx = i),
-                            child: Container(
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 180),
                               height: 28,
                               padding: const EdgeInsets.symmetric(
                                 horizontal: 12,
@@ -83,7 +101,7 @@ class _AnnouncementsListScreenState
                               ),
                               alignment: Alignment.center,
                               child: Text(
-                                filterLabels[i],
+                                labels[i],
                                 style: TextStyle(
                                   color: active
                                       ? Colors.white
@@ -101,156 +119,22 @@ class _AnnouncementsListScreenState
                 ),
               ),
               SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
                 sliver: SliverList.separated(
                   itemCount: filtered.length,
-                  separatorBuilder: (_, __) => const SizedBox(height: 8),
+                  separatorBuilder: (_, _) => const SizedBox(height: 10),
                   itemBuilder: (context, i) {
                     final row = filtered[i];
                     final isPinned =
                         row.category == AnnouncementUiCategory.pinned;
                     return Opacity(
-                      opacity: row.read ? 0.7 : 1.0,
-                      child: Material(
-                        color: AppTheme.surface,
-                        borderRadius: BorderRadius.circular(8),
-                        child: InkWell(
-                          onTap: () =>
-                              context.push('/announcements/${row.id}'),
-                          borderRadius: BorderRadius.circular(8),
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border(
-                                left: BorderSide(
-                                  color: isPinned
-                                      ? AppTheme.secondary
-                                      : AppTheme.outlineMuted,
-                                  width: isPinned ? 3 : 1,
-                                ),
-                                top: const BorderSide(
-                                  color: AppTheme.outlineMuted,
-                                ),
-                                right: const BorderSide(
-                                  color: AppTheme.outlineMuted,
-                                ),
-                                bottom: const BorderSide(
-                                  color: AppTheme.outlineMuted,
-                                ),
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    _CatChip(
-                                      l10n: l10n,
-                                      category: row.category,
-                                      pinned: isPinned,
-                                    ),
-                                    Text(
-                                      row.relativeTime +
-                                          (row.read ? ' · Okundu' : ''),
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .labelSmall
-                                          ?.copyWith(
-                                            color: AppTheme.onSurfaceTertiary,
-                                          ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  row.title,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleSmall
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: row.category ==
-                                                AnnouncementUiCategory.pinned
-                                            ? 16
-                                            : 15,
-                                        color: row.read
-                                            ? AppTheme.onSurfaceVariant
-                                            : null,
-                                      ),
-                                ),
-                                if (row.snippet.isNotEmpty) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    row.snippet,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: Theme.of(context)
-                                        .textTheme
-                                        .bodySmall
-                                        ?.copyWith(
-                                          color: AppTheme.onSurfaceVariant,
-                                        ),
-                                  ),
-                                ],
-                                if (!row.read) ...[
-                                  const SizedBox(height: 10),
-                                  Row(
-                                    children: [
-                                      _AuthorAvatar(
-                                        name: row.authorName,
-                                        size: row.category ==
-                                                AnnouncementUiCategory.pinned
-                                            ? 24
-                                            : 22,
-                                      ),
-                                      const SizedBox(width: 6),
-                                      Expanded(
-                                        child: Text(
-                                          '${row.authorName} · ${row.roleLabel}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall
-                                              ?.copyWith(
-                                                color:
-                                                    AppTheme.onSurfaceVariant,
-                                              ),
-                                        ),
-                                      ),
-                                      if (row.viewCount > 0) ...[
-                                        Text(
-                                          '👁 ${row.viewCount}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall
-                                              ?.copyWith(
-                                                color:
-                                                    AppTheme.onSurfaceTertiary,
-                                              ),
-                                        ),
-                                        if (row.commentCount > 0)
-                                          const SizedBox(width: 12),
-                                      ],
-                                      if (row.commentCount > 0)
-                                        Text(
-                                          '💬 ${row.commentCount}',
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .labelSmall
-                                              ?.copyWith(
-                                                color:
-                                                    AppTheme.onSurfaceTertiary,
-                                              ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ),
+                      opacity: row.read ? 0.72 : 1,
+                      child: _AnnouncementCard(
+                        row: row,
+                        l10n: l10n,
+                        isPinned: isPinned,
+                        onTap: () =>
+                            context.push('/announcements/${row.id}'),
                       ),
                     );
                   },
@@ -283,7 +167,10 @@ class _AnnouncementsListScreenState
       case 4:
         return rows
             .where(
-              (r) => r.category == AnnouncementUiCategory.maintenance,
+              (r) =>
+                  r.category == AnnouncementUiCategory.maintenance ||
+                  r.secondaryCategory ==
+                      AnnouncementUiCategory.maintenance,
             )
             .toList();
       default:
@@ -292,40 +179,188 @@ class _AnnouncementsListScreenState
   }
 }
 
-class _CatChip extends StatelessWidget {
-  const _CatChip({
+class _AnnouncementCard extends StatelessWidget {
+  const _AnnouncementCard({
+    required this.row,
+    required this.l10n,
+    required this.isPinned,
+    required this.onTap,
+  });
+
+  final AnnouncementUi row;
+  final AppLocalizations l10n;
+  final bool isPinned;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final timeLine = row.read
+        ? '${row.relativeTime} · ${l10n.announcementsReadLabel}'
+        : row.relativeTime;
+
+    // Avoid `Ink` here: inside sliver lists it can size to zero and show an
+    // empty white box while decoration still paints.
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: AppTheme.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: AppTheme.cardShadow,
+            border: Border(
+              left: BorderSide(
+                width: isPinned ? 3 : 1,
+                color: isPinned ? AppTheme.secondary : AppTheme.outlineMuted,
+              ),
+              top: const BorderSide(color: AppTheme.outlineMuted),
+              right: const BorderSide(color: AppTheme.outlineMuted),
+              bottom: const BorderSide(color: AppTheme.outlineMuted),
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 16, 14),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: _CategoryChip(
+                        l10n: l10n,
+                        category: row.category,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      timeLine,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppTheme.onSurfaceTertiary,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  row.title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    fontSize: isPinned ? 16 : 15,
+                    height: 1.25,
+                    color: row.read
+                        ? AppTheme.onSurfaceVariant
+                        : const Color(0xFF1A1A1A),
+                  ),
+                ),
+                if (row.snippet.isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Text(
+                    row.snippet,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: AppTheme.onSurfaceVariant,
+                      height: 1.35,
+                    ),
+                  ),
+                ],
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    _AuthorAvatar(
+                      name: row.authorName,
+                      category: row.category,
+                      size: isPinned ? 24 : 22,
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        '${row.authorName} · ${row.roleLabel}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppTheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ),
+                    const Icon(
+                      Icons.visibility_outlined,
+                      size: 15,
+                      color: AppTheme.onSurfaceTertiary,
+                    ),
+                    const SizedBox(width: 4),
+                    Text(
+                      '${row.viewCount}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: AppTheme.onSurfaceTertiary,
+                      ),
+                    ),
+                    if (row.commentCount > 0) ...[
+                      const SizedBox(width: 12),
+                      const Icon(
+                        Icons.chat_bubble_outline_rounded,
+                        size: 14,
+                        color: AppTheme.onSurfaceTertiary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        '${row.commentCount}',
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: AppTheme.onSurfaceTertiary,
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CategoryChip extends StatelessWidget {
+  const _CategoryChip({
     required this.l10n,
     required this.category,
-    required this.pinned,
   });
 
   final AppLocalizations l10n;
   final AnnouncementUiCategory category;
-  final bool pinned;
 
   @override
   Widget build(BuildContext context) {
-    late Color fg;
-    late Color bg;
-    late String label;
-    switch (category) {
-      case AnnouncementUiCategory.pinned:
-        fg = AppTheme.secondary;
-        bg = AppTheme.secondaryContainer;
-        label = '📌 ${l10n.announcementCatPinned}';
-      case AnnouncementUiCategory.info:
-        fg = AppTheme.info;
-        bg = AppTheme.infoContainer;
-        label = l10n.homeAnnouncementTagInfo;
-      case AnnouncementUiCategory.maintenance:
-        fg = AppTheme.warning;
-        bg = AppTheme.warningContainer;
-        label = l10n.announcementCatMaintenance;
-      case AnnouncementUiCategory.urgent:
-        fg = AppTheme.error;
-        bg = AppTheme.errorContainer;
-        label = l10n.announcementCatUrgent;
-    }
+    final (fg, bg, label) = switch (category) {
+      AnnouncementUiCategory.pinned => (
+          const Color(0xFFB57400),
+          AppTheme.secondaryContainer,
+          '⭐ ${l10n.announcementCatPinned}',
+        ),
+      AnnouncementUiCategory.info => (
+          AppTheme.info,
+          AppTheme.infoContainer,
+          l10n.homeAnnouncementTagInfo,
+        ),
+      AnnouncementUiCategory.maintenance => (
+          AppTheme.warning,
+          AppTheme.warningContainer,
+          l10n.announcementCatMaintenance,
+        ),
+      AnnouncementUiCategory.urgent => (
+          AppTheme.error,
+          AppTheme.errorContainer,
+          l10n.announcementCatUrgent,
+        ),
+    };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
@@ -338,6 +373,7 @@ class _CatChip extends StatelessWidget {
           color: fg,
           fontSize: 11,
           fontWeight: FontWeight.w700,
+          letterSpacing: 0.2,
         ),
       ),
     );
@@ -347,11 +383,26 @@ class _CatChip extends StatelessWidget {
 class _AuthorAvatar extends StatelessWidget {
   const _AuthorAvatar({
     required this.name,
+    required this.category,
     required this.size,
   });
 
   final String name;
+  final AnnouncementUiCategory category;
   final double size;
+
+  Color get _bg {
+    switch (category) {
+      case AnnouncementUiCategory.info:
+        return AppTheme.info;
+      case AnnouncementUiCategory.urgent:
+        return AppTheme.error;
+      case AnnouncementUiCategory.maintenance:
+        return AppTheme.primary;
+      case AnnouncementUiCategory.pinned:
+        return AppTheme.primary;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -366,8 +417,8 @@ class _AuthorAvatar extends StatelessWidget {
     return Container(
       width: size,
       height: size,
-      decoration: const BoxDecoration(
-        color: AppTheme.primary,
+      decoration: BoxDecoration(
+        color: _bg,
         shape: BoxShape.circle,
       ),
       alignment: Alignment.center,
@@ -375,7 +426,7 @@ class _AuthorAvatar extends StatelessWidget {
         initials,
         style: TextStyle(
           color: Colors.white,
-          fontSize: size * 0.4,
+          fontSize: size * 0.38,
           fontWeight: FontWeight.w700,
         ),
       ),

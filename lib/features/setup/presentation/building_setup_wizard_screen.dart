@@ -54,8 +54,8 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
               children: [
                 _stepBuilding(context, l10n),
                 _stepStructure(context, l10n),
-                _stepPlaceholder(context, 'Daireler · özet'),
-                _stepPlaceholder(context, 'Aidat planı'),
+                _stepPlaceholder(context, l10n.setupWizardStepUnitsPlaceholder),
+                _stepPlaceholder(context, l10n.setupWizardStepDuesPlaceholder),
               ],
             ),
           ),

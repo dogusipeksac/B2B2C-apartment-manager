@@ -947,6 +947,44 @@ class AppLocalizationsEn extends AppLocalizations {
   String get announcementDetailTitle => 'Announcement';
 
   @override
+  String announcementsChipAll(Object count) {
+    return 'All · $count';
+  }
+
+  @override
+  String announcementsChipPinned(Object count) {
+    return '📌 Pinned · $count';
+  }
+
+  @override
+  String get announcementsChipUrgent => '⚠️ Urgent';
+
+  @override
+  String get announcementsChipInfo => 'Info';
+
+  @override
+  String get announcementsChipMaintenance => 'Maintenance';
+
+  @override
+  String get announcementsReadLabel => 'Read';
+
+  @override
+  String announcementCommentPlaceholder(Object count) {
+    return 'Write a comment... ($count)';
+  }
+
+  @override
+  String get announcementDetailTagPinnedMaintenance => '⭐ PINNED · MAINTENANCE';
+
+  @override
+  String get announcementDownloadComingSoon => 'Download coming soon';
+
+  @override
+  String announcementViewsFallback(Object count) {
+    return '$count views';
+  }
+
+  @override
   String get issuesTitle => 'Issues';
 
   @override
@@ -980,7 +1018,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupWizardTitle => 'Building setup';
 
   @override
+  String get setupWizardStepUnitsPlaceholder => 'Units · summary';
+
+  @override
+  String get setupWizardStepDuesPlaceholder => 'Dues plan';
+
+  @override
   String get managerUnitsTitle => 'Units';
+
+  @override
+  String managerFloorHeading(Object floor) {
+    return 'FLOOR $floor';
+  }
+
+  @override
+  String managerFloorUnitCount(Object count) {
+    return '$count units';
+  }
 
   @override
   String get managerInviteTitle => 'Invite resident';
@@ -1068,6 +1122,99 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get issueFieldDescription => 'Description';
+
+  @override
+  String get issueCreateAppBarTitle => 'New issue report';
+
+  @override
+  String get issueCategorySection => 'CATEGORY';
+
+  @override
+  String get issueCategoryWater => 'Water';
+
+  @override
+  String get issueCategoryElectric => 'Electric';
+
+  @override
+  String get issueCategoryMechanical => 'Mechanical';
+
+  @override
+  String get issueCategoryOther => 'Other';
+
+  @override
+  String get issueLocationSection => 'LOCATION';
+
+  @override
+  String get issueLocationApartment => 'Inside unit';
+
+  @override
+  String get issueLocationParking => 'Parking';
+
+  @override
+  String get issueLocationRoof => 'Roof';
+
+  @override
+  String get issueLocationGarden => 'Garden';
+
+  @override
+  String get issueLocationElevator => 'Elevator';
+
+  @override
+  String get issuePrioritySection => 'PRIORITY';
+
+  @override
+  String get issuePriorityLow => 'Low';
+
+  @override
+  String get issuePriorityMedium => 'Medium';
+
+  @override
+  String get issuePriorityHigh => 'High';
+
+  @override
+  String get issueDescriptionPlaceholder => 'Describe the issue...';
+
+  @override
+  String get issuePhotoAdd => 'Photo';
+
+  @override
+  String get issuePhotoComingSoon => 'Photo upload coming soon';
+
+  @override
+  String get issueSubmittedDemo => 'Demo: report saved.';
+
+  @override
+  String get issueTimelineSection => 'TIMELINE';
+
+  @override
+  String get issueTimelineReported => 'Reported';
+
+  @override
+  String get issueTimelineSeen => 'Seen';
+
+  @override
+  String get issueTimelineInProgress => 'In progress';
+
+  @override
+  String get issueTimelineResolved => 'Resolved';
+
+  @override
+  String get issueTimelinePending => '—';
+
+  @override
+  String get issueDemoReportedBy => 'Reported by Mehmet Y. (3A).';
+
+  @override
+  String issueTimelineSeenBody(Object assignee) {
+    return '$assignee (manager) took the task';
+  }
+
+  @override
+  String get issueDemoInProgressNote =>
+      'Plumber called; arriving tomorrow 10:00.';
+
+  @override
+  String get issueDemoManagerName => 'Ayşe Demir';
 
   @override
   String get navBack => 'Back';

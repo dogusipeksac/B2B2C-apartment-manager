@@ -400,6 +400,36 @@
   "paymentSuccessBody": "Your dues are paid. We emailed the receipt.",
   "announcementsTitle": "Announcements",
   "announcementDetailTitle": "Announcement",
+  "announcementsChipAll": "All · {count}",
+  "@announcementsChipAll": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementsChipPinned": "📌 Pinned · {count}",
+  "@announcementsChipPinned": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementsChipUrgent": "⚠️ Urgent",
+  "announcementsChipInfo": "Info",
+  "announcementsChipMaintenance": "Maintenance",
+  "announcementsReadLabel": "Read",
+  "announcementCommentPlaceholder": "Write a comment... ({count})",
+  "@announcementCommentPlaceholder": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "announcementDetailTagPinnedMaintenance": "⭐ PINNED · MAINTENANCE",
+  "announcementDownloadComingSoon": "Download coming soon",
+  "announcementViewsFallback": "{count} views",
+  "@announcementViewsFallback": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "issuesTitle": "Issues",
   "issueNewTitle": "New issue",
   "issueDetailTitle": "Issue detail",
@@ -411,7 +441,21 @@
   "setupInviteTitle": "Invite code",
   "setupInviteJoin": "Join building",
   "setupWizardTitle": "Building setup",
+  "setupWizardStepUnitsPlaceholder": "Units · summary",
+  "setupWizardStepDuesPlaceholder": "Dues plan",
   "managerUnitsTitle": "Units",
+  "managerFloorHeading": "FLOOR {floor}",
+  "@managerFloorHeading": {
+    "placeholders": {
+      "floor": {}
+    }
+  },
+  "managerFloorUnitCount": "{count} units",
+  "@managerFloorUnitCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
   "managerInviteTitle": "Invite resident",
   "managerPeriodsTitle": "Dues periods",
   "managerExpenseTitle": "New expense",
@@ -445,6 +489,41 @@
   "profileVersionFooter": "Version 1.0.0",
   "issueFieldTitle": "Title",
   "issueFieldDescription": "Description",
+  "issueCreateAppBarTitle": "New issue report",
+  "issueCategorySection": "CATEGORY",
+  "issueCategoryWater": "Water",
+  "issueCategoryElectric": "Electric",
+  "issueCategoryMechanical": "Mechanical",
+  "issueCategoryOther": "Other",
+  "issueLocationSection": "LOCATION",
+  "issueLocationApartment": "Inside unit",
+  "issueLocationParking": "Parking",
+  "issueLocationRoof": "Roof",
+  "issueLocationGarden": "Garden",
+  "issueLocationElevator": "Elevator",
+  "issuePrioritySection": "PRIORITY",
+  "issuePriorityLow": "Low",
+  "issuePriorityMedium": "Medium",
+  "issuePriorityHigh": "High",
+  "issueDescriptionPlaceholder": "Describe the issue...",
+  "issuePhotoAdd": "Photo",
+  "issuePhotoComingSoon": "Photo upload coming soon",
+  "issueSubmittedDemo": "Demo: report saved.",
+  "issueTimelineSection": "TIMELINE",
+  "issueTimelineReported": "Reported",
+  "issueTimelineSeen": "Seen",
+  "issueTimelineInProgress": "In progress",
+  "issueTimelineResolved": "Resolved",
+  "issueTimelinePending": "—",
+  "issueDemoReportedBy": "Reported by Mehmet Y. (3A).",
+  "issueTimelineSeenBody": "{assignee} (manager) took the task",
+  "@issueTimelineSeenBody": {
+    "placeholders": {
+      "assignee": {}
+    }
+  },
+  "issueDemoInProgressNote": "Plumber called; arriving tomorrow 10:00.",
+  "issueDemoManagerName": "Ayşe Demir",
   "navBack": "Back",
   "setupInviteHeadline": "Connect to your building",
   "setupFloorCountLabel": "Floors",
