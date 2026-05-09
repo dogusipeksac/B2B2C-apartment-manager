@@ -49,7 +49,7 @@ class BuildingSetupRepository {
     final url = '${Env.supabaseUrl}/functions/v1/finalize_building_setup';
 
     try {
-      final response = await _dio.post<Map<String, dynamic>>(
+      final response = await _dio.post<dynamic>(
         url,
         data: <String, dynamic>{
           'device_id': session.deviceId,
@@ -81,7 +81,12 @@ class BuildingSetupRepository {
       );
 
       final status = response.statusCode ?? 0;
-      final body = response.data ?? <String, dynamic>{};
+      final raw = response.data;
+      final body = raw is Map<String, dynamic>
+          ? raw
+          : raw is Map
+              ? Map<String, dynamic>.from(raw as Map<dynamic, dynamic>)
+              : <String, dynamic>{};
 
       if (status >= 500) {
         throw AppException.server(code: body['error'] as String?);
@@ -107,10 +112,15 @@ class BuildingSetupRepository {
         final unitCount = countRaw is int
             ? countRaw
             : int.tryParse('$countRaw') ?? 0;
+        final serverName = body['building_name'];
+        final label = serverName is String && serverName.trim().isNotEmpty
+            ? serverName.trim()
+            : buildingName.trim();
         return FinalizeBuildingResult(
           buildingId: body['building_id']! as String,
           profileId: body['profile_id']! as String,
           unitCount: unitCount,
+          buildingLabel: label,
         );
       }
 
@@ -138,11 +148,13 @@ class FinalizeBuildingResult {
     required this.buildingId,
     required this.profileId,
     required this.unitCount,
+    required this.buildingLabel,
   });
 
   final String buildingId;
   final String profileId;
   final int unitCount;
+  final String buildingLabel;
 }
 
 final buildingSetupRepositoryProvider = Provider<BuildingSetupRepository>(

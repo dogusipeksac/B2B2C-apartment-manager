@@ -172,6 +172,7 @@ class _BuildingSetupWizardScreenState
       final updated = session.copyWith(
         buildingId: result.buildingId,
         profileId: result.profileId,
+        buildingName: result.buildingLabel,
         savedAt: DateTime.now(),
       );
       await ref.read(localSessionRepositoryProvider).save(updated);

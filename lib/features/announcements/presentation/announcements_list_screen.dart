@@ -1,4 +1,6 @@
+import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
+import 'package:apartment_manager/core/widgets/demo_module_lock_overlay.dart';
 import 'package:apartment_manager/features/announcements/domain/announcement_ui.dart';
 import 'package:apartment_manager/features/announcements/presentation/providers/announcement_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
@@ -61,88 +63,92 @@ class _AnnouncementsListScreenState
           ),
         ],
       ),
-      body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
-        data: (rows) {
-          final labels = _chipLabels(l10n, rows);
-          final filtered = _applyFilter(rows, _filterIdx);
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(labels.length, (i) {
-                        final active = _filterIdx == i;
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            right: i < labels.length - 1 ? 8 : 0,
-                          ),
-                          child: GestureDetector(
-                            onTap: () => setState(() => _filterIdx = i),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              height: 28,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: active
-                                    ? AppTheme.primary
-                                    : apart.surface,
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(
+      body: DemoModuleLockOverlay(
+        locked: !Env.demoMode,
+        message: l10n.demoModuleLockedBody,
+        child: async.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
+          data: (rows) {
+            final labels = _chipLabels(l10n, rows);
+            final filtered = _applyFilter(rows, _filterIdx);
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(labels.length, (i) {
+                          final active = _filterIdx == i;
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              right: i < labels.length - 1 ? 8 : 0,
+                            ),
+                            child: GestureDetector(
+                              onTap: () => setState(() => _filterIdx = i),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 180),
+                                height: 28,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
                                   color: active
                                       ? AppTheme.primary
-                                      : apart.outlineMuted,
+                                      : apart.surface,
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(
+                                    color: active
+                                        ? AppTheme.primary
+                                        : apart.outlineMuted,
+                                  ),
                                 ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                labels[i],
-                                style: TextStyle(
-                                  color: active
-                                      ? Colors.white
-                                      : apart.onSurfaceVariant,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+                                alignment: Alignment.center,
+                                child: Text(
+                                  labels[i],
+                                  style: TextStyle(
+                                    color: active
+                                        ? Colors.white
+                                        : apart.onSurfaceVariant,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-                sliver: SliverList.separated(
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (context, i) {
-                    final row = filtered[i];
-                    final isPinned =
-                        row.category == AnnouncementUiCategory.pinned;
-                    return Opacity(
-                      opacity: row.read ? 0.72 : 1,
-                      child: _AnnouncementCard(
-                        row: row,
-                        l10n: l10n,
-                        isPinned: isPinned,
-                        onTap: () => context.push('/announcements/${row.id}'),
-                      ),
-                    );
-                  },
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+                  sliver: SliverList.separated(
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, i) {
+                      final row = filtered[i];
+                      final isPinned =
+                          row.category == AnnouncementUiCategory.pinned;
+                      return Opacity(
+                        opacity: row.read ? 0.72 : 1,
+                        child: _AnnouncementCard(
+                          row: row,
+                          l10n: l10n,
+                          isPinned: isPinned,
+                          onTap: () => context.push('/announcements/${row.id}'),
+                        ),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -203,142 +209,142 @@ class _AnnouncementCard extends StatelessWidget {
     // Avoid `Ink` here: inside sliver lists it can size to zero and show an
     // empty white box while decoration still paints.
     return Material(
-        color: Colors.transparent,
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(12),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(12),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: apart.surface,
-              borderRadius: BorderRadius.circular(12),
-              boxShadow: apart.cardShadow,
-              // Uniform border color required when using borderRadius (Flutter
-              // assertion). Pinned accent is drawn as a separate strip below.
-              border: Border.all(color: apart.outlineMuted),
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: Stack(
-                children: [
-                  if (isPinned)
-                    const Positioned(
-                      left: 0,
-                      top: 0,
-                      bottom: 0,
-                      width: 3,
-                      child: ColoredBox(color: AppTheme.secondary),
-                    ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(
-                      isPinned ? 17 : 14,
-                      14,
-                      16,
-                      14,
-                    ),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Flexible(
-                              child: _CategoryChip(
-                                l10n: l10n,
-                                category: row.category,
-                              ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: apart.surface,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: apart.cardShadow,
+            // Uniform border color required when using borderRadius (Flutter
+            // assertion). Pinned accent is drawn as a separate strip below.
+            border: Border.all(color: apart.outlineMuted),
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Stack(
+              children: [
+                if (isPinned)
+                  const Positioned(
+                    left: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 3,
+                    child: ColoredBox(color: AppTheme.secondary),
+                  ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    isPinned ? 17 : 14,
+                    14,
+                    16,
+                    14,
+                  ),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Flexible(
+                            child: _CategoryChip(
+                              l10n: l10n,
+                              category: row.category,
                             ),
-                            const SizedBox(width: 8),
-                            Text(
-                              timeLine,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: apart.onSurfaceTertiary,
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          row.title,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            fontSize: isPinned ? 16 : 15,
-                            height: 1.25,
-                            color: row.read
-                                ? apart.onSurfaceVariant
-                                : scheme.onSurface,
                           ),
-                        ),
-                        if (row.snippet.isNotEmpty) ...[
-                          const SizedBox(height: 6),
+                          const SizedBox(width: 8),
                           Text(
-                            row.snippet,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: apart.onSurfaceVariant,
-                              height: 1.35,
+                            timeLine,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: apart.onSurfaceTertiary,
                             ),
                           ),
                         ],
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            _AuthorAvatar(
-                              name: row.authorName,
-                              category: row.category,
-                              size: isPinned ? 24 : 22,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                '${row.authorName} · ${row.roleLabel}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: apart.onSurfaceVariant,
-                                  fontWeight: FontWeight.w500,
-                                ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        row.title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          fontSize: isPinned ? 16 : 15,
+                          height: 1.25,
+                          color: row.read
+                              ? apart.onSurfaceVariant
+                              : scheme.onSurface,
+                        ),
+                      ),
+                      if (row.snippet.isNotEmpty) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          row.snippet,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: apart.onSurfaceVariant,
+                            height: 1.35,
+                          ),
+                        ),
+                      ],
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          _AuthorAvatar(
+                            name: row.authorName,
+                            category: row.category,
+                            size: isPinned ? 24 : 22,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              '${row.authorName} · ${row.roleLabel}',
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: apart.onSurfaceVariant,
+                                fontWeight: FontWeight.w500,
                               ),
                             ),
+                          ),
+                          Icon(
+                            Icons.visibility_outlined,
+                            size: 15,
+                            color: apart.onSurfaceTertiary,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${row.viewCount}',
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: apart.onSurfaceTertiary,
+                            ),
+                          ),
+                          if (row.commentCount > 0) ...[
+                            const SizedBox(width: 12),
                             Icon(
-                              Icons.visibility_outlined,
-                              size: 15,
+                              Icons.chat_bubble_outline_rounded,
+                              size: 14,
                               color: apart.onSurfaceTertiary,
                             ),
                             const SizedBox(width: 4),
                             Text(
-                              '${row.viewCount}',
+                              '${row.commentCount}',
                               style: theme.textTheme.labelSmall?.copyWith(
                                 color: apart.onSurfaceTertiary,
                               ),
                             ),
-                            if (row.commentCount > 0) ...[
-                              const SizedBox(width: 12),
-                              Icon(
-                                Icons.chat_bubble_outline_rounded,
-                                size: 14,
-                                color: apart.onSurfaceTertiary,
-                              ),
-                              const SizedBox(width: 4),
-                              Text(
-                                '${row.commentCount}',
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: apart.onSurfaceTertiary,
-                                ),
-                              ),
-                            ],
                           ],
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

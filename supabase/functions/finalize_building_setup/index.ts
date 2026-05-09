@@ -256,12 +256,22 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
+    const { data: bnRow } = await supabase
+      .from("buildings")
+      .select("name")
+      .eq("id", buildingIdExisting)
+      .maybeSingle();
+    const resumedName = typeof bnRow?.name === "string"
+      ? (bnRow.name as string).trim()
+      : "";
+
     return jsonResponse(200, {
       success: true,
       building_id: buildingIdExisting,
       profile_id: profileIdExisting,
       unit_count: typeof unitCount === "number" ? unitCount : 0,
       resumed: true,
+      building_name: resumedName,
     });
   }
 
@@ -363,5 +373,6 @@ serve(async (req: Request): Promise<Response> => {
     building_id: buildingId,
     profile_id: profileId,
     unit_count: unitsSpec.length,
+    building_name: name,
   });
 });

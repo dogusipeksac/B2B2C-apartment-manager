@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/utils/formatters.dart';
+import 'package:apartment_manager/core/widgets/demo_module_lock_overlay.dart';
 import 'package:apartment_manager/core/widgets/error_view.dart';
 import 'package:apartment_manager/features/dues/domain/dues_invoice_ui.dart';
 import 'package:apartment_manager/features/dues/presentation/providers/dues_providers.dart';
@@ -37,6 +39,199 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
       l10n.duesFilterLate,
     ];
 
+    final body = asyncInvoices.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (_, __) => ErrorView(message: l10n.catalogLoadError),
+      data: (rows) {
+        final filtered = _applyFilter(rows, _filterIdx);
+        return CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: asyncDebt.when(
+                loading: () => const SizedBox.shrink(),
+                error: (_, __) => const SizedBox.shrink(),
+                data: (summary) {
+                  if (summary == null || summary.openDebtKurus <= 0) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        gradient: const LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: [
+                            AppTheme.debtGradientStart,
+                            AppTheme.debtGradientEnd,
+                          ],
+                        ),
+                      ),
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'AÇIK BORÇ',
+                                  style: TextStyle(
+                                    color: Color(0xFFFFD9D9),
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    letterSpacing: 0.6,
+                                  ),
+                                ),
+                                const SizedBox(height: 2),
+                                Text(
+                                  formatTL(summary.openDebtKurus / 100),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 30,
+                                    fontWeight: FontWeight.w800,
+                                    letterSpacing: -0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                Text(
+                                  l10n.duesUnpaidSummary(
+                                    '${summary.unpaidCount}',
+                                    summary.lateLabel,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Color(0xFFFFD9D9),
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              backgroundColor: AppTheme.secondary,
+                              foregroundColor: scheme.onSecondary,
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 14,
+                                vertical: 8,
+                              ),
+                              minimumSize: Size.zero,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              textStyle: const TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            onPressed: () {
+                              DuesInvoiceUi? overdue;
+                              for (final r in rows) {
+                                if (r.status == DuesInvoiceUiStatus.overdue) {
+                                  overdue = r;
+                                  break;
+                                }
+                              }
+                              final id =
+                                  overdue?.id ??
+                                  (rows.isNotEmpty ? rows.first.id : null);
+                              if (id != null) {
+                                unawaited(
+                                  context.push('/invoice/$id'),
+                                );
+                              }
+                            },
+                            child: Text(l10n.duesPayNow),
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: List.generate(filters.length, (i) {
+                      final active = _filterIdx == i;
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          right: i < filters.length - 1 ? 8 : 0,
+                        ),
+                        child: GestureDetector(
+                          onTap: () => setState(() => _filterIdx = i),
+                          child: Container(
+                            height: 30,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 14,
+                            ),
+                            decoration: BoxDecoration(
+                              color: active ? AppTheme.primary : apart.surface,
+                              borderRadius: BorderRadius.circular(999),
+                              border: Border.all(
+                                color: active
+                                    ? AppTheme.primary
+                                    : apart.outlineMuted,
+                              ),
+                            ),
+                            alignment: Alignment.center,
+                            child: Text(
+                              filters[i],
+                              style: TextStyle(
+                                color: active
+                                    ? Colors.white
+                                    : apart.onSurfaceVariant,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  '2026',
+                  style: theme.textTheme.labelMedium?.copyWith(
+                    color: apart.onSurfaceVariant,
+                    fontWeight: FontWeight.w500,
+                    letterSpacing: 0.48,
+                  ),
+                ),
+              ),
+            ),
+            SliverList.separated(
+              itemCount: filtered.length,
+              separatorBuilder: (_, __) => const SizedBox(height: 8),
+              itemBuilder: (context, index) {
+                final row = filtered[index];
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: _InvoiceListItem(
+                    row: row,
+                    onTap: () => context.push('/invoice/${row.id}'),
+                  ),
+                );
+              },
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        );
+      },
+    );
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.duesMyTitle),
@@ -49,198 +244,10 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
           ),
         ],
       ),
-      body: asyncInvoices.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, __) => ErrorView(message: l10n.catalogLoadError),
-        data: (rows) {
-          final filtered = _applyFilter(rows, _filterIdx);
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: asyncDebt.when(
-                  loading: () => const SizedBox.shrink(),
-                  error: (_, __) => const SizedBox.shrink(),
-                  data: (summary) {
-                    if (summary == null || summary.openDebtKurus <= 0) {
-                      return const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          gradient: const LinearGradient(
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
-                            colors: [
-                              AppTheme.debtGradientStart,
-                              AppTheme.debtGradientEnd,
-                            ],
-                          ),
-                        ),
-                        padding: const EdgeInsets.all(16),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  const Text(
-                                    'AÇIK BORÇ',
-                                    style: TextStyle(
-                                      color: Color(0xFFFFD9D9),
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
-                                      letterSpacing: 0.6,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    formatTL(summary.openDebtKurus / 100),
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 30,
-                                      fontWeight: FontWeight.w800,
-                                      letterSpacing: -0.5,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    l10n.duesUnpaidSummary(
-                                      '${summary.unpaidCount}',
-                                      summary.lateLabel,
-                                    ),
-                                    style: const TextStyle(
-                                      color: Color(0xFFFFD9D9),
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                backgroundColor: AppTheme.secondary,
-                                foregroundColor: scheme.onSecondary,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 14,
-                                  vertical: 8,
-                                ),
-                                minimumSize: Size.zero,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                textStyle: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                              onPressed: () {
-                                DuesInvoiceUi? overdue;
-                                for (final r in rows) {
-                                  if (r.status ==
-                                      DuesInvoiceUiStatus.overdue) {
-                                    overdue = r;
-                                    break;
-                                  }
-                                }
-                                final id = overdue?.id ??
-                                    (rows.isNotEmpty ? rows.first.id : null);
-                                if (id != null) {
-                                  unawaited(
-                                    context.push('/invoice/$id'),
-                                  );
-                                }
-                              },
-                              child: Text(l10n.duesPayNow),
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(filters.length, (i) {
-                        final active = _filterIdx == i;
-                        return Padding(
-                          padding: EdgeInsets.only(right: i < filters.length - 1 ? 8 : 0),
-                          child: GestureDetector(
-                            onTap: () => setState(() => _filterIdx = i),
-                            child: Container(
-                              height: 30,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 14,
-                              ),
-                              decoration: BoxDecoration(
-                                color: active
-                                    ? AppTheme.primary
-                                    : apart.surface,
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(
-                                  color: active
-                                      ? AppTheme.primary
-                                      : apart.outlineMuted,
-                                ),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                filters[i],
-                                style: TextStyle(
-                                  color: active
-                                      ? Colors.white
-                                      : apart.onSurfaceVariant,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      }),
-                    ),
-                  ),
-                ),
-              ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: Text(
-                    '2026',
-                    style: theme.textTheme.labelMedium?.copyWith(
-                      color: apart.onSurfaceVariant,
-                      fontWeight: FontWeight.w500,
-                      letterSpacing: 0.48,
-                    ),
-                  ),
-                ),
-              ),
-              SliverList.separated(
-                itemCount: filtered.length,
-                separatorBuilder: (_, __) => const SizedBox(height: 8),
-                itemBuilder: (context, index) {
-                  final row = filtered[index];
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16),
-                    child: _InvoiceListItem(
-                      row: row,
-                      onTap: () => context.push('/invoice/${row.id}'),
-                    ),
-                  );
-                },
-              ),
-              const SliverToBoxAdapter(child: SizedBox(height: 24)),
-            ],
-          );
-        },
+      body: DemoModuleLockOverlay(
+        locked: !Env.demoMode,
+        message: l10n.demoModuleLockedBody,
+        child: body,
       ),
     );
   }
@@ -250,14 +257,10 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
     int filterIdx,
   ) {
     if (filterIdx == 1) {
-      return rows
-          .where((r) => r.status == DuesInvoiceUiStatus.open)
-          .toList();
+      return rows.where((r) => r.status == DuesInvoiceUiStatus.open).toList();
     }
     if (filterIdx == 2) {
-      return rows
-          .where((r) => r.status == DuesInvoiceUiStatus.paid)
-          .toList();
+      return rows.where((r) => r.status == DuesInvoiceUiStatus.paid).toList();
     }
     if (filterIdx == 3) {
       return rows
@@ -281,8 +284,10 @@ class _InvoiceListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final apart = context.apart;
-    final (badgeBg, badgeFg, chipBg, chipFg, chipLabel) =
-        _statusTokens(context, row.status);
+    final (badgeBg, badgeFg, chipBg, chipFg, chipLabel) = _statusTokens(
+      context,
+      row.status,
+    );
 
     return Material(
       color: apart.surface,
@@ -413,8 +418,18 @@ class _MonthBadge extends StatelessWidget {
   final Color fg;
 
   static const _months = [
-    'OCA', 'ŞUB', 'MAR', 'NİS', 'MAY', 'HAZ',
-    'TEM', 'AĞU', 'EYL', 'EKİ', 'KAS', 'ARA',
+    'OCA',
+    'ŞUB',
+    'MAR',
+    'NİS',
+    'MAY',
+    'HAZ',
+    'TEM',
+    'AĞU',
+    'EYL',
+    'EKİ',
+    'KAS',
+    'ARA',
   ];
 
   @override

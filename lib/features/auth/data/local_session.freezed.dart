@@ -15,7 +15,8 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$LocalSession {
 
- String get deviceId;@UserRoleConverter() UserRole get role; DateTime get savedAt; String? get buildingId; String? get unitId; String? get profileId; String? get fullName; String? get sessionToken;
+ String get deviceId;@UserRoleConverter() UserRole get role; DateTime get savedAt; String? get buildingId; String? get unitId; String? get profileId; String? get fullName; String? get sessionToken;/// Cached from finalize or invite APIs for dashboard titles.
+ String? get buildingName;
 /// Create a copy of LocalSession
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +29,16 @@ $LocalSessionCopyWith<LocalSession> get copyWith => _$LocalSessionCopyWithImpl<L
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocalSession&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.role, role) || other.role == role)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.buildingId, buildingId) || other.buildingId == buildingId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.sessionToken, sessionToken) || other.sessionToken == sessionToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is LocalSession&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.role, role) || other.role == role)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.buildingId, buildingId) || other.buildingId == buildingId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.sessionToken, sessionToken) || other.sessionToken == sessionToken)&&(identical(other.buildingName, buildingName) || other.buildingName == buildingName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,role,savedAt,buildingId,unitId,profileId,fullName,sessionToken);
+int get hashCode => Object.hash(runtimeType,deviceId,role,savedAt,buildingId,unitId,profileId,fullName,sessionToken,buildingName);
 
 @override
 String toString() {
-  return 'LocalSession(deviceId: $deviceId, role: $role, savedAt: $savedAt, buildingId: $buildingId, unitId: $unitId, profileId: $profileId, fullName: $fullName, sessionToken: $sessionToken)';
+  return 'LocalSession(deviceId: $deviceId, role: $role, savedAt: $savedAt, buildingId: $buildingId, unitId: $unitId, profileId: $profileId, fullName: $fullName, sessionToken: $sessionToken, buildingName: $buildingName)';
 }
 
 
@@ -48,7 +49,7 @@ abstract mixin class $LocalSessionCopyWith<$Res>  {
   factory $LocalSessionCopyWith(LocalSession value, $Res Function(LocalSession) _then) = _$LocalSessionCopyWithImpl;
 @useResult
 $Res call({
- String deviceId,@UserRoleConverter() UserRole role, DateTime savedAt, String? buildingId, String? unitId, String? profileId, String? fullName, String? sessionToken
+ String deviceId,@UserRoleConverter() UserRole role, DateTime savedAt, String? buildingId, String? unitId, String? profileId, String? fullName, String? sessionToken, String? buildingName
 });
 
 
@@ -65,7 +66,7 @@ class _$LocalSessionCopyWithImpl<$Res>
 
 /// Create a copy of LocalSession
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? role = null,Object? savedAt = null,Object? buildingId = freezed,Object? unitId = freezed,Object? profileId = freezed,Object? fullName = freezed,Object? sessionToken = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? deviceId = null,Object? role = null,Object? savedAt = null,Object? buildingId = freezed,Object? unitId = freezed,Object? profileId = freezed,Object? fullName = freezed,Object? sessionToken = freezed,Object? buildingName = freezed,}) {
   return _then(_self.copyWith(
 deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -75,6 +76,7 @@ as String?,unitId: freezed == unitId ? _self.unitId : unitId // ignore: cast_nul
 as String?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as String?,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String?,sessionToken: freezed == sessionToken ? _self.sessionToken : sessionToken // ignore: cast_nullable_to_non_nullable
+as String?,buildingName: freezed == buildingName ? _self.buildingName : buildingName // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -160,10 +162,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken,  String? buildingName)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _LocalSession() when $default != null:
-return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken);case _:
+return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken,_that.buildingName);case _:
   return orElse();
 
 }
@@ -181,10 +183,10 @@ return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.u
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken,  String? buildingName)  $default,) {final _that = this;
 switch (_that) {
 case _LocalSession():
-return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken);case _:
+return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken,_that.buildingName);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -201,10 +203,10 @@ return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.u
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String deviceId, @UserRoleConverter()  UserRole role,  DateTime savedAt,  String? buildingId,  String? unitId,  String? profileId,  String? fullName,  String? sessionToken,  String? buildingName)?  $default,) {final _that = this;
 switch (_that) {
 case _LocalSession() when $default != null:
-return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken);case _:
+return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.unitId,_that.profileId,_that.fullName,_that.sessionToken,_that.buildingName);case _:
   return null;
 
 }
@@ -216,7 +218,7 @@ return $default(_that.deviceId,_that.role,_that.savedAt,_that.buildingId,_that.u
 @JsonSerializable()
 
 class _LocalSession implements LocalSession {
-  const _LocalSession({required this.deviceId, @UserRoleConverter() required this.role, required this.savedAt, this.buildingId, this.unitId, this.profileId, this.fullName, this.sessionToken});
+  const _LocalSession({required this.deviceId, @UserRoleConverter() required this.role, required this.savedAt, this.buildingId, this.unitId, this.profileId, this.fullName, this.sessionToken, this.buildingName});
   factory _LocalSession.fromJson(Map<String, dynamic> json) => _$LocalSessionFromJson(json);
 
 @override final  String deviceId;
@@ -227,6 +229,8 @@ class _LocalSession implements LocalSession {
 @override final  String? profileId;
 @override final  String? fullName;
 @override final  String? sessionToken;
+/// Cached from finalize or invite APIs for dashboard titles.
+@override final  String? buildingName;
 
 /// Create a copy of LocalSession
 /// with the given fields replaced by the non-null parameter values.
@@ -241,16 +245,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocalSession&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.role, role) || other.role == role)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.buildingId, buildingId) || other.buildingId == buildingId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.sessionToken, sessionToken) || other.sessionToken == sessionToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _LocalSession&&(identical(other.deviceId, deviceId) || other.deviceId == deviceId)&&(identical(other.role, role) || other.role == role)&&(identical(other.savedAt, savedAt) || other.savedAt == savedAt)&&(identical(other.buildingId, buildingId) || other.buildingId == buildingId)&&(identical(other.unitId, unitId) || other.unitId == unitId)&&(identical(other.profileId, profileId) || other.profileId == profileId)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.sessionToken, sessionToken) || other.sessionToken == sessionToken)&&(identical(other.buildingName, buildingName) || other.buildingName == buildingName));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,deviceId,role,savedAt,buildingId,unitId,profileId,fullName,sessionToken);
+int get hashCode => Object.hash(runtimeType,deviceId,role,savedAt,buildingId,unitId,profileId,fullName,sessionToken,buildingName);
 
 @override
 String toString() {
-  return 'LocalSession(deviceId: $deviceId, role: $role, savedAt: $savedAt, buildingId: $buildingId, unitId: $unitId, profileId: $profileId, fullName: $fullName, sessionToken: $sessionToken)';
+  return 'LocalSession(deviceId: $deviceId, role: $role, savedAt: $savedAt, buildingId: $buildingId, unitId: $unitId, profileId: $profileId, fullName: $fullName, sessionToken: $sessionToken, buildingName: $buildingName)';
 }
 
 
@@ -261,7 +265,7 @@ abstract mixin class _$LocalSessionCopyWith<$Res> implements $LocalSessionCopyWi
   factory _$LocalSessionCopyWith(_LocalSession value, $Res Function(_LocalSession) _then) = __$LocalSessionCopyWithImpl;
 @override @useResult
 $Res call({
- String deviceId,@UserRoleConverter() UserRole role, DateTime savedAt, String? buildingId, String? unitId, String? profileId, String? fullName, String? sessionToken
+ String deviceId,@UserRoleConverter() UserRole role, DateTime savedAt, String? buildingId, String? unitId, String? profileId, String? fullName, String? sessionToken, String? buildingName
 });
 
 
@@ -278,7 +282,7 @@ class __$LocalSessionCopyWithImpl<$Res>
 
 /// Create a copy of LocalSession
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? deviceId = null,Object? role = null,Object? savedAt = null,Object? buildingId = freezed,Object? unitId = freezed,Object? profileId = freezed,Object? fullName = freezed,Object? sessionToken = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? deviceId = null,Object? role = null,Object? savedAt = null,Object? buildingId = freezed,Object? unitId = freezed,Object? profileId = freezed,Object? fullName = freezed,Object? sessionToken = freezed,Object? buildingName = freezed,}) {
   return _then(_LocalSession(
 deviceId: null == deviceId ? _self.deviceId : deviceId // ignore: cast_nullable_to_non_nullable
 as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
@@ -288,6 +292,7 @@ as String?,unitId: freezed == unitId ? _self.unitId : unitId // ignore: cast_nul
 as String?,profileId: freezed == profileId ? _self.profileId : profileId // ignore: cast_nullable_to_non_nullable
 as String?,fullName: freezed == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
 as String?,sessionToken: freezed == sessionToken ? _self.sessionToken : sessionToken // ignore: cast_nullable_to_non_nullable
+as String?,buildingName: freezed == buildingName ? _self.buildingName : buildingName // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

@@ -58,6 +58,8 @@ class HomeScreen extends ConsumerWidget {
               return ResidentHomeShell(
                 displayName: session?.fullName ?? '',
                 useDemoData: false,
+                lockDemoModules: true,
+                buildingName: session?.buildingName,
               );
             },
             data: (Profile? profile) {
@@ -65,6 +67,8 @@ class HomeScreen extends ConsumerWidget {
               return ResidentHomeShell(
                 displayName: name,
                 useDemoData: false,
+                lockDemoModules: true,
+                buildingName: session?.buildingName,
               );
             },
           );

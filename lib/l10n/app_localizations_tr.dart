@@ -1505,4 +1505,114 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get setupFinalizeBuildingNameRequired =>
       'Kurulumu tamamlamak için bina adı gerekli.';
+
+  @override
+  String get homeManagerLockedPlaceholder =>
+      'Özet ve grafik verisi yakında burada olacak.';
+
+  @override
+  String get homeQuickLockedHint => 'Bu özellik yakında açılacak.';
+
+  @override
+  String get managerInviteSubtitle =>
+      'Seçtiğin daire için sunucuda tek kullanımlık bir kod üretilir; sakine ilet.';
+
+  @override
+  String get managerInviteGenerate => 'Davet kodu oluştur';
+
+  @override
+  String get managerInviteYourCode => 'Davet kodu';
+
+  @override
+  String get managerInviteCopy => 'Panoya kopyala';
+
+  @override
+  String get managerInviteCopied => 'Kod panoya kopyalandı.';
+
+  @override
+  String get managerInviteFailed =>
+      'Kod oluşturulamadı. Oturumu kontrol edip tekrar dene.';
+
+  @override
+  String get managerInviteCodeCreated => 'Yeni davet kodu hazır.';
+
+  @override
+  String get managerInviteShareHint =>
+      'Bu kodu sakine güvenli kanaldan ilet; tek kullanımlıdır.';
+
+  @override
+  String get managerInviteDemoBanner =>
+      'Demo modda kod yerelde üretilir; gerçek davet için DEMO_MODE=false kullan.';
+
+  @override
+  String get managerInviteSelectUnit => 'Daire';
+
+  @override
+  String get residentInviteScreenTitle => 'Davet kodun';
+
+  @override
+  String get residentInviteCodeLabel => 'Davet kodu';
+
+  @override
+  String get residentInviteCodeHint => 'Örn. A3XY2';
+
+  @override
+  String get residentInviteFullNameLabel => 'Ad soyad';
+
+  @override
+  String get residentInviteSubmit => 'Apartmana katıl';
+
+  @override
+  String get residentInviteCodeTooShort => 'Kod 5 karakter olmalıdır.';
+
+  @override
+  String get residentInviteNameTooShort =>
+      'Ad soyad en az 3 karakter olmalıdır.';
+
+  @override
+  String get residentInviteUnexpected =>
+      'Bir sorun oluştu. Kodu kontrol edip tekrar dene.';
+
+  @override
+  String get managerInviteRetry => 'Tekrar dene';
+
+  @override
+  String get managerInviteSelectedUnitHint =>
+      'Üretilen kod bu daireye bağlanır; sakine ilettiğinizde bu daireye kayıt olur.';
+
+  @override
+  String get managerInviteNoSessionHint =>
+      'Oturum bulunamadı. Önce kurulum veya giriş yapın.';
+
+  @override
+  String get managerInviteNoUnits =>
+      'Bu bina için kayıtlı daire yok. Apartman kurulumunda daireler oluşturulmalı.';
+
+  @override
+  String get residentInviteScreenBody =>
+      'Yöneticinin verdiği 5 karakterlik kod hangi daireye tanımlandıysa kayıt o daireye yapılır. «Apartmana katıl» için ad soyadınızı girin.';
+
+  @override
+  String get residentInvitePreviewTitle => 'Kod ile bağlantı';
+
+  @override
+  String get residentInviteWrongCodeType =>
+      'Bu bir yönetici davet kodu. Sakin olarak girmek için yöneticiden daire kodu isteyin.';
+
+  @override
+  String get residentInvitePreviewDemo =>
+      'Demo modda sunucu doğrulaması yok; gerçek akış için DEMO_MODE kapalı çalıştırın.';
+
+  @override
+  String get homeManagerRolePrefix => 'YÖNETİCİ';
+
+  @override
+  String get homeManagerBuildingFallback => 'YÖNETİCİ · Apartman';
+
+  @override
+  String get residentRolePrefix => 'SAKİN';
+
+  @override
+  String get demoModuleLockedBody =>
+      'Gerçek veriler bağlanınca burası açılacak.';
 }

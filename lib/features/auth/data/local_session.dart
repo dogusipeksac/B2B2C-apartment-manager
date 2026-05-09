@@ -18,6 +18,8 @@ abstract class LocalSession with _$LocalSession {
     String? profileId,
     String? fullName,
     String? sessionToken,
+    /// Cached from finalize or invite APIs for dashboard titles.
+    String? buildingName,
   }) = _LocalSession;
 
   factory LocalSession.fromJson(Map<String, dynamic> json) =>

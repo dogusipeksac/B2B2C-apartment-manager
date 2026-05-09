@@ -1,4 +1,6 @@
+import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
+import 'package:apartment_manager/core/widgets/demo_module_lock_overlay.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
 import 'package:apartment_manager/features/issues/presentation/providers/issue_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
@@ -138,80 +140,83 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
         onPressed: () => context.push('/issues/create'),
         child: const Icon(Icons.add, size: 28),
       ),
-      body: async.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
-        data: (rows) {
-          final labels = _chipLabels(l10n, rows);
-          final filtered = _applyFilter(rows, _filterIdx);
-          return CustomScrollView(
-            slivers: [
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: Row(
-                      children: List.generate(labels.length, (i) {
-                        final active = _filterIdx == i;
-                        final p = _chipPalette(context, i, active);
-                        return Padding(
-                          padding: EdgeInsets.only(
-                            right: i < labels.length - 1 ? 8 : 0,
-                          ),
-                          child: GestureDetector(
-                            onTap: () => setState(() => _filterIdx = i),
-                            child: AnimatedContainer(
-                              duration: const Duration(milliseconds: 180),
-                              height: 30,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                              ),
-                              decoration: BoxDecoration(
-                                color: p.bg,
-                                borderRadius: BorderRadius.circular(999),
-                                border: Border.all(color: p.border),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                labels[i],
-                                style: TextStyle(
-                                  color: p.fg,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600,
+      body: DemoModuleLockOverlay(
+        locked: !Env.demoMode,
+        message: l10n.demoModuleLockedBody,
+        child: async.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
+          data: (rows) {
+            final labels = _chipLabels(l10n, rows);
+            final filtered = _applyFilter(rows, _filterIdx);
+            return CustomScrollView(
+              slivers: [
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                    child: SingleChildScrollView(
+                      scrollDirection: Axis.horizontal,
+                      child: Row(
+                        children: List.generate(labels.length, (i) {
+                          final active = _filterIdx == i;
+                          final p = _chipPalette(context, i, active);
+                          return Padding(
+                            padding: EdgeInsets.only(
+                              right: i < labels.length - 1 ? 8 : 0,
+                            ),
+                            child: GestureDetector(
+                              onTap: () => setState(() => _filterIdx = i),
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 180),
+                                height: 30,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: p.bg,
+                                  borderRadius: BorderRadius.circular(999),
+                                  border: Border.all(color: p.border),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  labels[i],
+                                  style: TextStyle(
+                                    color: p.fg,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        );
-                      }),
+                          );
+                        }),
+                      ),
                     ),
                   ),
                 ),
-              ),
-              SliverPadding(
-                padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
-                sliver: SliverList.separated(
-                  itemCount: filtered.length,
-                  separatorBuilder: (_, _) => const SizedBox(height: 10),
-                  itemBuilder: (context, i) {
-                    final row = filtered[i];
-                    return _IssueCard(
-                      row: row,
-                      l10n: l10n,
-                      onTap: () => context.push('/issues/${row.id}'),
-                    );
-                  },
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 12, 16, 88),
+                  sliver: SliverList.separated(
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: 10),
+                    itemBuilder: (context, i) {
+                      final row = filtered[i];
+                      return _IssueCard(
+                        row: row,
+                        l10n: l10n,
+                        onTap: () => context.push('/issues/${row.id}'),
+                      );
+                    },
+                  ),
                 ),
-              ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
 }
-
 
 class _IssueCard extends StatelessWidget {
   const _IssueCard({
@@ -292,175 +297,174 @@ class _IssueCard extends StatelessWidget {
     final metaMuted = resolved
         ? apart.onSurfaceVariant
         : apart.onSurfaceTertiary;
-    final titleColor =
-        resolved ? apart.onSurfaceVariant : scheme.onSurface;
+    final titleColor = resolved ? apart.onSurfaceVariant : scheme.onSurface;
     final sb = _statusBadgeColors(scheme);
     final (catBg, catFg, catIcon) = _categoryVisual(scheme);
 
     return Material(
-        color: Colors.transparent,
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(16),
+      clipBehavior: Clip.antiAlias,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(16),
-          child: DecoratedBox(
-            decoration: BoxDecoration(
-              color: apart.surface,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: apart.cardShadow,
-              border: Border.all(color: apart.outlineMuted),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 4,
-                        ),
-                        decoration: BoxDecoration(
-                          color: sb.bg,
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          _statusBadgeLabel(),
-                          style: theme.textTheme.labelSmall?.copyWith(
-                            color: sb.fg,
-                            fontWeight: FontWeight.w700,
-                            fontSize: 11,
-                          ),
-                        ),
+        child: DecoratedBox(
+          decoration: BoxDecoration(
+            color: apart.surface,
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: apart.cardShadow,
+            border: Border.all(color: apart.outlineMuted),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
                       ),
-                      const Spacer(),
-                      Text(
-                        '${row.publicCode} · ${row.relativeTime}',
+                      decoration: BoxDecoration(
+                        color: sb.bg,
+                        borderRadius: BorderRadius.circular(6),
+                      ),
+                      child: Text(
+                        _statusBadgeLabel(),
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: metaMuted,
+                          color: sb.fg,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 11,
                         ),
                       ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: catBg,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        alignment: Alignment.center,
-                        child: Icon(
-                          catIcon,
-                          color: catFg,
-                          size: 24,
-                        ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      '${row.publicCode} · ${row.relativeTime}',
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: metaMuted,
                       ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              row.title,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 15,
-                                height: 1.25,
-                                color: titleColor,
-                              ),
-                            ),
-                            const SizedBox(height: 4),
-                            Text(
-                              row.subtitle,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: apart.onSurfaceVariant,
-                                height: 1.3,
-                              ),
-                            ),
-                          ],
-                        ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 44,
+                      height: 44,
+                      decoration: BoxDecoration(
+                        color: catBg,
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      if (row.priority == IssueUiPriority.high &&
-                          row.status != IssueUiStatus.resolved)
-                        const Padding(
-                          padding: EdgeInsets.only(left: 6),
-                          child: Icon(
-                            Icons.change_history_rounded,
-                            color: AppTheme.error,
-                            size: 22,
-                          ),
-                        ),
-                    ],
-                  ),
-                  if (_showFooter) ...[
-                    const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Container(
-                          width: 26,
-                          height: 26,
-                          decoration: BoxDecoration(
-                            color: _avatarBg(),
-                            shape: BoxShape.circle,
-                          ),
-                          alignment: Alignment.center,
-                          child: Text(
-                            row.avatarInitials.length > 2
-                                ? row.avatarInitials.substring(0, 2)
-                                : row.avatarInitials,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w700,
-                              fontSize: 10,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            row.isOwnReport
-                                ? l10n.issuesFooterOwnReport
-                                : l10n.issuesFooterTracking(
-                                    row.footerAssigneeName,
-                                  ),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: apart.onSurfaceVariant,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        if (row.commentCount > 0) ...[
-                          Icon(
-                            Icons.chat_bubble_outline_rounded,
-                            size: 15,
-                            color: apart.onSurfaceTertiary,
-                          ),
-                          const SizedBox(width: 4),
+                      alignment: Alignment.center,
+                      child: Icon(
+                        catIcon,
+                        color: catFg,
+                        size: 24,
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            '${row.commentCount}',
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: apart.onSurfaceTertiary,
+                            row.title,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 15,
+                              height: 1.25,
+                              color: titleColor,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            row.subtitle,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: apart.onSurfaceVariant,
+                              height: 1.3,
                             ),
                           ),
                         ],
-                      ],
+                      ),
                     ),
+                    if (row.priority == IssueUiPriority.high &&
+                        row.status != IssueUiStatus.resolved)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 6),
+                        child: Icon(
+                          Icons.change_history_rounded,
+                          color: AppTheme.error,
+                          size: 22,
+                        ),
+                      ),
                   ],
+                ),
+                if (_showFooter) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Container(
+                        width: 26,
+                        height: 26,
+                        decoration: BoxDecoration(
+                          color: _avatarBg(),
+                          shape: BoxShape.circle,
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          row.avatarInitials.length > 2
+                              ? row.avatarInitials.substring(0, 2)
+                              : row.avatarInitials,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w700,
+                            fontSize: 10,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          row.isOwnReport
+                              ? l10n.issuesFooterOwnReport
+                              : l10n.issuesFooterTracking(
+                                  row.footerAssigneeName,
+                                ),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: apart.onSurfaceVariant,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                      if (row.commentCount > 0) ...[
+                        Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 15,
+                          color: apart.onSurfaceTertiary,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${row.commentCount}',
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: apart.onSurfaceTertiary,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
                 ],
-              ),
+              ],
             ),
           ),
         ),
+      ),
     );
   }
 }

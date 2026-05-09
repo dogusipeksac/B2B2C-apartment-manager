@@ -10,6 +10,29 @@ Bu klasör veritabanı tanımları ve `redeem_code` Edge Function kaynağını i
 | `schema_v2.sql` | Davet kodu modeli: `invite_codes`, `devices`, `profiles` gevşetme |
 | `rls.sql` | Row Level Security politikaları (`schema.sql` sonrası uygulanır) |
 | `functions/redeem_code/index.ts` | Kod kullanımı (admin / unit) — **service role** |
+| `functions/manager_invite/index.ts` | Yönetici: daire listesi + sakin davet kodu üretimi — **service role** |
+| `functions/finalize_building_setup/index.ts` | Kurulum sonrası bina/daire kaydı |
+
+## Yönetici — `manager_invite` (sakin daveti)
+
+Uygulama **Sakin daveti** ekranında `list_units` ve `create_invite` için bu fonksiyona POST atar. Sunucuda **deploy edilmediyse** istek 404 olur veya anlamsız gövde döner.
+
+### Deploy
+
+```bash
+supabase login
+supabase link --project-ref <PROJECT_REF>
+supabase functions deploy manager_invite --project-ref <PROJECT_REF>
+supabase functions deploy redeem_code --project-ref <PROJECT_REF>
+```
+
+`config.toml` içinde `[functions.manager_invite] verify_jwt = false` ile anon key üzerinden çağrıya izin verilir (Dashboard’da da function için JWT kapalı olmalı).
+
+### Ön koşullar
+
+1. SQL: `schema_v2.sql` (ve gerekiyorsa `schema.sql`) uygulanmış olmalı — `invite_codes`, `units`, `devices` tabloları.
+2. Yönetici cihazı `finalize_building_setup` ile tamamlanmış olmalı — `devices.building_id` dolu; aksi halde Edge **`building_not_ready`** döner.
+3. Projede en az bir **aktif daire** (`units`) kaydı olmalı.
 
 ## Veritabanını güncelleme sırası
 

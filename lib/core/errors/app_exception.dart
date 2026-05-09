@@ -22,37 +22,84 @@ sealed class AppException with _$AppException implements Exception {
   const factory AppException.unknown() = _Unknown;
 
   String get userMessage => when(
-        network: () => 'İnternet bağlantınızı kontrol edip tekrar deneyin.',
-        auth: (code, messageKey) {
-          if (code == 'invalid_session') {
-            return 'Cihaz oturumu sunucu ile eşleşmiyor. Davet kodu ekranına '
-                'dönüp kodu yeniden girin.';
-          }
-          if (code == 'no_session_token') {
-            return 'Oturum bilgisi bulunamadı. Davet kodunu tekrar girin.';
-          }
-          return 'Oturumunuzla ilgili bir sorun oluştu. Lütfen tekrar giriş '
-              'yapın.';
-        },
-        validation: (code, messageKey) {
-          switch (code) {
-            case 'device_not_found':
-              return 'Bu cihaz sunucuda bulunamadı. Davet kodunu tekrar girin.';
-            case 'building_fields_invalid':
-              return 'Bina adı ve il / ilçe bilgilerini kontrol edin.';
-            case 'building_numeric_invalid':
-              return 'Kat, daire sayısı ve aidat ayarlarını kontrol edin.';
-            case 'building_already_created_inconsistent':
-              return 'Bu cihaz için kayıt yarım kalmış. Destek ile iletişime '
-                  'geçin veya yeni davet kodu isteyin.';
-            case 'demo_mode':
-              return 'Bu işlem demo modda kullanılamaz.';
-            default:
-              return 'Lütfen bilgileri kontrol edin ve tekrar deneyin.';
-          }
-        },
-        server: (code, messageKey) =>
-            'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.',
-        unknown: () => 'Beklenmeyen bir hata oluştu.',
-      );
+    network: () => 'İnternet bağlantınızı kontrol edip tekrar deneyin.',
+    auth: (code, messageKey) {
+      if (code == 'invalid_session') {
+        return 'Cihaz oturumu sunucu ile eşleşmiyor. Davet kodu ekranına '
+            'dönüp kodu yeniden girin.';
+      }
+      if (code == 'no_session_token') {
+        return 'Oturum bilgisi bulunamadı. Davet kodunu tekrar girin.';
+      }
+      if (code == 'not_building_admin') {
+        return 'Bu işlem yalnızca apartman yöneticisi içindir.';
+      }
+      return 'Oturumunuzla ilgili bir sorun oluştu. Lütfen tekrar giriş '
+          'yapın.';
+    },
+    validation: (code, messageKey) {
+      switch (code) {
+        case 'device_not_found':
+          return 'Bu cihaz sunucuda bulunamadı. Davet kodunu tekrar girin.';
+        case 'building_fields_invalid':
+          return 'Bina adı ve il / ilçe bilgilerini kontrol edin.';
+        case 'building_numeric_invalid':
+          return 'Kat, daire sayısı ve aidat ayarlarını kontrol edin.';
+        case 'building_already_created_inconsistent':
+          return 'Bu cihaz için kayıt yarım kalmış. Destek ile iletişime '
+              'geçin veya yeni davet kodu isteyin.';
+        case 'building_not_ready':
+          return 'Önce apartman kurulumunu tamamlayın.';
+        case 'manager_invite_not_deployed':
+          return 'Sunucuda davet fonksiyonu bulunamadı. '
+              'Terminalde `supabase functions deploy manager_invite` '
+              'çalıştırın.';
+        case 'no_units_for_building':
+          return 'Bu bina için kayıtlı daire bulunamadı.';
+        case 'invalid_unit':
+          return 'Seçilen daire geçersiz.';
+        case 'demo_mode':
+          return 'Bu işlem demo modda kullanılamaz.';
+        case 'device_or_token_required':
+          return 'Oturum bilgisi eksik. Uygulamayı yeniden başlatıp tekrar '
+              'deneyin.';
+        case 'unknown_action':
+        case 'invalid_json':
+          return 'İstek geçersiz. Uygulamayı güncelleyin.';
+        case 'method_not_allowed':
+          return 'Sunucu bu işlemi kabul etmedi.';
+        case 'code_generation_failed':
+          return 'Kod üretilemedi. Biraz sonra tekrar deneyin.';
+        case 'server_misconfigured':
+          return 'Sunucu yapılandırması eksik. Yönetici ile iletişime '
+              'geçin.';
+        case 'database_error':
+          return 'Veritabanı hatası. Biraz sonra tekrar deneyin.';
+        case 'code_not_found_or_expired':
+          return 'Kod bulunamadı veya süresi dolmuş.';
+        case 'code_already_used':
+          return 'Bu kod daha önce kullanılmış.';
+        case 'full_name_required':
+          return 'Ad soyad en az 3 karakter olmalıdır.';
+        case 'code_required':
+        case 'code_invalid_length':
+          return 'Davet kodunu kontrol edin.';
+        case 'device_id_required':
+          return 'Cihaz kimliği alınamadı. Uygulamayı yeniden başlatın.';
+        case 'invite_data_invalid':
+        case 'unknown_code_type':
+          return 'Bu davet kodu geçersiz veya sunucu kaydı eksik.';
+        case 'unknown_backend_response':
+          return 'Sunucu yanıtı okunamadı veya Edge fonksiyonu eksik. '
+              'Supabase’te `manager_invite` ve `redeem_code` '
+              'fonksiyonlarını deploy edin; şema için schema_v2.sql '
+              'uygulandığından emin olun.';
+        default:
+          return 'Lütfen bilgileri kontrol edin ve tekrar deneyin.';
+      }
+    },
+    server: (code, messageKey) =>
+        'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.',
+    unknown: () => 'Beklenmeyen bir hata oluştu.',
+  );
 }

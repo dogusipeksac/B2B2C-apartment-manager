@@ -20,7 +20,7 @@ import 'package:apartment_manager/features/onboarding/presentation/onboarding_sc
 import 'package:apartment_manager/features/setup/presentation/account_role_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/admin_invite_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
-import 'package:apartment_manager/features/setup/presentation/resident_invite_placeholder_screen.dart';
+import 'package:apartment_manager/features/setup/presentation/resident_invite_screen.dart';
 import 'package:apartment_manager/features/splash/presentation/splash_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -95,7 +95,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/setup/resident-invite',
-        builder: (context, state) => const ResidentInvitePlaceholderScreen(),
+        builder: (context, state) => const ResidentInviteScreen(),
       ),
       GoRoute(
         path: '/setup/admin-invite',

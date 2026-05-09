@@ -2869,6 +2869,198 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kurulumu tamamlamak için bina adı gerekli.'**
   String get setupFinalizeBuildingNameRequired;
+
+  /// No description provided for @homeManagerLockedPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özet ve grafik verisi yakında burada olacak.'**
+  String get homeManagerLockedPlaceholder;
+
+  /// No description provided for @homeQuickLockedHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu özellik yakında açılacak.'**
+  String get homeQuickLockedHint;
+
+  /// No description provided for @managerInviteSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçtiğin daire için sunucuda tek kullanımlık bir kod üretilir; sakine ilet.'**
+  String get managerInviteSubtitle;
+
+  /// No description provided for @managerInviteGenerate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu oluştur'**
+  String get managerInviteGenerate;
+
+  /// No description provided for @managerInviteYourCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get managerInviteYourCode;
+
+  /// No description provided for @managerInviteCopy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Panoya kopyala'**
+  String get managerInviteCopy;
+
+  /// No description provided for @managerInviteCopied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod panoya kopyalandı.'**
+  String get managerInviteCopied;
+
+  /// No description provided for @managerInviteFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod oluşturulamadı. Oturumu kontrol edip tekrar dene.'**
+  String get managerInviteFailed;
+
+  /// No description provided for @managerInviteCodeCreated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni davet kodu hazır.'**
+  String get managerInviteCodeCreated;
+
+  /// No description provided for @managerInviteShareHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kodu sakine güvenli kanaldan ilet; tek kullanımlıdır.'**
+  String get managerInviteShareHint;
+
+  /// No description provided for @managerInviteDemoBanner.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo modda kod yerelde üretilir; gerçek davet için DEMO_MODE=false kullan.'**
+  String get managerInviteDemoBanner;
+
+  /// No description provided for @managerInviteSelectUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire'**
+  String get managerInviteSelectUnit;
+
+  /// No description provided for @residentInviteScreenTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodun'**
+  String get residentInviteScreenTitle;
+
+  /// No description provided for @residentInviteCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get residentInviteCodeLabel;
+
+  /// No description provided for @residentInviteCodeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. A3XY2'**
+  String get residentInviteCodeHint;
+
+  /// No description provided for @residentInviteFullNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad soyad'**
+  String get residentInviteFullNameLabel;
+
+  /// No description provided for @residentInviteSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmana katıl'**
+  String get residentInviteSubmit;
+
+  /// No description provided for @residentInviteCodeTooShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod 5 karakter olmalıdır.'**
+  String get residentInviteCodeTooShort;
+
+  /// No description provided for @residentInviteNameTooShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad soyad en az 3 karakter olmalıdır.'**
+  String get residentInviteNameTooShort;
+
+  /// No description provided for @residentInviteUnexpected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir sorun oluştu. Kodu kontrol edip tekrar dene.'**
+  String get residentInviteUnexpected;
+
+  /// No description provided for @managerInviteRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tekrar dene'**
+  String get managerInviteRetry;
+
+  /// No description provided for @managerInviteSelectedUnitHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üretilen kod bu daireye bağlanır; sakine ilettiğinizde bu daireye kayıt olur.'**
+  String get managerInviteSelectedUnitHint;
+
+  /// No description provided for @managerInviteNoSessionHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oturum bulunamadı. Önce kurulum veya giriş yapın.'**
+  String get managerInviteNoSessionHint;
+
+  /// No description provided for @managerInviteNoUnits.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bina için kayıtlı daire yok. Apartman kurulumunda daireler oluşturulmalı.'**
+  String get managerInviteNoUnits;
+
+  /// No description provided for @residentInviteScreenBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticinin verdiği 5 karakterlik kod hangi daireye tanımlandıysa kayıt o daireye yapılır. «Apartmana katıl» için ad soyadınızı girin.'**
+  String get residentInviteScreenBody;
+
+  /// No description provided for @residentInvitePreviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod ile bağlantı'**
+  String get residentInvitePreviewTitle;
+
+  /// No description provided for @residentInviteWrongCodeType.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bir yönetici davet kodu. Sakin olarak girmek için yöneticiden daire kodu isteyin.'**
+  String get residentInviteWrongCodeType;
+
+  /// No description provided for @residentInvitePreviewDemo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo modda sunucu doğrulaması yok; gerçek akış için DEMO_MODE kapalı çalıştırın.'**
+  String get residentInvitePreviewDemo;
+
+  /// No description provided for @homeManagerRolePrefix.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ'**
+  String get homeManagerRolePrefix;
+
+  /// No description provided for @homeManagerBuildingFallback.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ · Apartman'**
+  String get homeManagerBuildingFallback;
+
+  /// No description provided for @residentRolePrefix.
+  ///
+  /// In tr, this message translates to:
+  /// **'SAKİN'**
+  String get residentRolePrefix;
+
+  /// No description provided for @demoModuleLockedBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gerçek veriler bağlanınca burası açılacak.'**
+  String get demoModuleLockedBody;
 }
 
 class _AppLocalizationsDelegate

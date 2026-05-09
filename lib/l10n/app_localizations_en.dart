@@ -1507,4 +1507,113 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setupFinalizeBuildingNameRequired =>
       'Building name is required to complete setup.';
+
+  @override
+  String get homeManagerLockedPlaceholder =>
+      'Summary and chart data will appear here soon.';
+
+  @override
+  String get homeQuickLockedHint => 'This feature is coming soon.';
+
+  @override
+  String get managerInviteSubtitle =>
+      'Creates a one-time code on the server for the selected unit—share it with the resident.';
+
+  @override
+  String get managerInviteGenerate => 'Generate invite code';
+
+  @override
+  String get managerInviteYourCode => 'Invite code';
+
+  @override
+  String get managerInviteCopy => 'Copy to clipboard';
+
+  @override
+  String get managerInviteCopied => 'Code copied to clipboard.';
+
+  @override
+  String get managerInviteFailed =>
+      'Could not create the code. Check your session and try again.';
+
+  @override
+  String get managerInviteCodeCreated => 'New invite code is ready.';
+
+  @override
+  String get managerInviteShareHint =>
+      'Send this code to the resident over a trusted channel; it is single-use.';
+
+  @override
+  String get managerInviteDemoBanner =>
+      'In demo mode the code is generated locally; set DEMO_MODE=false for real invites.';
+
+  @override
+  String get managerInviteSelectUnit => 'Unit';
+
+  @override
+  String get residentInviteScreenTitle => 'Your invite code';
+
+  @override
+  String get residentInviteCodeLabel => 'Invite code';
+
+  @override
+  String get residentInviteCodeHint => 'e.g. A3XY2';
+
+  @override
+  String get residentInviteFullNameLabel => 'Full name';
+
+  @override
+  String get residentInviteSubmit => 'Join building';
+
+  @override
+  String get residentInviteCodeTooShort => 'The code must be 5 characters.';
+
+  @override
+  String get residentInviteNameTooShort =>
+      'Full name must be at least 3 characters.';
+
+  @override
+  String get residentInviteUnexpected =>
+      'Something went wrong. Check the code and try again.';
+
+  @override
+  String get managerInviteRetry => 'Try again';
+
+  @override
+  String get managerInviteSelectedUnitHint =>
+      'The generated code is tied to this unit; residents who use it register for this apartment.';
+
+  @override
+  String get managerInviteNoSessionHint =>
+      'No session found. Complete setup or sign in first.';
+
+  @override
+  String get managerInviteNoUnits =>
+      'There are no units for this building yet. Complete building setup first.';
+
+  @override
+  String get residentInviteScreenBody =>
+      'The 5-character code is tied to one unit by your manager; registration attaches you to that unit. Enter your full name and tap Join.';
+
+  @override
+  String get residentInvitePreviewTitle => 'Linked with this code';
+
+  @override
+  String get residentInviteWrongCodeType =>
+      'This is a manager invite code. Ask your manager for a unit code to join as a resident.';
+
+  @override
+  String get residentInvitePreviewDemo =>
+      'Demo mode has no server validation; run with DEMO_MODE off for the real flow.';
+
+  @override
+  String get homeManagerRolePrefix => 'MANAGER';
+
+  @override
+  String get homeManagerBuildingFallback => 'MANAGER · Building';
+
+  @override
+  String get residentRolePrefix => 'RESIDENT';
+
+  @override
+  String get demoModuleLockedBody => 'Live data will unlock this section.';
 }
