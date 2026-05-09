@@ -1433,4 +1433,74 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileSetupDemoManager => 'Continue as manager';
+
+  @override
+  String get adminInviteTitle => 'Manager invite code';
+
+  @override
+  String get adminInviteSubtitle =>
+      'Enter the admin invite code you created in Supabase. After validation you continue to building setup; finishing saves the building and units to the server.';
+
+  @override
+  String get adminInviteHeadline => 'Building setup';
+
+  @override
+  String get adminInviteEightCharHint =>
+      'Enter the 8-character code from your manager or admin panel.';
+
+  @override
+  String get adminInviteChecking => 'Checking code…';
+
+  @override
+  String get adminInviteVerifiedBadge => 'CODE VERIFIED';
+
+  @override
+  String get adminInviteVerifiedCardTitle => 'Manager code ready';
+
+  @override
+  String get adminInviteVerifiedCardBody =>
+      'You can start registering your building. Tap below to continue.';
+
+  @override
+  String get adminInvitePrimaryButton => 'Continue to setup';
+
+  @override
+  String get inviteFooterNoCode => 'I don\'t have a code';
+
+  @override
+  String get inviteFooterScanQr => 'Scan QR code';
+
+  @override
+  String get inviteFooterNoCodeNotice =>
+      'Get a manager code from Supabase or support.';
+
+  @override
+  String get inviteFooterQrSoon => 'QR login coming soon.';
+
+  @override
+  String get adminInviteCodeLabel => 'Invite code';
+
+  @override
+  String get adminInviteCodeHint => 'e.g. DOGUS001';
+
+  @override
+  String get adminInviteContinue => 'Continue';
+
+  @override
+  String get adminInviteCodeTooShort => 'Code must be at least 4 characters.';
+
+  @override
+  String get adminInviteCodeNotFound => 'Code not found or expired.';
+
+  @override
+  String get adminInviteNotAdminCode =>
+      'This is not a manager code. Choose «I\'m a resident» for a resident invite.';
+
+  @override
+  String get adminInviteUnexpectedError =>
+      'Something went wrong. Please try again.';
+
+  @override
+  String get setupFinalizeFailed =>
+      'Setup could not be saved. Check your connection and try again.';
 }

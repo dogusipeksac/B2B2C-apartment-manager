@@ -1,6 +1,7 @@
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona_storage.dart';
 import 'package:apartment_manager/features/announcements/presentation/announcement_detail_screen.dart';
+import 'package:apartment_manager/features/auth/domain/user_role.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/auth/presentation/screens/login_placeholder_screen.dart';
 import 'package:apartment_manager/features/demo/presentation/demo_role_screen.dart';
@@ -17,6 +18,7 @@ import 'package:apartment_manager/features/manager/presentation/periods_screen.d
 import 'package:apartment_manager/features/manager/presentation/units_screen.dart';
 import 'package:apartment_manager/features/onboarding/presentation/onboarding_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/account_role_screen.dart';
+import 'package:apartment_manager/features/setup/presentation/admin_invite_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/resident_invite_placeholder_screen.dart';
 import 'package:apartment_manager/features/splash/presentation/splash_screen.dart';
@@ -96,6 +98,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const ResidentInvitePlaceholderScreen(),
       ),
       GoRoute(
+        path: '/setup/admin-invite',
+        builder: (context, state) => const AdminInviteScreen(),
+      ),
+      GoRoute(
         path: '/setup/wizard',
         builder: (context, state) => const BuildingSetupWizardScreen(),
       ),
@@ -143,6 +149,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isOnboarding = location == '/onboarding';
       final isAccountType = location == '/setup/account-type';
       final isResidentInvite = location == '/setup/resident-invite';
+      final isAdminInvite = location == '/setup/admin-invite';
       final isSetupWizard = location == '/setup/wizard';
       final isDemoRole = location == '/demo-role';
 
@@ -150,13 +157,47 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/home';
       }
 
+      if (Env.demoMode && isAdminInvite) {
+        return '/setup/wizard';
+      }
+
       if (local == null) {
+        if (isSetupWizard && !Env.demoMode) {
+          return '/setup/admin-invite';
+        }
         final allowedUnauth = isLogin ||
             isOnboarding ||
             isAccountType ||
             isResidentInvite ||
-            isSetupWizard;
+            isAdminInvite ||
+            (isSetupWizard && Env.demoMode);
         return allowedUnauth ? null : '/setup/account-type';
+      }
+
+      if (isAdminInvite) {
+        final token = local.sessionToken;
+        if (local.role == UserRole.buildingAdmin &&
+            token != null &&
+            token.isNotEmpty &&
+            (local.buildingId == null || local.buildingId!.isEmpty)) {
+          return '/setup/wizard';
+        }
+      }
+
+      if (isSetupWizard) {
+        if (Env.demoMode) {
+          return null;
+        }
+        final token = local.sessionToken;
+        if (local.role != UserRole.buildingAdmin ||
+            token == null ||
+            token.isEmpty) {
+          return '/home';
+        }
+        if (local.buildingId != null && local.buildingId!.isNotEmpty) {
+          return '/home';
+        }
+        return null;
       }
 
       if (Env.demoMode && !isDemoRole) {

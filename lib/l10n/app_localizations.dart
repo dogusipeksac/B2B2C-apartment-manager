@@ -2737,6 +2737,132 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Yönetici ile devam et'**
   String get profileSetupDemoManager;
+
+  /// No description provided for @adminInviteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici davet kodu'**
+  String get adminInviteTitle;
+
+  /// No description provided for @adminInviteSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Supabase’te oluşturduğun admin (yönetici) davet kodunu gir. Kod doğrulanınca apartman kurulumuna geçersin; tamamlayınca bina ve daireler sunucuya kaydedilir.'**
+  String get adminInviteSubtitle;
+
+  /// No description provided for @adminInviteHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman kurulumu'**
+  String get adminInviteHeadline;
+
+  /// No description provided for @adminInviteEightCharHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticinden veya panelde tanımlı 8 haneli kodu gir.'**
+  String get adminInviteEightCharHint;
+
+  /// No description provided for @adminInviteChecking.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod kontrol ediliyor…'**
+  String get adminInviteChecking;
+
+  /// No description provided for @adminInviteVerifiedBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'KOD DOĞRULANDI'**
+  String get adminInviteVerifiedBadge;
+
+  /// No description provided for @adminInviteVerifiedCardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici kodu hazır'**
+  String get adminInviteVerifiedCardTitle;
+
+  /// No description provided for @adminInviteVerifiedCardBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod ile apartman kaydına başlayabilirsin. Aşağıdan devam et.'**
+  String get adminInviteVerifiedCardBody;
+
+  /// No description provided for @adminInvitePrimaryButton.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman kurulumuna geç'**
+  String get adminInvitePrimaryButton;
+
+  /// No description provided for @inviteFooterNoCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodum yok'**
+  String get inviteFooterNoCode;
+
+  /// No description provided for @inviteFooterScanQr.
+  ///
+  /// In tr, this message translates to:
+  /// **'QR kod tara'**
+  String get inviteFooterScanQr;
+
+  /// No description provided for @inviteFooterNoCodeNotice.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici kodunu Supabase veya destek kanalından alman gerekir.'**
+  String get inviteFooterNoCodeNotice;
+
+  /// No description provided for @inviteFooterQrSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'QR ile giriş yakında.'**
+  String get inviteFooterQrSoon;
+
+  /// No description provided for @adminInviteCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get adminInviteCodeLabel;
+
+  /// No description provided for @adminInviteCodeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. DOGUS001'**
+  String get adminInviteCodeHint;
+
+  /// No description provided for @adminInviteContinue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam et'**
+  String get adminInviteContinue;
+
+  /// No description provided for @adminInviteCodeTooShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod en az 4 karakter olmalıdır.'**
+  String get adminInviteCodeTooShort;
+
+  /// No description provided for @adminInviteCodeNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod bulunamadı veya süresi dolmuş.'**
+  String get adminInviteCodeNotFound;
+
+  /// No description provided for @adminInviteNotAdminCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod yönetici kodu değil. Sakin kodu için başta «Sakinim» seç.'**
+  String get adminInviteNotAdminCode;
+
+  /// No description provided for @adminInviteUnexpectedError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bir sorun oluştu. Lütfen tekrar deneyin.'**
+  String get adminInviteUnexpectedError;
+
+  /// No description provided for @setupFinalizeFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene.'**
+  String get setupFinalizeFailed;
 }
 
 class _AppLocalizationsDelegate

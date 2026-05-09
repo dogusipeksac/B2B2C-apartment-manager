@@ -1431,4 +1431,74 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profileSetupDemoManager => 'Yönetici ile devam et';
+
+  @override
+  String get adminInviteTitle => 'Yönetici davet kodu';
+
+  @override
+  String get adminInviteSubtitle =>
+      'Supabase’te oluşturduğun admin (yönetici) davet kodunu gir. Kod doğrulanınca apartman kurulumuna geçersin; tamamlayınca bina ve daireler sunucuya kaydedilir.';
+
+  @override
+  String get adminInviteHeadline => 'Apartman kurulumu';
+
+  @override
+  String get adminInviteEightCharHint =>
+      'Yöneticinden veya panelde tanımlı 8 haneli kodu gir.';
+
+  @override
+  String get adminInviteChecking => 'Kod kontrol ediliyor…';
+
+  @override
+  String get adminInviteVerifiedBadge => 'KOD DOĞRULANDI';
+
+  @override
+  String get adminInviteVerifiedCardTitle => 'Yönetici kodu hazır';
+
+  @override
+  String get adminInviteVerifiedCardBody =>
+      'Bu kod ile apartman kaydına başlayabilirsin. Aşağıdan devam et.';
+
+  @override
+  String get adminInvitePrimaryButton => 'Apartman kurulumuna geç';
+
+  @override
+  String get inviteFooterNoCode => 'Kodum yok';
+
+  @override
+  String get inviteFooterScanQr => 'QR kod tara';
+
+  @override
+  String get inviteFooterNoCodeNotice =>
+      'Yönetici kodunu Supabase veya destek kanalından alman gerekir.';
+
+  @override
+  String get inviteFooterQrSoon => 'QR ile giriş yakında.';
+
+  @override
+  String get adminInviteCodeLabel => 'Davet kodu';
+
+  @override
+  String get adminInviteCodeHint => 'Örn. DOGUS001';
+
+  @override
+  String get adminInviteContinue => 'Devam et';
+
+  @override
+  String get adminInviteCodeTooShort => 'Kod en az 4 karakter olmalıdır.';
+
+  @override
+  String get adminInviteCodeNotFound => 'Kod bulunamadı veya süresi dolmuş.';
+
+  @override
+  String get adminInviteNotAdminCode =>
+      'Bu kod yönetici kodu değil. Sakin kodu için başta «Sakinim» seç.';
+
+  @override
+  String get adminInviteUnexpectedError =>
+      'Bir sorun oluştu. Lütfen tekrar deneyin.';
+
+  @override
+  String get setupFinalizeFailed =>
+      'Kurulum kaydedilemedi. Bağlantını kontrol edip tekrar dene.';
 }

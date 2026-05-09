@@ -2,3 +2,6 @@ project_id = "hmrzrjngcyvmbkwceauz"
 
 [functions.redeem_code]
 verify_jwt = false
+
+[functions.finalize_building_setup]
+verify_jwt = false

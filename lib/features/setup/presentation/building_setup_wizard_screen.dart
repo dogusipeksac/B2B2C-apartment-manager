@@ -2,24 +2,30 @@ import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/widgets/app_button.dart';
+import 'package:apartment_manager/features/auth/domain/user_role.dart';
+import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/setup/data/building_setup_repository.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 /// Manager flow: 4-step building setup (mockup 3.3–3.5).
-/// Persists UI-only until API.
-class BuildingSetupWizardScreen extends StatefulWidget {
+/// Completes via Edge Function when not in demo mode.
+class BuildingSetupWizardScreen extends ConsumerStatefulWidget {
   const BuildingSetupWizardScreen({super.key});
 
   @override
-  State<BuildingSetupWizardScreen> createState() =>
+  ConsumerState<BuildingSetupWizardScreen> createState() =>
       _BuildingSetupWizardScreenState();
 }
 
-class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
+class _BuildingSetupWizardScreenState
+    extends ConsumerState<BuildingSetupWizardScreen> {
   final _page = PageController();
   int _step = 0;
 
@@ -60,6 +66,8 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
 
   static const _dueDayChoices = <int>[1, 5, 10, 15, 20];
 
+  bool _finalizeBusy = false;
+
   @override
   void dispose() {
     _page.dispose();
@@ -95,6 +103,96 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
     context.go('/home');
   }
 
+  Future<void> _completeSetup(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (!_namingAutomatic.value) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.homeFeatureSoon)),
+      );
+      return;
+    }
+
+    if (Env.demoMode) {
+      _goHome(context);
+      return;
+    }
+
+    final session = await ref.read(localSessionProvider.future);
+    if (session == null ||
+        session.role != UserRole.buildingAdmin ||
+        session.sessionToken == null ||
+        session.sessionToken!.isEmpty) {
+      if (context.mounted) {
+        context.go('/setup/admin-invite');
+      }
+      return;
+    }
+
+    if (session.buildingId != null && session.buildingId!.isNotEmpty) {
+      if (!context.mounted) {
+        return;
+      }
+      _goHome(context);
+      return;
+    }
+
+    final idx = _districtIndex.value.clamp(0, _districts.length - 1);
+    final dist = _districts[idx];
+    final city = dist.$1;
+    final district = dist.$2;
+
+    setState(() => _finalizeBusy = true);
+    try {
+      final result =
+          await ref.read(buildingSetupRepositoryProvider).finalizeBuilding(
+                session: session,
+                buildingName: _name.text.trim(),
+                address: _address.text.trim(),
+                city: city,
+                district: district,
+                monthlyDuesKurus: _duesKurus.value,
+                duesDueDay: _dueDay.value,
+                lateFeeEnabled: _lateFeeEnabled.value,
+                singleBlock: _singleBlock.value,
+                floors: _floors.value,
+                perFloor: _perFloor.value,
+                namingAutomatic: _namingAutomatic.value,
+                managerFullName: session.fullName,
+              );
+
+      final updated = session.copyWith(
+        buildingId: result.buildingId,
+        profileId: result.profileId,
+        savedAt: DateTime.now(),
+      );
+      await ref.read(localSessionRepositoryProvider).save(updated);
+      ref.notifyLocalSessionChanged();
+
+      if (!context.mounted) {
+        return;
+      }
+      _goHome(context);
+    } on AppException catch (e) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.userMessage)),
+      );
+    } on Object {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.setupFinalizeFailed)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _finalizeBusy = false);
+      }
+    }
+  }
+
   void _back(BuildContext context) {
     if (_step == 0) {
       context.go('/setup/account-type');
@@ -110,8 +208,11 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
   }
 
   void _next(BuildContext context) {
+    if (_finalizeBusy) {
+      return;
+    }
     if (_step >= 3) {
-      _goHome(context);
+      unawaited(_completeSetup(context));
       return;
     }
     setState(() => _step += 1);
@@ -186,6 +287,7 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
                     const SizedBox(width: 12),
                     Expanded(
                       child: AppButton(
+                        isLoading: _finalizeBusy,
                         onPressed: () => _next(context),
                         child: _step >= 3
                             ? Row(
@@ -321,26 +423,28 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
           valueListenable: _districtIndex,
           builder: (context, idx, _) {
             final safe = idx.clamp(0, _districts.length - 1);
-            return DropdownMenu<int>(
+            return DropdownButtonFormField<int>(
               key: ValueKey<int>(safe),
-              initialSelection: safe,
-              label: Text(l10n.setupDistrictLabel),
-              expandedInsets: EdgeInsets.zero,
-              onSelected: (v) {
+              initialValue: safe,
+              isExpanded: true,
+              decoration: InputDecoration(
+                labelText: l10n.setupDistrictLabel,
+              ),
+              items: List.generate(
+                _districts.length,
+                (i) {
+                  final (city, dist) = _districts[i];
+                  return DropdownMenuItem<int>(
+                    value: i,
+                    child: Text('$city · $dist'),
+                  );
+                },
+              ),
+              onChanged: (v) {
                 if (v != null) {
                   _districtIndex.value = v;
                 }
               },
-              dropdownMenuEntries: List.generate(
-                _districts.length,
-                (i) {
-                  final (city, dist) = _districts[i];
-                  return DropdownMenuEntry<int>(
-                    value: i,
-                    label: '$city · $dist',
-                  );
-                },
-              ),
             );
           },
         ),

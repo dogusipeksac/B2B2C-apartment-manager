@@ -84,7 +84,7 @@ CREATE INDEX IF NOT EXISTS idx_devices_device ON public.devices (device_id);
 CREATE INDEX IF NOT EXISTS idx_devices_profile ON public.devices (profile_id);
 
 COMMENT ON TABLE public.devices IS
-  'One row per physical device_id; session_token issued by redeem_code Edge Function (client-side).';
+  'One row per physical device_id; session_token stored by redeem_code (see schema_v3_devices_session.sql).';
 
 -- -----------------------------------------------------------------------------
 -- RLS: invite_codes — anon can read active codes (validation preview); creators via auth (optional)

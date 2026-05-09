@@ -1,3 +1,4 @@
+import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -114,7 +115,11 @@ class _AccountRoleScreenState extends State<AccountRoleScreen> {
             child: FilledButton(
               onPressed: () {
                 if (_selected == SetupAccountRole.manager) {
-                  context.go('/setup/wizard');
+                  if (Env.demoMode) {
+                    context.go('/setup/wizard');
+                  } else {
+                    context.go('/setup/admin-invite');
+                  }
                 } else {
                   context.go('/setup/resident-invite');
                 }
