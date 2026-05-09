@@ -6,9 +6,18 @@ class Env {
 
   static const _keySupabaseUrl = 'SUPABASE_URL';
   static const _keySupabaseAnonKey = 'SUPABASE_ANON_KEY';
+  static const _keyDemoMode = 'DEMO_MODE';
+
+  /// Uses local fake auth/profile repositories; Supabase not initialized.
+  static bool get demoMode =>
+      dotenv.env[_keyDemoMode]?.toLowerCase().trim() == 'true';
 
   static Future<void> load() async {
     await dotenv.load();
+
+    if (demoMode) {
+      return;
+    }
 
     final url = dotenv.env[_keySupabaseUrl];
     final anonKey = dotenv.env[_keySupabaseAnonKey];

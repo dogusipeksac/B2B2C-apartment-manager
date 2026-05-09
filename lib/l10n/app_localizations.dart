@@ -104,11 +104,77 @@ abstract class AppLocalizations {
   /// **'Apartman Yöneticisi'**
   String get appTitle;
 
+  /// No description provided for @splashTagline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanın için hepsi tek yerde'**
+  String get splashTagline;
+
   /// No description provided for @emailEntryTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Giriş'**
+  /// **'Giriş yap'**
   String get emailEntryTitle;
+
+  /// No description provided for @emailLoginHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-posta adresin'**
+  String get emailLoginHeadline;
+
+  /// No description provided for @emailLoginSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sana tek kullanımlık bir kod göndereceğiz.'**
+  String get emailLoginSubtitle;
+
+  /// No description provided for @emailFieldLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'E-POSTA'**
+  String get emailFieldLabel;
+
+  /// No description provided for @kvkkEmailNotice.
+  ///
+  /// In tr, this message translates to:
+  /// **'KVKK uyumluyuz. E-posta sadece giriş için kullanılır.'**
+  String get kvkkEmailNotice;
+
+  /// No description provided for @loginLegalPrefix.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam ederek '**
+  String get loginLegalPrefix;
+
+  /// No description provided for @loginLegalTerms.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım Şartları'**
+  String get loginLegalTerms;
+
+  /// No description provided for @loginLegalMiddle.
+  ///
+  /// In tr, this message translates to:
+  /// **' ve '**
+  String get loginLegalMiddle;
+
+  /// No description provided for @loginLegalPrivacy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik Politikası'**
+  String get loginLegalPrivacy;
+
+  /// No description provided for @loginLegalSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'\'nı kabul ediyorsun.'**
+  String get loginLegalSuffix;
+
+  /// No description provided for @legalLinkPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu içerik yakında eklenecek.'**
+  String get legalLinkPlaceholder;
 
   /// No description provided for @emailHint.
   ///
@@ -121,6 +187,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Devam et'**
   String get continueButton;
+
+  /// No description provided for @otpAppBarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrulama'**
+  String get otpAppBarTitle;
+
+  /// No description provided for @otpHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu gir'**
+  String get otpHeadline;
+
+  /// No description provided for @otpSentParagraph.
+  ///
+  /// In tr, this message translates to:
+  /// **'{identifier} adresine 6 haneli kod gönderdik.'**
+  String otpSentParagraph(Object identifier);
+
+  /// No description provided for @otpResendPrompt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu almadın mı?'**
+  String get otpResendPrompt;
+
+  /// No description provided for @otpResendLineCooldown.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu almadın mı? Yeniden gönder ({time})'**
+  String otpResendLineCooldown(Object time);
 
   /// No description provided for @otpTitle.
   ///
@@ -155,14 +251,56 @@ abstract class AppLocalizations {
   /// No description provided for @profileSetupTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Profil'**
+  /// **'Profil oluştur'**
   String get profileSetupTitle;
+
+  /// No description provided for @profileHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seni nasıl tanıtalım?'**
+  String get profileHeadline;
+
+  /// No description provided for @profileSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Komşuların ve yöneticin bu ismi görür.'**
+  String get profileSubtitle;
+
+  /// No description provided for @profileAvatarTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Avatar'**
+  String get profileAvatarTitle;
+
+  /// No description provided for @profileAvatarSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'İleride ekleyebilirsin'**
+  String get profileAvatarSubtitle;
+
+  /// No description provided for @fullNameFieldLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'AD SOYAD'**
+  String get fullNameFieldLabel;
 
   /// No description provided for @fullNameHint.
   ///
   /// In tr, this message translates to:
   /// **'Ad Soyad'**
   String get fullNameHint;
+
+  /// No description provided for @phoneFieldLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TELEFON (OPSİYONEL)'**
+  String get phoneFieldLabel;
+
+  /// No description provided for @phoneHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'+90 5__ ___ __ __'**
+  String get phoneHint;
 
   /// No description provided for @saveButton.
   ///
@@ -223,6 +361,1782 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'{email} adresine doğrulama kodu gönderildi.'**
   String otpSentToEmail(Object email);
+
+  /// No description provided for @demoHubTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo — Ekran kataloğu'**
+  String get demoHubTitle;
+
+  /// No description provided for @demoHubSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'HTML mockup ve analiz raporuna göre tüm ekranlar. Veriler örnektir.'**
+  String get demoHubSubtitle;
+
+  /// No description provided for @demoBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'DEMO'**
+  String get demoBadge;
+
+  /// No description provided for @demoBackToHub.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kataloga dön'**
+  String get demoBackToHub;
+
+  /// No description provided for @demoSectionAuth.
+  ///
+  /// In tr, this message translates to:
+  /// **'1 · Giriş ve tanıtım'**
+  String get demoSectionAuth;
+
+  /// No description provided for @demoSectionHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'2 · Ana sayfalar'**
+  String get demoSectionHome;
+
+  /// No description provided for @demoSectionSetup.
+  ///
+  /// In tr, this message translates to:
+  /// **'3 · Bina kurulumu'**
+  String get demoSectionSetup;
+
+  /// No description provided for @demoSectionResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'4 · Sakin (aidat, duyuru, profil)'**
+  String get demoSectionResident;
+
+  /// No description provided for @demoSectionIssues.
+  ///
+  /// In tr, this message translates to:
+  /// **'5 · Arızalar'**
+  String get demoSectionIssues;
+
+  /// No description provided for @demoSectionAdmin.
+  ///
+  /// In tr, this message translates to:
+  /// **'6 · Yönetici'**
+  String get demoSectionAdmin;
+
+  /// No description provided for @demoSectionReports.
+  ///
+  /// In tr, this message translates to:
+  /// **'7 · Raporlar'**
+  String get demoSectionReports;
+
+  /// No description provided for @demoSectionDocs.
+  ///
+  /// In tr, this message translates to:
+  /// **'8 · Belge ve oylama'**
+  String get demoSectionDocs;
+
+  /// No description provided for @demoSectionSubscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'9 · Abonelik ve ayarlar'**
+  String get demoSectionSubscription;
+
+  /// No description provided for @demoTileSplashPreview.
+  ///
+  /// In tr, this message translates to:
+  /// **'1.1 Splash'**
+  String get demoTileSplashPreview;
+
+  /// No description provided for @demoTileWelcome.
+  ///
+  /// In tr, this message translates to:
+  /// **'1.2 Tanıtım (onboarding)'**
+  String get demoTileWelcome;
+
+  /// No description provided for @demoTileLoginReal.
+  ///
+  /// In tr, this message translates to:
+  /// **'1.3 Gerçek giriş ekranı'**
+  String get demoTileLoginReal;
+
+  /// No description provided for @demoTileOtpReal.
+  ///
+  /// In tr, this message translates to:
+  /// **'1.4 OTP doğrulama'**
+  String get demoTileOtpReal;
+
+  /// No description provided for @demoTileProfileReal.
+  ///
+  /// In tr, this message translates to:
+  /// **'1.5 Profil oluşturma'**
+  String get demoTileProfileReal;
+
+  /// No description provided for @demoTileResidentHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'2.1 Sakin ana sayfa'**
+  String get demoTileResidentHome;
+
+  /// No description provided for @demoTileAdminHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'2.2 Yönetici ana sayfa'**
+  String get demoTileAdminHome;
+
+  /// No description provided for @demoTileRoleSelect.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.1 Rol seçimi'**
+  String get demoTileRoleSelect;
+
+  /// No description provided for @demoTileInviteCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.2 Davet kodu'**
+  String get demoTileInviteCode;
+
+  /// No description provided for @demoTileSetupBuilding.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.3 Kurulum · Bina'**
+  String get demoTileSetupBuilding;
+
+  /// No description provided for @demoTileSetupStructure.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.4 Kurulum · Yapı'**
+  String get demoTileSetupStructure;
+
+  /// No description provided for @demoTileSetupUnits.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.5 Kurulum · Daireler'**
+  String get demoTileSetupUnits;
+
+  /// No description provided for @demoTileSetupDues.
+  ///
+  /// In tr, this message translates to:
+  /// **'3.6 Kurulum · Aidat'**
+  String get demoTileSetupDues;
+
+  /// No description provided for @demoTileDuesHistory.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.1 Aidat geçmişi'**
+  String get demoTileDuesHistory;
+
+  /// No description provided for @demoTileDuesDetail.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.2 Aidat detay'**
+  String get demoTileDuesDetail;
+
+  /// No description provided for @demoTilePaymentCheckout.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.3 Ödeme (iyzico)'**
+  String get demoTilePaymentCheckout;
+
+  /// No description provided for @demoTilePaymentSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.4 Ödeme başarılı'**
+  String get demoTilePaymentSuccess;
+
+  /// No description provided for @demoTileAnnouncements.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.5 Duyuru akışı'**
+  String get demoTileAnnouncements;
+
+  /// No description provided for @demoTileAnnouncementDetail.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.6 Duyuru detay'**
+  String get demoTileAnnouncementDetail;
+
+  /// No description provided for @demoTileProfileResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'4.7 Profil'**
+  String get demoTileProfileResident;
+
+  /// No description provided for @demoTileIssuesList.
+  ///
+  /// In tr, this message translates to:
+  /// **'5.1 Arıza listesi'**
+  String get demoTileIssuesList;
+
+  /// No description provided for @demoTileIssueNew.
+  ///
+  /// In tr, this message translates to:
+  /// **'5.2 Yeni arıza'**
+  String get demoTileIssueNew;
+
+  /// No description provided for @demoTileIssueDetail.
+  ///
+  /// In tr, this message translates to:
+  /// **'5.3 Arıza detay'**
+  String get demoTileIssueDetail;
+
+  /// No description provided for @demoTileIssuesKanban.
+  ///
+  /// In tr, this message translates to:
+  /// **'5.4 Yönetici kanban'**
+  String get demoTileIssuesKanban;
+
+  /// No description provided for @demoTileUnitsGrid.
+  ///
+  /// In tr, this message translates to:
+  /// **'6.1 Daireler'**
+  String get demoTileUnitsGrid;
+
+  /// No description provided for @demoTileInviteResidents.
+  ///
+  /// In tr, this message translates to:
+  /// **'6.2 Sakin daveti'**
+  String get demoTileInviteResidents;
+
+  /// No description provided for @demoTilePeriods.
+  ///
+  /// In tr, this message translates to:
+  /// **'6.3 Dönemler'**
+  String get demoTilePeriods;
+
+  /// No description provided for @demoTileExpenseNew.
+  ///
+  /// In tr, this message translates to:
+  /// **'6.4 Yeni gider'**
+  String get demoTileExpenseNew;
+
+  /// No description provided for @demoTileReportsOverview.
+  ///
+  /// In tr, this message translates to:
+  /// **'7.1 Mali özet raporu'**
+  String get demoTileReportsOverview;
+
+  /// No description provided for @demoTileDocuments.
+  ///
+  /// In tr, this message translates to:
+  /// **'8.1 Belgeler'**
+  String get demoTileDocuments;
+
+  /// No description provided for @demoTilePolls.
+  ///
+  /// In tr, this message translates to:
+  /// **'8.2 Oylamalar'**
+  String get demoTilePolls;
+
+  /// No description provided for @demoTileSubscription.
+  ///
+  /// In tr, this message translates to:
+  /// **'9.1 Abonelik'**
+  String get demoTileSubscription;
+
+  /// No description provided for @demoTileBuildingSettings.
+  ///
+  /// In tr, this message translates to:
+  /// **'9.2 Bina ayarları'**
+  String get demoTileBuildingSettings;
+
+  /// No description provided for @demoSplashTagline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanın için hepsi tek yerde'**
+  String get demoSplashTagline;
+
+  /// No description provided for @demoWelcomeSlide1Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanını yönet, sakinler haberdar'**
+  String get demoWelcomeSlide1Title;
+
+  /// No description provided for @demoWelcomeSlide1Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat takibi, duyurular, arıza bildirim ve oylamalar — hepsi tek bir uygulamada.'**
+  String get demoWelcomeSlide1Body;
+
+  /// No description provided for @demoWelcomeSlide2Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat ve ödemeler şeffaf'**
+  String get demoWelcomeSlide2Title;
+
+  /// No description provided for @demoWelcomeSlide2Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borç durumunu anında gör, ödemeni güvenle tamamla.'**
+  String get demoWelcomeSlide2Body;
+
+  /// No description provided for @demoWelcomeSlide3Title.
+  ///
+  /// In tr, this message translates to:
+  /// **'Topluluk tek yerde'**
+  String get demoWelcomeSlide3Title;
+
+  /// No description provided for @demoWelcomeSlide3Body.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyurular, belgeler ve oylamalarla komşularınla bağlantıda kal.'**
+  String get demoWelcomeSlide3Body;
+
+  /// No description provided for @demoSkip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Atla'**
+  String get demoSkip;
+
+  /// No description provided for @demoBuildingHeaderLine.
+  ///
+  /// In tr, this message translates to:
+  /// **'YEŞİL VADİ APT. · 3A'**
+  String get demoBuildingHeaderLine;
+
+  /// No description provided for @demoHelloName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Merhaba {name}'**
+  String demoHelloName(Object name);
+
+  /// No description provided for @demoOpenDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'AÇIK BORÇ'**
+  String get demoOpenDebt;
+
+  /// No description provided for @demoDueLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vade: {date} · {status}'**
+  String demoDueLabel(Object date, Object status);
+
+  /// No description provided for @demoPayNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi öde'**
+  String get demoPayNow;
+
+  /// No description provided for @demoAnnouncementsSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyurular'**
+  String get demoAnnouncementsSection;
+
+  /// No description provided for @demoIssuesSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arızalar'**
+  String get demoIssuesSection;
+
+  /// No description provided for @demoPinAnnouncement.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sabitlenmiş'**
+  String get demoPinAnnouncement;
+
+  /// No description provided for @demoAnnouncementSampleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Asansör bakımı yarın 10:00–12:00'**
+  String get demoAnnouncementSampleTitle;
+
+  /// No description provided for @demoAnnouncementSampleMeta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetim · 124 görüntüleme'**
+  String get demoAnnouncementSampleMeta;
+
+  /// No description provided for @demoIssueSampleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çatı sızdırması — merdiven sonu'**
+  String get demoIssueSampleTitle;
+
+  /// No description provided for @demoIssueSampleMeta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık · Yüksek öncelik'**
+  String get demoIssueSampleMeta;
+
+  /// No description provided for @demoNavHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ana sayfa'**
+  String get demoNavHome;
+
+  /// No description provided for @demoNavAnnouncements.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyurular'**
+  String get demoNavAnnouncements;
+
+  /// No description provided for @demoNavFinance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat'**
+  String get demoNavFinance;
+
+  /// No description provided for @demoNavIssues.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arızalar'**
+  String get demoNavIssues;
+
+  /// No description provided for @demoNavProfile.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
+  String get demoNavProfile;
+
+  /// No description provided for @demoAdminSummaryTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ay özeti'**
+  String get demoAdminSummaryTitle;
+
+  /// No description provided for @demoCollected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahsil edilen'**
+  String get demoCollected;
+
+  /// No description provided for @demoExpected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Beklenen'**
+  String get demoExpected;
+
+  /// No description provided for @demoExpenseTotal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gider'**
+  String get demoExpenseTotal;
+
+  /// No description provided for @demoQuickActions.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı işlemler'**
+  String get demoQuickActions;
+
+  /// No description provided for @demoActionInvite.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get demoActionInvite;
+
+  /// No description provided for @demoActionExpense.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni gider'**
+  String get demoActionExpense;
+
+  /// No description provided for @demoActionIssues.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arızalar'**
+  String get demoActionIssues;
+
+  /// No description provided for @demoChartPlaceholder.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahsilat grafiği (demo)'**
+  String get demoChartPlaceholder;
+
+  /// No description provided for @demoRoleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nasıl devam edelim?'**
+  String get demoRoleTitle;
+
+  /// No description provided for @demoRoleSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin davet koduyla katılır; yönetici yeni bina kurulumunu başlatır.'**
+  String get demoRoleSubtitle;
+
+  /// No description provided for @demoRoleResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin — davet kodum var'**
+  String get demoRoleResident;
+
+  /// No description provided for @demoRoleAdmin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici — bina oluştur'**
+  String get demoRoleAdmin;
+
+  /// No description provided for @demoInviteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get demoInviteTitle;
+
+  /// No description provided for @demoInviteSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'8 haneli kodu girin; doğrulayınca apartman önizlemesi gösterilir.'**
+  String get demoInviteSubtitle;
+
+  /// No description provided for @demoInviteHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'KOD'**
+  String get demoInviteHint;
+
+  /// No description provided for @demoInviteVerify.
+  ///
+  /// In tr, this message translates to:
+  /// **'Doğrula ve katıl'**
+  String get demoInviteVerify;
+
+  /// No description provided for @demoInvitePreviewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeşil Vadi Apartmanı'**
+  String get demoInvitePreviewTitle;
+
+  /// No description provided for @demoInvitePreviewSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Üsküdar · İstanbul'**
+  String get demoInvitePreviewSubtitle;
+
+  /// No description provided for @demoSetupBuildingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bina bilgileri'**
+  String get demoSetupBuildingTitle;
+
+  /// No description provided for @demoSetupBuildingName.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman adı'**
+  String get demoSetupBuildingName;
+
+  /// No description provided for @demoSetupAddress.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık adres'**
+  String get demoSetupAddress;
+
+  /// No description provided for @demoSetupCity.
+  ///
+  /// In tr, this message translates to:
+  /// **'İl / ilçe'**
+  String get demoSetupCity;
+
+  /// No description provided for @demoSetupStep.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adım {current} / {total}'**
+  String demoSetupStep(Object current, Object total);
+
+  /// No description provided for @demoSetupStructureTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapı'**
+  String get demoSetupStructureTitle;
+
+  /// No description provided for @demoSetupFloors.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kat sayısı'**
+  String get demoSetupFloors;
+
+  /// No description provided for @demoSetupUnitsPerFloor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kat başı daire'**
+  String get demoSetupUnitsPerFloor;
+
+  /// No description provided for @demoSetupUnitsPreview.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önizleme: ~{count} daire'**
+  String demoSetupUnitsPreview(Object count);
+
+  /// No description provided for @demoSetupUnitsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daireler'**
+  String get demoSetupUnitsTitle;
+
+  /// No description provided for @demoSetupNamingAuto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otomatik adlandırma'**
+  String get demoSetupNamingAuto;
+
+  /// No description provided for @demoSetupDuesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat şablonu'**
+  String get demoSetupDuesTitle;
+
+  /// No description provided for @demoSetupDuesAmount.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aylık tutar'**
+  String get demoSetupDuesAmount;
+
+  /// No description provided for @demoSetupDueDay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vade günü'**
+  String get demoSetupDueDay;
+
+  /// No description provided for @demoSetupSmsReminder.
+  ///
+  /// In tr, this message translates to:
+  /// **'SMS hatırlatma'**
+  String get demoSetupSmsReminder;
+
+  /// No description provided for @demoSetupLateFee.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikme uyarısı'**
+  String get demoSetupLateFee;
+
+  /// No description provided for @demoFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get demoFilterAll;
+
+  /// No description provided for @demoFilterPaid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödendi'**
+  String get demoFilterPaid;
+
+  /// No description provided for @demoFilterDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borçlu'**
+  String get demoFilterDebt;
+
+  /// No description provided for @demoMonthMarch2026.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mart 2026'**
+  String get demoMonthMarch2026;
+
+  /// No description provided for @demoMonthFebruary2026.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şubat 2026'**
+  String get demoMonthFebruary2026;
+
+  /// No description provided for @demoDuesDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat detayı'**
+  String get demoDuesDetailTitle;
+
+  /// No description provided for @demoBreakdownBase.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat tutarı'**
+  String get demoBreakdownBase;
+
+  /// No description provided for @demoBreakdownLate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikme'**
+  String get demoBreakdownLate;
+
+  /// No description provided for @demoInvoiceRef.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fatura no: {ref}'**
+  String demoInvoiceRef(Object ref);
+
+  /// No description provided for @demoPaymentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme'**
+  String get demoPaymentTitle;
+
+  /// No description provided for @demoPaymentSavedCard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıtlı kart'**
+  String get demoPaymentSavedCard;
+
+  /// No description provided for @demoPaymentCvv.
+  ///
+  /// In tr, this message translates to:
+  /// **'CVV'**
+  String get demoPaymentCvv;
+
+  /// No description provided for @demoPaymentSecure.
+  ///
+  /// In tr, this message translates to:
+  /// **'3D Secure ile güvenli ödeme'**
+  String get demoPaymentSecure;
+
+  /// No description provided for @demoPaymentSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödemeyi tamamla'**
+  String get demoPaymentSubmit;
+
+  /// No description provided for @demoPaymentSuccessTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme alındı'**
+  String get demoPaymentSuccessTitle;
+
+  /// No description provided for @demoPaymentSuccessBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem başarıyla tamamlandı. Makbuzu indirebilirsiniz.'**
+  String get demoPaymentSuccessBody;
+
+  /// No description provided for @demoDownloadReceipt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Makbuzu indir'**
+  String get demoDownloadReceipt;
+
+  /// No description provided for @demoAnnouncementDetailHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yorum yazın…'**
+  String get demoAnnouncementDetailHint;
+
+  /// No description provided for @demoAnnouncementSampleBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Elektrik kesintisi olabileceğinden asansör kullanımında dikkatli olun.'**
+  String get demoAnnouncementSampleBody;
+
+  /// No description provided for @demoAttachmentPdf.
+  ///
+  /// In tr, this message translates to:
+  /// **'toplanti_notlari.pdf'**
+  String get demoAttachmentPdf;
+
+  /// No description provided for @demoProfileBuildingCard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman kartı'**
+  String get demoProfileBuildingCard;
+
+  /// No description provided for @demoProfileSettings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlar'**
+  String get demoProfileSettings;
+
+  /// No description provided for @demoProfileNotifications.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimler'**
+  String get demoProfileNotifications;
+
+  /// No description provided for @demoProfilePrivacy.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizlilik ve KVKK'**
+  String get demoProfilePrivacy;
+
+  /// No description provided for @demoIssueCategory.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kategori'**
+  String get demoIssueCategory;
+
+  /// No description provided for @demoIssueLocation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Konum'**
+  String get demoIssueLocation;
+
+  /// No description provided for @demoIssuePriority.
+  ///
+  /// In tr, this message translates to:
+  /// **'Öncelik'**
+  String get demoIssuePriority;
+
+  /// No description provided for @demoIssueAddPhoto.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fotoğraf ekle'**
+  String get demoIssueAddPhoto;
+
+  /// No description provided for @demoIssueSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arızayı bildir'**
+  String get demoIssueSubmit;
+
+  /// No description provided for @demoIssueTimelineLogged.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıt oluşturuldu'**
+  String get demoIssueTimelineLogged;
+
+  /// No description provided for @demoIssueTimelineAssigned.
+  ///
+  /// In tr, this message translates to:
+  /// **'Teknik ekibe atandı'**
+  String get demoIssueTimelineAssigned;
+
+  /// No description provided for @demoIssueAdminNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici notu: Yarın sabah kontrol edilecek.'**
+  String get demoIssueAdminNote;
+
+  /// No description provided for @demoKanbanOpen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get demoKanbanOpen;
+
+  /// No description provided for @demoKanbanProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemde'**
+  String get demoKanbanProgress;
+
+  /// No description provided for @demoKanbanDone.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlandı'**
+  String get demoKanbanDone;
+
+  /// No description provided for @demoUnitsFloor.
+  ///
+  /// In tr, this message translates to:
+  /// **'{floor}. kat'**
+  String demoUnitsFloor(Object floor);
+
+  /// No description provided for @demoUnitDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borç {amount}'**
+  String demoUnitDebt(Object amount);
+
+  /// No description provided for @demoUnitPaid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödendi'**
+  String get demoUnitPaid;
+
+  /// No description provided for @demoUnitEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boş'**
+  String get demoUnitEmpty;
+
+  /// No description provided for @demoInviteQrHelp.
+  ///
+  /// In tr, this message translates to:
+  /// **'QR kodu paylaş veya kodu kopyala.'**
+  String get demoInviteQrHelp;
+
+  /// No description provided for @demoInviteShare.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daveti paylaş'**
+  String get demoInviteShare;
+
+  /// No description provided for @demoInviteBulk.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplu davet (CSV)'**
+  String get demoInviteBulk;
+
+  /// No description provided for @demoPeriodActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif dönem'**
+  String get demoPeriodActive;
+
+  /// No description provided for @demoPeriodCollectionRate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahsilat oranı'**
+  String get demoPeriodCollectionRate;
+
+  /// No description provided for @demoExpenseNotifyResidents.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakinlere bildir'**
+  String get demoExpenseNotifyResidents;
+
+  /// No description provided for @demoExpenseSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gideri kaydet'**
+  String get demoExpenseSave;
+
+  /// No description provided for @demoExpenseCategoryWater.
+  ///
+  /// In tr, this message translates to:
+  /// **'Su'**
+  String get demoExpenseCategoryWater;
+
+  /// No description provided for @demoExpenseCategoryElectric.
+  ///
+  /// In tr, this message translates to:
+  /// **'Elektrik'**
+  String get demoExpenseCategoryElectric;
+
+  /// No description provided for @demoExpenseCategoryElevator.
+  ///
+  /// In tr, this message translates to:
+  /// **'Asansör'**
+  String get demoExpenseCategoryElevator;
+
+  /// No description provided for @demoExpenseCategoryOther.
+  ///
+  /// In tr, this message translates to:
+  /// **'Diğer'**
+  String get demoExpenseCategoryOther;
+
+  /// No description provided for @demoReportsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Raporlar'**
+  String get demoReportsTitle;
+
+  /// No description provided for @demoReportsCashflow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Nakit akışı'**
+  String get demoReportsCashflow;
+
+  /// No description provided for @demoReportsExpenseSplit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gider dağılımı'**
+  String get demoReportsExpenseSplit;
+
+  /// No description provided for @demoDocumentsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Belgeler'**
+  String get demoDocumentsTitle;
+
+  /// No description provided for @demoDocumentsFolderMeeting.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplantı'**
+  String get demoDocumentsFolderMeeting;
+
+  /// No description provided for @demoDocumentsFolderContracts.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sözleşmeler'**
+  String get demoDocumentsFolderContracts;
+
+  /// No description provided for @demoPollsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylamalar'**
+  String get demoPollsTitle;
+
+  /// No description provided for @demoPollsActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Devam eden'**
+  String get demoPollsActive;
+
+  /// No description provided for @demoPollsClosed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tamamlanan'**
+  String get demoPollsClosed;
+
+  /// No description provided for @demoPollSampleTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çatı yenileme önerisi'**
+  String get demoPollSampleTitle;
+
+  /// No description provided for @demoSubscriptionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Abonelik'**
+  String get demoSubscriptionTitle;
+
+  /// No description provided for @demoSubscriptionPlan.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profesyonel plan'**
+  String get demoSubscriptionPlan;
+
+  /// No description provided for @demoSubscriptionPrice.
+  ///
+  /// In tr, this message translates to:
+  /// **'₺299 / ay · bir bina'**
+  String get demoSubscriptionPrice;
+
+  /// No description provided for @demoSubscriptionCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Planı seç'**
+  String get demoSubscriptionCta;
+
+  /// No description provided for @demoSettingsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bina ayarları'**
+  String get demoSettingsTitle;
+
+  /// No description provided for @demoSettingsDues.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat kuralları'**
+  String get demoSettingsDues;
+
+  /// No description provided for @demoSettingsRoles.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici rolleri'**
+  String get demoSettingsRoles;
+
+  /// No description provided for @demoLegendPaid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödendi'**
+  String get demoLegendPaid;
+
+  /// No description provided for @demoLegendDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Borçlu'**
+  String get demoLegendDebt;
+
+  /// No description provided for @demoLegendVacant.
+  ///
+  /// In tr, this message translates to:
+  /// **'Boş'**
+  String get demoLegendVacant;
+
+  /// No description provided for @demoSampleDelay.
+  ///
+  /// In tr, this message translates to:
+  /// **'3 gün gecikti'**
+  String get demoSampleDelay;
+
+  /// No description provided for @demoSampleDateShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'5 Mart 2026'**
+  String get demoSampleDateShort;
+
+  /// No description provided for @demoPriorityHigh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yüksek öncelik'**
+  String get demoPriorityHigh;
+
+  /// No description provided for @homeRecentAnnouncements.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son duyurular'**
+  String get homeRecentAnnouncements;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get homeSeeAll;
+
+  /// No description provided for @homeAnnouncementTagPin.
+  ///
+  /// In tr, this message translates to:
+  /// **'PIN'**
+  String get homeAnnouncementTagPin;
+
+  /// No description provided for @homeAnnouncementTagInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bilgi'**
+  String get homeAnnouncementTagInfo;
+
+  /// No description provided for @homeOpenIssuesSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık arızalar'**
+  String get homeOpenIssuesSection;
+
+  /// No description provided for @homeIssueStatusInProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlemde'**
+  String get homeIssueStatusInProgress;
+
+  /// No description provided for @homeIssueUpdatedAgo.
+  ///
+  /// In tr, this message translates to:
+  /// **'{time} önce güncellendi'**
+  String homeIssueUpdatedAgo(Object time);
+
+  /// No description provided for @homeManagerBuildingLine.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ · YEŞİL VADİ APT.'**
+  String get homeManagerBuildingLine;
+
+  /// No description provided for @homeManagerMonthYear.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mart 2026'**
+  String get homeManagerMonthYear;
+
+  /// No description provided for @homeManagerCollectionLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tahsilat'**
+  String get homeManagerCollectionLabel;
+
+  /// No description provided for @homeManagerIncomeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu ay gelir'**
+  String get homeManagerIncomeLabel;
+
+  /// No description provided for @homeManagerOpenDebtLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık borç'**
+  String get homeManagerOpenDebtLabel;
+
+  /// No description provided for @homeManagerOpenIssuesLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık arıza'**
+  String get homeManagerOpenIssuesLabel;
+
+  /// No description provided for @homeManagerUnitsSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} daire'**
+  String homeManagerUnitsSuffix(Object count);
+
+  /// No description provided for @homeManagerHighPrioritySuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} yüksek öncelik'**
+  String homeManagerHighPrioritySuffix(Object count);
+
+  /// No description provided for @homeManagerIncomeDelta.
+  ///
+  /// In tr, this message translates to:
+  /// **'↑ {percent} önceki ay'**
+  String homeManagerIncomeDelta(Object percent);
+
+  /// No description provided for @homeChartSixMonths.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son 6 ay · Gelir / Gider'**
+  String get homeChartSixMonths;
+
+  /// No description provided for @homeChartLegendIncome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gelir'**
+  String get homeChartLegendIncome;
+
+  /// No description provided for @homeChartLegendExpense.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gider'**
+  String get homeChartLegendExpense;
+
+  /// No description provided for @homeQuickNewPeriod.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni dönem'**
+  String get homeQuickNewPeriod;
+
+  /// No description provided for @homeQuickSendAnnouncement.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyuru gönder'**
+  String get homeQuickSendAnnouncement;
+
+  /// No description provided for @homeQuickSendInvite.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet gönder'**
+  String get homeQuickSendInvite;
+
+  /// No description provided for @homeQuickAddExpense.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gider ekle'**
+  String get homeQuickAddExpense;
+
+  /// No description provided for @homeQuickActionsSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hızlı aksiyonlar'**
+  String get homeQuickActionsSection;
+
+  /// No description provided for @homeDemoSwitchManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici görünümü'**
+  String get homeDemoSwitchManager;
+
+  /// No description provided for @homeDemoSwitchResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin görünümü'**
+  String get homeDemoSwitchResident;
+
+  /// No description provided for @homeEmptyNoRecords.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz kayıt yok.'**
+  String get homeEmptyNoRecords;
+
+  /// No description provided for @homeNoOutstandingDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık borcunuz yok.'**
+  String get homeNoOutstandingDebt;
+
+  /// No description provided for @homeAidatSectionTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat özeti'**
+  String get homeAidatSectionTitle;
+
+  /// No description provided for @homeDemoDuesMarchTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mart 2026 aidatı'**
+  String get homeDemoDuesMarchTitle;
+
+  /// No description provided for @homeDemoDuesMarchSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son ödeme tarihi geçti'**
+  String get homeDemoDuesMarchSubtitle;
+
+  /// No description provided for @homeDemoDuesFebTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şubat 2026 aidatı'**
+  String get homeDemoDuesFebTitle;
+
+  /// No description provided for @homeDemoDuesFebSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödendi · 28 Şubat 2026'**
+  String get homeDemoDuesFebSubtitle;
+
+  /// No description provided for @homeDemoElevatorAnnouncementTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Asansör bakımı · 12 Mart'**
+  String get homeDemoElevatorAnnouncementTitle;
+
+  /// No description provided for @homeDemoElevatorAnnouncementAuthor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayşe Demir'**
+  String get homeDemoElevatorAnnouncementAuthor;
+
+  /// No description provided for @homeDemoHotWaterTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sıcak su kesintisi 14:00–16:00'**
+  String get homeDemoHotWaterTitle;
+
+  /// No description provided for @homeDemoHotWaterAuthor.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ali Kaya'**
+  String get homeDemoHotWaterAuthor;
+
+  /// No description provided for @homeDemoRoofLeakTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çatı su sızıntısı'**
+  String get homeDemoRoofLeakTitle;
+
+  /// No description provided for @homeDemoIssueUpdatedHours.
+  ///
+  /// In tr, this message translates to:
+  /// **'2 saat'**
+  String get homeDemoIssueUpdatedHours;
+
+  /// No description provided for @homeNotificationsBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} bildirim'**
+  String homeNotificationsBadge(Object count);
+
+  /// No description provided for @homeFeatureSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bölüm yakında.'**
+  String get homeFeatureSoon;
+
+  /// No description provided for @demoPersonaScreenTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap türü'**
+  String get demoPersonaScreenTitle;
+
+  /// No description provided for @demoPersonaScreenSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanına nasıl katılıyorsun? Bunu demo içinde istediğin zaman profilden değiştirebilirsin.'**
+  String get demoPersonaScreenSubtitle;
+
+  /// No description provided for @demoPersonaResidentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin olarak devam et'**
+  String get demoPersonaResidentTitle;
+
+  /// No description provided for @demoPersonaResidentBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticinden aldığın davet kodu ile dairene bağlan.'**
+  String get demoPersonaResidentBody;
+
+  /// No description provided for @demoPersonaManagerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici olarak devam et'**
+  String get demoPersonaManagerTitle;
+
+  /// No description provided for @demoPersonaManagerBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanını sıfırdan kur, sakinleri davet et.'**
+  String get demoPersonaManagerBody;
+
+  /// No description provided for @demoPersonaTrialBanner.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk 30 gün ücretsiz. Kart bilgisi gerekmez.'**
+  String get demoPersonaTrialBanner;
+
+  /// No description provided for @catalogEmptyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz kayıt yok'**
+  String get catalogEmptyTitle;
+
+  /// No description provided for @catalogLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Veriler yüklenemedi'**
+  String get catalogLoadError;
+
+  /// No description provided for @duesMyTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidatlarım'**
+  String get duesMyTitle;
+
+  /// No description provided for @duesOpenDebt.
+  ///
+  /// In tr, this message translates to:
+  /// **'AÇIK BORÇ'**
+  String get duesOpenDebt;
+
+  /// No description provided for @duesUnpaidSummary.
+  ///
+  /// In tr, this message translates to:
+  /// **'{unpaid} ödenmemiş · {late}'**
+  String duesUnpaidSummary(Object unpaid, Object late);
+
+  /// No description provided for @duesFilterAll.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tümü'**
+  String get duesFilterAll;
+
+  /// No description provided for @duesFilterOpen.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get duesFilterOpen;
+
+  /// No description provided for @duesFilterPaid.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödendi'**
+  String get duesFilterPaid;
+
+  /// No description provided for @duesFilterLate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikmiş'**
+  String get duesFilterLate;
+
+  /// No description provided for @duesPayNow.
+  ///
+  /// In tr, this message translates to:
+  /// **'Şimdi öde'**
+  String get duesPayNow;
+
+  /// No description provided for @duesDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat detayı'**
+  String get duesDetailTitle;
+
+  /// No description provided for @duesAmountDue.
+  ///
+  /// In tr, this message translates to:
+  /// **'ÖDENECEK TUTAR'**
+  String get duesAmountDue;
+
+  /// No description provided for @duesLineBase.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat'**
+  String get duesLineBase;
+
+  /// No description provided for @duesLineLateFee.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gecikme faizi ({days} gün)'**
+  String duesLineLateFee(Object days);
+
+  /// No description provided for @duesPayCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'{amount} öde'**
+  String duesPayCta(Object amount);
+
+  /// No description provided for @paymentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme'**
+  String get paymentTitle;
+
+  /// No description provided for @paymentSecurePay.
+  ///
+  /// In tr, this message translates to:
+  /// **'Güvenli öde'**
+  String get paymentSecurePay;
+
+  /// No description provided for @paymentSuccessTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ödeme başarılı'**
+  String get paymentSuccessTitle;
+
+  /// No description provided for @paymentSuccessBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidatın ödendi. Makbuzu e-posta ile gönderdik.'**
+  String get paymentSuccessBody;
+
+  /// No description provided for @announcementsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyurular'**
+  String get announcementsTitle;
+
+  /// No description provided for @announcementDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Duyuru'**
+  String get announcementDetailTitle;
+
+  /// No description provided for @issuesTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arızalar'**
+  String get issuesTitle;
+
+  /// No description provided for @issueNewTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni arıza'**
+  String get issueNewTitle;
+
+  /// No description provided for @issueDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arıza detayı'**
+  String get issueDetailTitle;
+
+  /// No description provided for @issueSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bildirimi gönder'**
+  String get issueSubmit;
+
+  /// No description provided for @issuesKanbanTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arıza panosu'**
+  String get issuesKanbanTitle;
+
+  /// No description provided for @profileMenuTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil'**
+  String get profileMenuTitle;
+
+  /// No description provided for @profileSwitchToManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici görünümüne geç'**
+  String get profileSwitchToManager;
+
+  /// No description provided for @profileSwitchToResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin görünümüne geç'**
+  String get profileSwitchToResident;
+
+  /// No description provided for @setupInviteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get setupInviteTitle;
+
+  /// No description provided for @setupInviteJoin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmana katıl'**
+  String get setupInviteJoin;
+
+  /// No description provided for @setupWizardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bina kurulumu'**
+  String get setupWizardTitle;
+
+  /// No description provided for @managerUnitsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daireler'**
+  String get managerUnitsTitle;
+
+  /// No description provided for @managerInviteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin daveti'**
+  String get managerInviteTitle;
+
+  /// No description provided for @managerPeriodsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat dönemleri'**
+  String get managerPeriodsTitle;
+
+  /// No description provided for @managerExpenseTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni gider'**
+  String get managerExpenseTitle;
+
+  /// No description provided for @commonClose.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapat'**
+  String get commonClose;
+
+  /// No description provided for @duesDetailApartmentTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire'**
+  String get duesDetailApartmentTitle;
+
+  /// No description provided for @duesDetailApartmentValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'3A · Mehmet Yılmaz'**
+  String get duesDetailApartmentValue;
+
+  /// No description provided for @duesDetailPeriodTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dönem'**
+  String get duesDetailPeriodTitle;
+
+  /// No description provided for @duesDetailDueTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vade'**
+  String get duesDetailDueTitle;
+
+  /// No description provided for @duesDetailInvoiceTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Fatura no'**
+  String get duesDetailInvoiceTitle;
+
+  /// No description provided for @payment3dInfo.
+  ///
+  /// In tr, this message translates to:
+  /// **'3D Secure ile güvenli ödeme. SMS doğrulama gelecek.'**
+  String get payment3dInfo;
+
+  /// No description provided for @paymentNewCard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni kart ekle'**
+  String get paymentNewCard;
+
+  /// No description provided for @paymentTotal.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam {amount}'**
+  String paymentTotal(Object amount);
+
+  /// No description provided for @paymentReceiptAmountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'TUTAR'**
+  String get paymentReceiptAmountLabel;
+
+  /// No description provided for @paymentReceiptPeriodLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'DÖNEM'**
+  String get paymentReceiptPeriodLabel;
+
+  /// No description provided for @paymentReceiptTxnLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İŞLEM NO'**
+  String get paymentReceiptTxnLabel;
+
+  /// No description provided for @paymentReceiptMethodLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNTEM'**
+  String get paymentReceiptMethodLabel;
+
+  /// No description provided for @paymentReceiptAmountValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'₺1.530,00'**
+  String get paymentReceiptAmountValue;
+
+  /// No description provided for @paymentReceiptPeriodValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mart 2026 · 3A'**
+  String get paymentReceiptPeriodValue;
+
+  /// No description provided for @paymentReceiptTxnValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'İZ-9F4A2-26'**
+  String get paymentReceiptTxnValue;
+
+  /// No description provided for @paymentReceiptMethodValue.
+  ///
+  /// In tr, this message translates to:
+  /// **'VISA **** 4729'**
+  String get paymentReceiptMethodValue;
+
+  /// No description provided for @announcementCatPinned.
+  ///
+  /// In tr, this message translates to:
+  /// **'SABİT'**
+  String get announcementCatPinned;
+
+  /// No description provided for @announcementCatMaintenance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bakım'**
+  String get announcementCatMaintenance;
+
+  /// No description provided for @announcementCatUrgent.
+  ///
+  /// In tr, this message translates to:
+  /// **'Acil'**
+  String get announcementCatUrgent;
+
+  /// No description provided for @profileBadgeResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin'**
+  String get profileBadgeResident;
+
+  /// No description provided for @profileBadgeManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici'**
+  String get profileBadgeManager;
+
+  /// No description provided for @profileVersionFooter.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sürüm 1.0.0 · KVKK'**
+  String get profileVersionFooter;
+
+  /// No description provided for @issueFieldTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlık'**
+  String get issueFieldTitle;
+
+  /// No description provided for @issueFieldDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get issueFieldDescription;
+
+  /// No description provided for @navBack.
+  ///
+  /// In tr, this message translates to:
+  /// **'Geri'**
+  String get navBack;
+
+  /// No description provided for @setupInviteHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanına bağlan'**
+  String get setupInviteHeadline;
+
+  /// No description provided for @setupFloorCountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kat sayısı'**
+  String get setupFloorCountLabel;
+
+  /// No description provided for @setupWizardPerFloorLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her katta daire'**
+  String get setupWizardPerFloorLabel;
+
+  /// No description provided for @setupBuildingNameLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bina adı'**
+  String get setupBuildingNameLabel;
+
+  /// No description provided for @setupAddressLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık adres'**
+  String get setupAddressLabel;
+
+  /// No description provided for @profileSetupDemoResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin ile devam et'**
+  String get profileSetupDemoResident;
+
+  /// No description provided for @profileSetupDemoManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici ile devam et'**
+  String get profileSetupDemoManager;
 }
 
 class _AppLocalizationsDelegate

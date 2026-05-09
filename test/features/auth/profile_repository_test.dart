@@ -37,10 +37,10 @@ void main() {
       remoteDataSource: FakeProfileRemoteDataSource(
         getRowResult: {
           'id': 'u1',
-          'fullName': 'Ada Lovelace',
+          'full_name': 'Ada Lovelace',
           'phone': null,
           'email': 'ada@example.com',
-          'avatarUrl': null,
+          'avatar_url': null,
           'language': 'tr',
         },
       ),
@@ -63,10 +63,10 @@ void main() {
       remoteDataSource: FakeProfileRemoteDataSource(
         upsertResult: {
           'id': 'u1',
-          'fullName': 'Ada Lovelace',
+          'full_name': 'Ada Lovelace',
           'phone': null,
           'email': 'ada@example.com',
-          'avatarUrl': null,
+          'avatar_url': null,
           'language': 'tr',
         },
       ),

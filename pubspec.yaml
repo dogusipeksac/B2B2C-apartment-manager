@@ -58,6 +58,7 @@ dependencies:
   postgrest: ^2.7.0
   printing: ^5.14.3
   reactive_forms: ^18.2.2
+  shared_preferences: ^2.5.5
   supabase_flutter: ^2.12.4
 
 dev_dependencies:

@@ -7,14 +7,20 @@ part 'profile.g.dart';
 abstract class Profile with _$Profile {
   const factory Profile({
     required String id,
-    required String fullName,
+    // ignore: invalid_annotation_target -- JsonKey maps camelCase field to DB column.
+    @JsonKey(name: 'full_name') required String fullName,
     required String language,
     String? phone,
     String? email,
-    String? avatarUrl,
+    // ignore: invalid_annotation_target -- JsonKey maps camelCase field to DB column.
+    @JsonKey(name: 'avatar_url') String? avatarUrl,
+    // ignore: invalid_annotation_target -- JsonKey maps camelCase field to DB column.
+    @JsonKey(name: 'notification_token') String? notificationToken,
+    // ignore: invalid_annotation_target -- JsonKey maps camelCase field to DB column.
+    @JsonKey(name: 'created_at') DateTime? createdAt,
+    // ignore: invalid_annotation_target -- JsonKey maps camelCase field to DB column.
+    @JsonKey(name: 'updated_at') DateTime? updatedAt,
   }) = _Profile;
-
-  const Profile._();
 
   factory Profile.fromJson(Map<String, dynamic> json) =>
       _$ProfileFromJson(json);

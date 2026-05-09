@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/widgets/app_button.dart';
-import 'package:apartment_manager/core/widgets/app_scaffold.dart';
 import 'package:apartment_manager/features/auth/data/auth_repository.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/auth/presentation/theme/auth_shell_colors.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -55,6 +55,12 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
     _startCooldown();
   }
 
+  String _formatMmSs(int seconds) {
+    final m = seconds ~/ 60;
+    final s = seconds % 60;
+    return '${m.toString().padLeft(2, '0')}:${s.toString().padLeft(2, '0')}';
+  }
+
   void _startCooldown() {
     _cooldownTimer?.cancel();
     setState(() => _remaining = _cooldownSeconds);
@@ -83,6 +89,8 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final authState = ref.watch(authNotifierProvider);
+    final scheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
 
     ref.listen(authNotifierProvider, (prev, next) {
       next.whenOrNull(
@@ -114,84 +122,180 @@ class _OtpVerificationScreenState extends ConsumerState<OtpVerificationScreen> {
 
     final resendEnabled = _remaining == 0 && !authState.isLoading;
 
-    return AppScaffold(
-      appBar: AppBar(title: Text(l10n.otpTitle)),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
+    return Scaffold(
+      backgroundColor: AuthShellColors.scaffoldBg,
+      appBar: AppBar(
+        backgroundColor: AuthShellColors.surface,
+        foregroundColor: scheme.onSurface,
+        elevation: 0,
+        surfaceTintColor: Colors.transparent,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+          onPressed: () {
+            if (context.canPop()) {
+              context.pop();
+            } else {
+              context.go('/login');
+            }
+          },
+        ),
+        title: Text(
+          l10n.otpAppBarTitle,
+          style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+        ),
+        bottom: const PreferredSize(
+          preferredSize: Size.fromHeight(1),
+          child: Divider(
+            height: 1,
+            thickness: 1,
+            color: AuthShellColors.border,
+          ),
+        ),
+      ),
+      body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.otpSubtitle(widget.identifier)),
-            const SizedBox(height: 16),
-            MaterialPinField(
-              length: 6,
-              pinController: _pinController,
-              autoFocus: true,
-              theme: MaterialPinTheme(
-                cellSize: const Size(44, 48),
-                borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Text(
+                      l10n.otpHeadline,
+                      style: textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.otpSentParagraph(widget.identifier),
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AuthShellColors.textMuted,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Center(
+                      child: MaterialPinField(
+                        length: 6,
+                        pinController: _pinController,
+                        autoFocus: true,
+                        theme: MaterialPinTheme(
+                          spacing: 10,
+                          borderRadius: BorderRadius.circular(12),
+                          focusedBorderWidth: 1.5,
+                          borderColor: AuthShellColors.border,
+                          focusedBorderColor: scheme.primary,
+                          fillColor: AuthShellColors.surface,
+                          textStyle: textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    if (resendEnabled)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            l10n.otpResendPrompt,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: AuthShellColors.textMuted,
+                              fontSize: 13,
+                            ),
+                          ),
+                          TextButton(
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 4,
+                              ),
+                              minimumSize: Size.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            ),
+                            onPressed: authState.isLoading
+                                ? null
+                                : () async {
+                                    final ok = await ref
+                                        .read(authNotifierProvider.notifier)
+                                        .sendOtp(
+                                          identifier: widget.identifier,
+                                          channel: widget.channel,
+                                        );
+                                    if (!context.mounted) {
+                                      return;
+                                    }
+                                    if (ok) {
+                                      _startCooldown();
+                                    }
+                                  },
+                            child: Text(
+                              l10n.resendOtp,
+                              style: TextStyle(
+                                color: scheme.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 13,
+                              ),
+                            ),
+                          ),
+                        ],
+                      )
+                    else
+                      Text(
+                        l10n.otpResendLineCooldown(
+                          _formatMmSs(_remaining),
+                        ),
+                        textAlign: TextAlign.center,
+                        style: textTheme.bodySmall?.copyWith(
+                          color: AuthShellColors.textMuted,
+                          fontSize: 13,
+                        ),
+                      ),
+                  ],
+                ),
               ),
             ),
-            const SizedBox(height: 16),
-            AppButton(
-              isLoading: authState.isLoading,
-              onPressed: () async {
-                final code = _pinController.text.trim();
-                if (code.length != 6) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.errorInvalidOtp)),
-                  );
-                  return;
-                }
-
-                final ok = await ref
-                    .read(authNotifierProvider.notifier)
-                    .verifyOtp(
-                      identifier: widget.identifier,
-                      code: code,
-                      channel: widget.channel,
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
+              child: AppButton(
+                isLoading: authState.isLoading,
+                onPressed: () async {
+                  final code = _pinController.text.trim();
+                  if (code.length != 6) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.errorInvalidOtp)),
                     );
+                    return;
+                  }
 
-                if (!context.mounted || !ok) {
-                  return;
-                }
+                  final ok = await ref
+                      .read(authNotifierProvider.notifier)
+                      .verifyOtp(
+                        identifier: widget.identifier,
+                        code: code,
+                        channel: widget.channel,
+                      );
 
-                final profile = await ref.read(currentProfileProvider.future);
-                if (!context.mounted) {
-                  return;
-                }
+                  if (!context.mounted || !ok) {
+                    return;
+                  }
 
-                final fullName = profile?.fullName.trim() ?? '';
-                if (fullName.isEmpty) {
-                  context.go('/profile-setup');
-                } else {
-                  context.go('/home');
-                }
-              },
-              child: Text(l10n.verifyButton),
-            ),
-            const SizedBox(height: 12),
-            AppButton(
-              variant: AppButtonVariant.text,
-              onPressed: resendEnabled
-                  ? () async {
-                      final ok = await ref
-                          .read(authNotifierProvider.notifier)
-                          .sendOtp(
-                            identifier: widget.identifier,
-                            channel: widget.channel,
-                          );
-                      if (!context.mounted) {
-                        return;
-                      }
-                      if (ok) {
-                        _startCooldown();
-                      }
-                    }
-                  : null,
-              child: _remaining > 0
-                  ? Text(l10n.resendIn(_remaining))
-                  : Text(l10n.resendOtp),
+                  final profile = await ref.read(currentProfileProvider.future);
+                  if (!context.mounted) {
+                    return;
+                  }
+
+                  final fullName = profile?.fullName.trim() ?? '';
+                  if (fullName.isEmpty) {
+                    context.go('/profile-setup');
+                  } else {
+                    context.go('/home');
+                  }
+                },
+                child: Text(l10n.verifyButton),
+              ),
             ),
           ],
         ),

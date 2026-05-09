@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:apartment_manager/core/errors/app_exception.dart';
+import 'package:apartment_manager/core/onboarding/onboarding_storage.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
@@ -40,6 +41,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           debugPrint('splash: session is $label');
         }
         if (session == null) {
+          final seenOnboarding =
+              await OnboardingStorage.hasSeenOnboarding();
+          if (!mounted) {
+            return;
+          }
+          if (!seenOnboarding) {
+            if (kDebugMode) {
+              debugPrint('splash: go(/onboarding)');
+            }
+            context.go('/onboarding');
+            return;
+          }
           if (kDebugMode) {
             debugPrint('splash: go(/login)');
           }
@@ -104,16 +117,86 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(l10n.appTitle, style: Theme.of(context).textTheme.titleLarge),
-            const SizedBox(height: 16),
-            const CircularProgressIndicator(),
-          ],
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0xFF2A7C33),
+              Color(0xFF11421A),
+              Color(0xFF003300),
+            ],
+            stops: [0, 0.7, 1],
+          ),
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              const Spacer(),
+              Container(
+                width: 88,
+                height: 88,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(24),
+                  color: Colors.white.withValues(alpha: 0.1),
+                  border: Border.all(
+                    color: Colors.white.withValues(alpha: 0.18),
+                  ),
+                ),
+                child: const Icon(
+                  Icons.apartment_rounded,
+                  size: 48,
+                  color: Colors.white,
+                ),
+              ),
+              const SizedBox(height: 22),
+              Text(
+                l10n.appTitle,
+                style: textTheme.headlineSmall?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  letterSpacing: -0.3,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 32),
+                child: Text(
+                  l10n.splashTagline,
+                  textAlign: TextAlign.center,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: const Color(0xFFC9DCCD),
+                  ),
+                ),
+              ),
+              const Spacer(),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(
+                  3,
+                  (i) => Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 3),
+                    child: Container(
+                      width: 6,
+                      height: 6,
+                      decoration: const BoxDecoration(
+                        color: Colors.white54,
+                        shape: BoxShape.circle,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
         ),
       ),
     );

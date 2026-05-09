@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Profile {
 
- String get id; String get fullName; String get language; String? get phone; String? get email; String? get avatarUrl;
+ String get id;@JsonKey(name: 'full_name') String get fullName; String get language; String? get phone; String? get email;@JsonKey(name: 'avatar_url') String? get avatarUrl;@JsonKey(name: 'notification_token') String? get notificationToken;@JsonKey(name: 'created_at') DateTime? get createdAt;@JsonKey(name: 'updated_at') DateTime? get updatedAt;
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ProfileCopyWith<Profile> get copyWith => _$ProfileCopyWithImpl<Profile>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.notificationToken, notificationToken) || other.notificationToken == notificationToken)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl,notificationToken,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl)';
+  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl, notificationToken: $notificationToken, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ProfileCopyWith<$Res>  {
   factory $ProfileCopyWith(Profile value, $Res Function(Profile) _then) = _$ProfileCopyWithImpl;
 @useResult
 $Res call({
- String id, String fullName, String language, String? phone, String? email, String? avatarUrl
+ String id,@JsonKey(name: 'full_name') String fullName, String language, String? phone, String? email,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'notification_token') String? notificationToken,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
 });
 
 
@@ -65,7 +65,7 @@ class _$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,Object? notificationToken = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
@@ -73,7 +73,10 @@ as String,language: null == language ? _self.language : language // ignore: cast
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,notificationToken: freezed == notificationToken ? _self.notificationToken : notificationToken // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
@@ -158,10 +161,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String language,  String? phone,  String? email, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'notification_token')  String? notificationToken, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl,_that.notificationToken,_that.createdAt,_that.updatedAt);case _:
   return orElse();
 
 }
@@ -179,10 +182,10 @@ return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id, @JsonKey(name: 'full_name')  String fullName,  String language,  String? phone,  String? email, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'notification_token')  String? notificationToken, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)  $default,) {final _that = this;
 switch (_that) {
 case _Profile():
-return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl,_that.notificationToken,_that.createdAt,_that.updatedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -199,10 +202,10 @@ return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String fullName,  String language,  String? phone,  String? email,  String? avatarUrl)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id, @JsonKey(name: 'full_name')  String fullName,  String language,  String? phone,  String? email, @JsonKey(name: 'avatar_url')  String? avatarUrl, @JsonKey(name: 'notification_token')  String? notificationToken, @JsonKey(name: 'created_at')  DateTime? createdAt, @JsonKey(name: 'updated_at')  DateTime? updatedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _Profile() when $default != null:
-return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl);case _:
+return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_that.avatarUrl,_that.notificationToken,_that.createdAt,_that.updatedAt);case _:
   return null;
 
 }
@@ -213,16 +216,19 @@ return $default(_that.id,_that.fullName,_that.language,_that.phone,_that.email,_
 /// @nodoc
 @JsonSerializable()
 
-class _Profile extends Profile {
-  const _Profile({required this.id, required this.fullName, required this.language, this.phone, this.email, this.avatarUrl}): super._();
+class _Profile implements Profile {
+  const _Profile({required this.id, @JsonKey(name: 'full_name') required this.fullName, required this.language, this.phone, this.email, @JsonKey(name: 'avatar_url') this.avatarUrl, @JsonKey(name: 'notification_token') this.notificationToken, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt});
   factory _Profile.fromJson(Map<String, dynamic> json) => _$ProfileFromJson(json);
 
 @override final  String id;
-@override final  String fullName;
+@override@JsonKey(name: 'full_name') final  String fullName;
 @override final  String language;
 @override final  String? phone;
 @override final  String? email;
-@override final  String? avatarUrl;
+@override@JsonKey(name: 'avatar_url') final  String? avatarUrl;
+@override@JsonKey(name: 'notification_token') final  String? notificationToken;
+@override@JsonKey(name: 'created_at') final  DateTime? createdAt;
+@override@JsonKey(name: 'updated_at') final  DateTime? updatedAt;
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
@@ -237,16 +243,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Profile&&(identical(other.id, id) || other.id == id)&&(identical(other.fullName, fullName) || other.fullName == fullName)&&(identical(other.language, language) || other.language == language)&&(identical(other.phone, phone) || other.phone == phone)&&(identical(other.email, email) || other.email == email)&&(identical(other.avatarUrl, avatarUrl) || other.avatarUrl == avatarUrl)&&(identical(other.notificationToken, notificationToken) || other.notificationToken == notificationToken)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl);
+int get hashCode => Object.hash(runtimeType,id,fullName,language,phone,email,avatarUrl,notificationToken,createdAt,updatedAt);
 
 @override
 String toString() {
-  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl)';
+  return 'Profile(id: $id, fullName: $fullName, language: $language, phone: $phone, email: $email, avatarUrl: $avatarUrl, notificationToken: $notificationToken, createdAt: $createdAt, updatedAt: $updatedAt)';
 }
 
 
@@ -257,7 +263,7 @@ abstract mixin class _$ProfileCopyWith<$Res> implements $ProfileCopyWith<$Res> {
   factory _$ProfileCopyWith(_Profile value, $Res Function(_Profile) _then) = __$ProfileCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String fullName, String language, String? phone, String? email, String? avatarUrl
+ String id,@JsonKey(name: 'full_name') String fullName, String language, String? phone, String? email,@JsonKey(name: 'avatar_url') String? avatarUrl,@JsonKey(name: 'notification_token') String? notificationToken,@JsonKey(name: 'created_at') DateTime? createdAt,@JsonKey(name: 'updated_at') DateTime? updatedAt
 });
 
 
@@ -274,7 +280,7 @@ class __$ProfileCopyWithImpl<$Res>
 
 /// Create a copy of Profile
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? fullName = null,Object? language = null,Object? phone = freezed,Object? email = freezed,Object? avatarUrl = freezed,Object? notificationToken = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,}) {
   return _then(_Profile(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String,fullName: null == fullName ? _self.fullName : fullName // ignore: cast_nullable_to_non_nullable
@@ -282,7 +288,10 @@ as String,language: null == language ? _self.language : language // ignore: cast
 as String,phone: freezed == phone ? _self.phone : phone // ignore: cast_nullable_to_non_nullable
 as String?,email: freezed == email ? _self.email : email // ignore: cast_nullable_to_non_nullable
 as String?,avatarUrl: freezed == avatarUrl ? _self.avatarUrl : avatarUrl // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,notificationToken: freezed == notificationToken ? _self.notificationToken : notificationToken // ignore: cast_nullable_to_non_nullable
+as String?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,updatedAt: freezed == updatedAt ? _self.updatedAt : updatedAt // ignore: cast_nullable_to_non_nullable
+as DateTime?,
   ));
 }
 
