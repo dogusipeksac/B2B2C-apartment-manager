@@ -124,15 +124,15 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         width: double.infinity,
         height: double.infinity,
         decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
+          gradient: RadialGradient(
+            center: Alignment(0, -0.35),
+            radius: 1.15,
             colors: [
               Color(0xFF2A7C33),
               Color(0xFF11421A),
               Color(0xFF003300),
             ],
-            stops: [0, 0.7, 1],
+            stops: [0, 0.65, 1],
           ),
         ),
         child: SafeArea(

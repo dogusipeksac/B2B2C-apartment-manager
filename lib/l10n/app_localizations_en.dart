@@ -328,7 +328,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String demoHelloName(Object name) {
-    return 'Hello $name';
+    return 'Hello $name 👋';
   }
 
   @override
@@ -748,16 +748,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeManagerMonthYear => 'March 2026';
 
   @override
-  String get homeManagerCollectionLabel => 'Collection';
+  String get homeManagerCollectionLabel => 'COLLECTION';
 
   @override
-  String get homeManagerIncomeLabel => 'Income this month';
+  String get homeManagerIncomeLabel => 'INCOME THIS MONTH';
 
   @override
-  String get homeManagerOpenDebtLabel => 'Outstanding debt';
+  String get homeManagerOpenDebtLabel => 'OUTSTANDING DEBT';
 
   @override
-  String get homeManagerOpenIssuesLabel => 'Open issues';
+  String get homeManagerOpenIssuesLabel => 'OPEN ISSUES';
 
   @override
   String homeManagerUnitsSuffix(Object count) {
@@ -796,7 +796,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeQuickAddExpense => 'Add expense';
 
   @override
-  String get homeQuickActionsSection => 'Quick actions';
+  String get homeQuickActionsSection => 'QUICK ACTIONS';
 
   @override
   String get homeDemoSwitchManager => 'Manager view';

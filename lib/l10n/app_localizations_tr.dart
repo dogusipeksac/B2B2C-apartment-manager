@@ -327,7 +327,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String demoHelloName(Object name) {
-    return 'Merhaba $name';
+    return 'Merhaba $name 👋';
   }
 
   @override
@@ -366,13 +366,13 @@ class AppLocalizationsTr extends AppLocalizations {
   String get demoNavHome => 'Ana sayfa';
 
   @override
-  String get demoNavAnnouncements => 'Duyurular';
+  String get demoNavAnnouncements => 'Duyuru';
 
   @override
   String get demoNavFinance => 'Aidat';
 
   @override
-  String get demoNavIssues => 'Arızalar';
+  String get demoNavIssues => 'Arıza';
 
   @override
   String get demoNavProfile => 'Profil';
@@ -746,16 +746,16 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeManagerMonthYear => 'Mart 2026';
 
   @override
-  String get homeManagerCollectionLabel => 'Tahsilat';
+  String get homeManagerCollectionLabel => 'TAHSİLAT';
 
   @override
-  String get homeManagerIncomeLabel => 'Bu ay gelir';
+  String get homeManagerIncomeLabel => 'BU AY GELİR';
 
   @override
-  String get homeManagerOpenDebtLabel => 'Açık borç';
+  String get homeManagerOpenDebtLabel => 'AÇIK BORÇ';
 
   @override
-  String get homeManagerOpenIssuesLabel => 'Açık arıza';
+  String get homeManagerOpenIssuesLabel => 'AÇIK ARIZA';
 
   @override
   String homeManagerUnitsSuffix(Object count) {
@@ -794,7 +794,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get homeQuickAddExpense => 'Gider ekle';
 
   @override
-  String get homeQuickActionsSection => 'Hızlı aksiyonlar';
+  String get homeQuickActionsSection => 'HIZLI AKSİYONLAR';
 
   @override
   String get homeDemoSwitchManager => 'Yönetici görünümü';

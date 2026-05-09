@@ -129,7 +129,7 @@
   "demoWelcomeSlide3Body": "Stay connected with news, documents, and polls.",
   "demoSkip": "Skip",
   "demoBuildingHeaderLine": "GREEN VALLEY APT · 3A",
-  "demoHelloName": "Hello {name}",
+  "demoHelloName": "Hello {name} 👋",
   "@demoHelloName": {
     "placeholders": {
       "name": {}
@@ -304,10 +304,10 @@
   },
   "homeManagerBuildingLine": "MANAGER · GREEN VALLEY APT.",
   "homeManagerMonthYear": "March 2026",
-  "homeManagerCollectionLabel": "Collection",
-  "homeManagerIncomeLabel": "Income this month",
-  "homeManagerOpenDebtLabel": "Outstanding debt",
-  "homeManagerOpenIssuesLabel": "Open issues",
+  "homeManagerCollectionLabel": "COLLECTION",
+  "homeManagerIncomeLabel": "INCOME THIS MONTH",
+  "homeManagerOpenDebtLabel": "OUTSTANDING DEBT",
+  "homeManagerOpenIssuesLabel": "OPEN ISSUES",
   "homeManagerUnitsSuffix": "{count} units",
   "@homeManagerUnitsSuffix": {
     "placeholders": {
@@ -333,7 +333,7 @@
   "homeQuickSendAnnouncement": "Send announcement",
   "homeQuickSendInvite": "Send invite",
   "homeQuickAddExpense": "Add expense",
-  "homeQuickActionsSection": "Quick actions",
+  "homeQuickActionsSection": "QUICK ACTIONS",
   "homeDemoSwitchManager": "Manager view",
   "homeDemoSwitchResident": "Resident view",
   "homeEmptyNoRecords": "No records yet.",

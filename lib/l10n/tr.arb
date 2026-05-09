@@ -129,7 +129,7 @@
   "demoWelcomeSlide3Body": "Duyurular, belgeler ve oylamalarla komşularınla bağlantıda kal.",
   "demoSkip": "Atla",
   "demoBuildingHeaderLine": "YEŞİL VADİ APT. · 3A",
-  "demoHelloName": "Merhaba {name}",
+  "demoHelloName": "Merhaba {name} 👋",
   "@demoHelloName": {
     "placeholders": {
       "name": {}
@@ -152,9 +152,9 @@
   "demoIssueSampleTitle": "Çatı sızdırması — merdiven sonu",
   "demoIssueSampleMeta": "Açık · Yüksek öncelik",
   "demoNavHome": "Ana sayfa",
-  "demoNavAnnouncements": "Duyurular",
+  "demoNavAnnouncements": "Duyuru",
   "demoNavFinance": "Aidat",
-  "demoNavIssues": "Arızalar",
+  "demoNavIssues": "Arıza",
   "demoNavProfile": "Profil",
   "demoAdminSummaryTitle": "Bu ay özeti",
   "demoCollected": "Tahsil edilen",
@@ -304,10 +304,10 @@
   },
   "homeManagerBuildingLine": "YÖNETİCİ · YEŞİL VADİ APT.",
   "homeManagerMonthYear": "Mart 2026",
-  "homeManagerCollectionLabel": "Tahsilat",
-  "homeManagerIncomeLabel": "Bu ay gelir",
-  "homeManagerOpenDebtLabel": "Açık borç",
-  "homeManagerOpenIssuesLabel": "Açık arıza",
+  "homeManagerCollectionLabel": "TAHSİLAT",
+  "homeManagerIncomeLabel": "BU AY GELİR",
+  "homeManagerOpenDebtLabel": "AÇIK BORÇ",
+  "homeManagerOpenIssuesLabel": "AÇIK ARIZA",
   "homeManagerUnitsSuffix": "{count} daire",
   "@homeManagerUnitsSuffix": {
     "placeholders": {
@@ -333,7 +333,7 @@
   "homeQuickSendAnnouncement": "Duyuru gönder",
   "homeQuickSendInvite": "Davet gönder",
   "homeQuickAddExpense": "Gider ekle",
-  "homeQuickActionsSection": "Hızlı aksiyonlar",
+  "homeQuickActionsSection": "HIZLI AKSİYONLAR",
   "homeDemoSwitchManager": "Yönetici görünümü",
   "homeDemoSwitchResident": "Sakin görünümü",
   "homeEmptyNoRecords": "Henüz kayıt yok.",

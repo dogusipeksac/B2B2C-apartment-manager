@@ -64,7 +64,7 @@ class _ResidentHomeShellState extends ConsumerState<ResidentHomeShell> {
     final data = _data(l10n);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppTheme.scaffoldBg,
       body: IndexedStack(
         index: _tabIndex,
         children: [
@@ -87,7 +87,6 @@ class _ResidentHomeShellState extends ConsumerState<ResidentHomeShell> {
       bottomNavigationBar: NavigationBar(
         selectedIndex: _tabIndex,
         onDestinationSelected: (i) => setState(() => _tabIndex = i),
-        indicatorColor: AppTheme.primary.withValues(alpha: 0.2),
         labelBehavior: NavigationDestinationLabelBehavior.alwaysShow,
         destinations: [
           NavigationDestination(
@@ -145,13 +144,13 @@ class _ResidentDashboardTab extends StatelessWidget {
     return CustomScrollView(
       slivers: [
         SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (showDemoBanner) ...[
-                  Card(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              if (showDemoBanner)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                  child: Card(
                     color: theme.colorScheme.secondaryContainer,
                     child: Padding(
                       padding: const EdgeInsets.all(12),
@@ -180,32 +179,66 @@ class _ResidentDashboardTab extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
-                ],
-                Row(
+                ),
+              Container(
+                color: AppTheme.surface,
+                padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            l10n.demoHelloName(name),
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.w700,
+                            l10n.demoBuildingHeaderLine,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: AppTheme.onSurfaceVariant,
+                              letterSpacing: 0.48,
+                              fontWeight: FontWeight.w500,
+                              fontSize: 12,
+                              height: 1.33,
                             ),
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            l10n.demoBuildingHeaderLine,
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              color: theme.colorScheme.outline,
+                            l10n.demoHelloName(name),
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 18,
+                              height: 24 / 18,
+                              letterSpacing: -0.2,
                             ),
                           ),
                         ],
                       ),
                     ),
                     IconButton(
-                      icon: const Icon(Icons.notifications_outlined),
+                      style: IconButton.styleFrom(
+                        fixedSize: const Size(40, 40),
+                      ),
+                      icon: Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          const Icon(Icons.notifications_outlined),
+                          Positioned(
+                            right: 8,
+                            top: 8,
+                            child: Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: AppTheme.error,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: AppTheme.surface,
+                                  width: 2,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                       onPressed: () {
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text(l10n.homeFeatureSoon)),
@@ -214,192 +247,384 @@ class _ResidentDashboardTab extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
-                if (data.hasDebt)
-                  Card(
-                    color: AppTheme.error,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            l10n.demoOpenDebt,
-                            style: const TextStyle(
-                              color: Color(0xFFFFD9D9),
-                              fontSize: 12,
-                              letterSpacing: 0.6,
-                              fontWeight: FontWeight.w600,
+              ),
+              const Divider(height: 1, thickness: 1),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (data.hasDebt)
+                      Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          gradient: const LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppTheme.debtGradientStart,
+                              AppTheme.debtGradientEnd,
+                            ],
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: AppTheme.error.withValues(alpha: 0.25),
+                              blurRadius: 22,
+                              offset: const Offset(0, 8),
                             ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            formatTL(data.openDebtLira),
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            l10n.demoDueLabel(
-                              data.dueDateShort,
-                              data.delayStatus,
-                            ),
-                            style: const TextStyle(color: Colors.white70),
-                          ),
-                          const SizedBox(height: 16),
-                          SizedBox(
-                            width: double.infinity,
-                            child: FilledButton(
-                              style: FilledButton.styleFrom(
-                                backgroundColor: AppTheme.secondary,
-                                foregroundColor: Colors.black87,
-                              ),
-                              onPressed: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l10n.homeFeatureSoon)),
-                                );
-                              },
-                              child: Text(l10n.demoPayNow),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  )
-                else
-                  Card(
-                    color: AppTheme.primary.withValues(alpha: 0.08),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Row(
-                        children: [
-                          const Icon(
-                            Icons.check_circle_outline,
-                            color: AppTheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              l10n.homeNoOutstandingDebt,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                color: AppTheme.primary,
+                          ],
+                        ),
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.demoOpenDebt,
+                              style: const TextStyle(
+                                color: Color(0xFFFFD9D9),
+                                fontSize: 12,
+                                letterSpacing: 0.72,
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
+                            const SizedBox(height: 4),
+                            Text(
+                              formatTL(data.openDebtLira),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 36,
+                                height: 40 / 36,
+                                fontWeight: FontWeight.w800,
+                                letterSpacing: -0.6,
+                                fontFeatures: [FontFeature.tabularFigures()],
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Row(
+                              children: [
+                                const Icon(
+                                  Icons.schedule_rounded,
+                                  size: 14,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(width: 6),
+                                Expanded(
+                                  child: Text(
+                                    l10n.demoDueLabel(
+                                      data.dueDateShort,
+                                      data.delayStatus,
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: Colors.white,
+                                      height: 20 / 14,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 12),
+                            SizedBox(
+                              width: double.infinity,
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                  backgroundColor: AppTheme.secondary,
+                                  foregroundColor: const Color(0xFF1A1A1A),
+                                  minimumSize: const Size.fromHeight(48),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  textStyle: theme.textTheme.labelLarge
+                                      ?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(l10n.homeFeatureSoon),
+                                    ),
+                                  );
+                                },
+                                child: Text(l10n.demoPayNow),
+                              ),
+                            ),
+                          ],
+                        ),
+                      )
+                    else
+                      Card(
+                        color: AppTheme.primaryContainer,
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle_outline,
+                                color: AppTheme.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  l10n.homeNoOutstandingDebt,
+                                  style: theme.textTheme.titleSmall?.copyWith(
+                                    color: AppTheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      l10n.homeRecentAnnouncements,
-                      style: theme.textTheme.titleSmall,
-                    ),
-                    TextButton(
-                      onPressed: data.announcements.isEmpty
-                          ? null
-                          : onSeeAllAnnouncements,
-                      child: Text(l10n.homeSeeAll),
-                    ),
+                    const SizedBox(height: 12),
+                    if (data.announcements.isEmpty)
+                      Text(
+                        l10n.homeEmptyNoRecords,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.outline,
+                        ),
+                      )
+                    else
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.campaign_outlined,
+                                    size: 18,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.homeRecentAnnouncements,
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      minimumSize: Size.zero,
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      foregroundColor: theme.colorScheme.primary,
+                                    ),
+                                    onPressed: onSeeAllAnnouncements,
+                                    child: Text(
+                                      l10n.homeSeeAll,
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        letterSpacing: 0.48,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              for (var i = 0;
+                                  i < data.announcements.length;
+                                  i++) ...[
+                                    if (i > 0)
+                                      const Divider(height: 1)
+                                    else
+                                      const SizedBox.shrink(),
+                                    Padding(
+                                      padding: EdgeInsets.only(
+                                        top: i == 0 ? 0 : 8,
+                                        bottom: i == data.announcements.length - 1
+                                            ? 0
+                                            : 8,
+                                      ),
+                                      child: Row(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          _AnnouncementTagChip(tag: data
+                                              .announcements[i].tag),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  data.announcements[i].title,
+                                                  style: theme
+                                                      .textTheme.bodySmall
+                                                      ?.copyWith(
+                                                    fontWeight: FontWeight.w500,
+                                                    height: 20 / 14,
+                                                  ),
+                                                ),
+                                                const SizedBox(height: 2),
+                                                Text(
+                                                  data.announcements[i].author,
+                                                  style: theme
+                                                      .textTheme.labelMedium
+                                                      ?.copyWith(
+                                                    color: AppTheme
+                                                        .onSurfaceVariant,
+                                                    fontSize: 12,
+                                                    height: 16 / 12,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                            ],
+                          ),
+                        ),
+                      ),
+                    const SizedBox(height: 12),
+                    if (data.issues.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          l10n.homeEmptyNoRecords,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.outline,
+                          ),
+                        ),
+                      )
+                    else
+                      Card(
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.build_outlined,
+                                    size: 18,
+                                    color: AppTheme.warning,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.homeOpenIssuesSection,
+                                      style: theme.textTheme.titleSmall
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ),
+                                  TextButton(
+                                    style: TextButton.styleFrom(
+                                      minimumSize: Size.zero,
+                                      padding: EdgeInsets.zero,
+                                      tapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      foregroundColor: theme.colorScheme.primary,
+                                    ),
+                                    onPressed: onSeeAllIssues,
+                                    child: Text(
+                                      l10n.homeSeeAll,
+                                      style: theme.textTheme.labelMedium
+                                          ?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 12,
+                                        letterSpacing: 0.48,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 8),
+                              for (final item in data.issues)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: 36,
+                                      height: 36,
+                                      decoration: BoxDecoration(
+                                        color: AppTheme.infoContainer,
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                      child: Icon(
+                                        Icons.water_drop_outlined,
+                                        color: AppTheme.info,
+                                        size: 22,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            item.title,
+                                            style: theme.textTheme.bodySmall
+                                                ?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                              height: 20 / 14,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            '${item.statusLabel} · '
+                                            '${l10n.homeIssueUpdatedAgo(item.updatedTimePhrase)}',
+                                            style: theme.textTheme.labelMedium
+                                                ?.copyWith(
+                                              color: AppTheme.onSurfaceVariant,
+                                              fontSize: 12,
+                                              height: 16 / 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Chip(
+                                      label: Text(
+                                        item.statusLabel,
+                                        style: theme.textTheme.labelSmall
+                                            ?.copyWith(
+                                          color: AppTheme.warning,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 11,
+                                        ),
+                                      ),
+                                      backgroundColor: AppTheme.warningContainer,
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 8,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ),
+                        ),
+                      ),
                   ],
                 ),
-                const SizedBox(height: 8),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
-        if (data.announcements.isEmpty)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                l10n.homeEmptyNoRecords,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-              ),
-            ),
-          )
-        else
-          SliverList.separated(
-            itemBuilder: (context, index) {
-              final item = data.announcements[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.campaign_outlined),
-                    title: Text(item.title),
-                    subtitle: Text(item.author),
-                    trailing: _AnnouncementTagChip(tag: item.tag),
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(height: 8),
-            itemCount: data.announcements.length,
-          ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  l10n.homeOpenIssuesSection,
-                  style: theme.textTheme.titleSmall,
-                ),
-                TextButton(
-                  onPressed:
-                      data.issues.isEmpty ? null : onSeeAllIssues,
-                  child: Text(l10n.homeSeeAll),
-                ),
-              ],
-            ),
-          ),
-        ),
-        if (data.issues.isEmpty)
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Text(
-                l10n.homeEmptyNoRecords,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.outline,
-                ),
-              ),
-            ),
-          )
-        else
-          SliverList.separated(
-            itemBuilder: (context, index) {
-              final item = data.issues[index];
-              return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.build_outlined),
-                    title: Text(item.title),
-                    subtitle: Text(
-                      '${item.statusLabel} · '
-                      '${l10n.homeIssueUpdatedAgo(item.updatedTimePhrase)}',
-                    ),
-                  ),
-                ),
-              );
-            },
-            separatorBuilder: (BuildContext context, int index) =>
-                const SizedBox(height: 8),
-            itemCount: data.issues.length,
-          ),
         const SliverToBoxAdapter(child: SizedBox(height: 24)),
       ],
     );
@@ -418,30 +643,50 @@ class _AnnouncementTagChip extends StatelessWidget {
 
     switch (tag) {
       case HomeAnnouncementTag.pin:
-        return Chip(
-          label: Text(
-            l10n.homeAnnouncementTagPin,
-            style: theme.textTheme.labelSmall?.copyWith(
-              color: AppTheme.error,
-              fontWeight: FontWeight.w700,
-            ),
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+          decoration: BoxDecoration(
+            color: AppTheme.secondaryContainer,
+            borderRadius: BorderRadius.circular(999),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          side: BorderSide(color: AppTheme.error.withValues(alpha: 0.5)),
-          backgroundColor: AppTheme.error.withValues(alpha: 0.08),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.push_pin_outlined,
+                size: 10,
+                color: const Color(0xFF8A5A00),
+              ),
+              const SizedBox(width: 4),
+              Text(
+                l10n.homeAnnouncementTagPin,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: const Color(0xFF8A5A00),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 10,
+                  letterSpacing: 0.4,
+                  height: 1,
+                ),
+              ),
+            ],
+          ),
         );
       case HomeAnnouncementTag.info:
         return Chip(
           label: Text(
             l10n.homeAnnouncementTagInfo,
             style: theme.textTheme.labelSmall?.copyWith(
-              color: const Color(0xFF1565C0),
+              color: AppTheme.info,
               fontWeight: FontWeight.w700,
+              fontSize: 10,
+              height: 1,
             ),
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 6),
-          side: const BorderSide(color: Color(0xFFBBDEFB)),
-          backgroundColor: const Color(0xFFE3F2FD),
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          visualDensity: VisualDensity.compact,
+          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          side: BorderSide.none,
+          backgroundColor: AppTheme.infoContainer,
         );
     }
   }

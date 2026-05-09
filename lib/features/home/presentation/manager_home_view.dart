@@ -57,7 +57,7 @@ class ManagerHomeView extends StatelessWidget {
         tr ? '%${data.incomeDeltaPercent}' : '${data.incomeDeltaPercent}%';
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: AppTheme.scaffoldBg,
       drawer: Drawer(
         child: SafeArea(
           child: ListTile(
@@ -110,29 +110,29 @@ class ManagerHomeView extends StatelessWidget {
                 ),
                 if (data.notificationBadgeCount > 0)
                   Positioned(
-                    right: 6,
-                    top: 6,
+                    right: 4,
+                    top: 4,
                     child: IgnorePointer(
                       child: Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 5,
-                          vertical: 2,
-                        ),
-                        decoration: const BoxDecoration(
-                          color: AppTheme.error,
+                        width: 18,
+                        height: 18,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: AppTheme.secondary,
                           shape: BoxShape.circle,
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 18,
-                          minHeight: 18,
+                          border: Border.all(
+                            color: AppTheme.surface,
+                            width: 2,
+                          ),
                         ),
                         child: Text(
                           '${data.notificationBadgeCount}',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: Colors.white,
+                            color: const Color(0xFF1A1A1A),
                             fontWeight: FontWeight.w700,
-                            fontSize: 10,
+                            fontSize: 9,
+                            height: 1,
                           ),
                         ),
                       ),
@@ -150,8 +150,8 @@ class ManagerHomeView extends StatelessWidget {
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
             childAspectRatio: 1.35,
             children: [
               _SummaryCard(
@@ -197,7 +197,7 @@ class ManagerHomeView extends StatelessWidget {
                     Text(
                       l10n.homeManagerIncomeDelta(deltaLabel),
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppTheme.primary,
+                        color: AppTheme.success,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -238,6 +238,7 @@ class ManagerHomeView extends StatelessWidget {
                       '${data.openIssuesCount}',
                       style: theme.textTheme.headlineSmall?.copyWith(
                         fontWeight: FontWeight.w800,
+                        color: AppTheme.warning,
                       ),
                     ),
                     const SizedBox(height: 4),
@@ -262,9 +263,30 @@ class ManagerHomeView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    l10n.homeChartSixMonths,
-                    style: theme.textTheme.titleSmall,
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.homeChartSixMonths,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        padding: EdgeInsets.zero,
+                        constraints: const BoxConstraints(
+                          minWidth: 40,
+                          minHeight: 40,
+                        ),
+                        icon: Icon(
+                          Icons.more_horiz_rounded,
+                          color: AppTheme.onSurfaceTertiary,
+                          size: 18,
+                        ),
+                        onPressed: () => _soon(context, l10n),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 8),
                   Row(
@@ -282,7 +304,7 @@ class ManagerHomeView extends StatelessWidget {
                   ),
                   const SizedBox(height: 12),
                   SizedBox(
-                    height: 220,
+                    height: 160,
                     child: BarChart(
                       BarChartData(
                         alignment: BarChartAlignment.spaceAround,
@@ -358,34 +380,46 @@ class ManagerHomeView extends StatelessWidget {
           const SizedBox(height: 16),
           Text(
             l10n.homeQuickActionsSection,
-            style: theme.textTheme.titleSmall,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: AppTheme.onSurfaceVariant,
+              letterSpacing: 0.52,
+              fontWeight: FontWeight.w500,
+            ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
           GridView.count(
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 2,
-            mainAxisSpacing: 12,
-            crossAxisSpacing: 12,
+            mainAxisSpacing: 8,
+            crossAxisSpacing: 8,
             childAspectRatio: 2.4,
             children: [
               _QuickTile(
-                icon: Icons.add_circle_outline,
+                iconBoxBg: AppTheme.primaryContainer,
+                iconBoxFg: AppTheme.primary,
+                icon: Icons.add_rounded,
                 label: l10n.homeQuickNewPeriod,
                 onTap: () => _open(context, '/manager/periods'),
               ),
               _QuickTile(
+                iconBoxBg: AppTheme.secondaryContainer,
+                iconBoxFg: const Color(0xFFB57400),
                 icon: Icons.campaign_outlined,
                 label: l10n.homeQuickSendAnnouncement,
                 onTap: () => _soon(context, l10n),
               ),
               _QuickTile(
-                icon: Icons.mail_outline,
+                iconBoxBg: AppTheme.infoContainer,
+                iconBoxFg: AppTheme.info,
+                icon: Icons.mail_outline_rounded,
                 label: l10n.homeQuickSendInvite,
                 onTap: () => _open(context, '/manager/invite'),
               ),
               _QuickTile(
-                icon: Icons.receipt_long_outlined,
+                iconBoxBg: AppTheme.errorContainer,
+                iconBoxFg: AppTheme.error,
+                icon: Icons.payments_outlined,
                 label: l10n.homeQuickAddExpense,
                 onTap: () => _open(context, '/manager/expense/new'),
               ),
@@ -418,7 +452,11 @@ class _SummaryCard extends StatelessWidget {
             Text(
               title,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: theme.colorScheme.outline,
+                color: AppTheme.onSurfaceVariant,
+                letterSpacing: 0.48,
+                fontSize: 12,
+                height: 16 / 12,
+                fontWeight: FontWeight.w500,
               ),
             ),
             const SizedBox(height: 8),
@@ -462,11 +500,15 @@ class _LegendDot extends StatelessWidget {
 
 class _QuickTile extends StatelessWidget {
   const _QuickTile({
+    required this.iconBoxBg,
+    required this.iconBoxFg,
     required this.icon,
     required this.label,
     required this.onTap,
   });
 
+  final Color iconBoxBg;
+  final Color iconBoxFg;
   final IconData icon;
   final String label;
   final VoidCallback onTap;
@@ -476,20 +518,34 @@ class _QuickTile extends StatelessWidget {
     final theme = Theme.of(context);
     return Material(
       color: theme.colorScheme.surface,
-      borderRadius: BorderRadius.circular(12),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+        side: const BorderSide(color: AppTheme.outlineMuted),
+      ),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(8),
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              Icon(icon, color: AppTheme.primary),
-              const SizedBox(width: 10),
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: iconBoxBg,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Icon(icon, color: iconBoxFg, size: 22),
+              ),
+              const SizedBox(width: 8),
               Expanded(
                 child: Text(
                   label,
-                  style: theme.textTheme.labelLarge,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    height: 20 / 14,
+                  ),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

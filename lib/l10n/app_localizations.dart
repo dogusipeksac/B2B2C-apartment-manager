@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoHelloName.
   ///
   /// In tr, this message translates to:
-  /// **'Merhaba {name}'**
+  /// **'Merhaba {name} 👋'**
   String demoHelloName(Object name);
 
   /// No description provided for @demoOpenDebt.
@@ -767,7 +767,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoNavAnnouncements.
   ///
   /// In tr, this message translates to:
-  /// **'Duyurular'**
+  /// **'Duyuru'**
   String get demoNavAnnouncements;
 
   /// No description provided for @demoNavFinance.
@@ -779,7 +779,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoNavIssues.
   ///
   /// In tr, this message translates to:
-  /// **'Arızalar'**
+  /// **'Arıza'**
   String get demoNavIssues;
 
   /// No description provided for @demoNavProfile.
@@ -1493,25 +1493,25 @@ abstract class AppLocalizations {
   /// No description provided for @homeManagerCollectionLabel.
   ///
   /// In tr, this message translates to:
-  /// **'Tahsilat'**
+  /// **'TAHSİLAT'**
   String get homeManagerCollectionLabel;
 
   /// No description provided for @homeManagerIncomeLabel.
   ///
   /// In tr, this message translates to:
-  /// **'Bu ay gelir'**
+  /// **'BU AY GELİR'**
   String get homeManagerIncomeLabel;
 
   /// No description provided for @homeManagerOpenDebtLabel.
   ///
   /// In tr, this message translates to:
-  /// **'Açık borç'**
+  /// **'AÇIK BORÇ'**
   String get homeManagerOpenDebtLabel;
 
   /// No description provided for @homeManagerOpenIssuesLabel.
   ///
   /// In tr, this message translates to:
-  /// **'Açık arıza'**
+  /// **'AÇIK ARIZA'**
   String get homeManagerOpenIssuesLabel;
 
   /// No description provided for @homeManagerUnitsSuffix.
@@ -1577,7 +1577,7 @@ abstract class AppLocalizations {
   /// No description provided for @homeQuickActionsSection.
   ///
   /// In tr, this message translates to:
-  /// **'Hızlı aksiyonlar'**
+  /// **'HIZLI AKSİYONLAR'**
   String get homeQuickActionsSection;
 
   /// No description provided for @homeDemoSwitchManager.
