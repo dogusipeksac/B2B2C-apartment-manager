@@ -37,16 +37,17 @@ class _AnnouncementsListScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final async = ref.watch(announcementsListProvider);
+    final apart = context.apart;
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
         title: Text(l10n.announcementsTitle),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Material(
-              color: AppTheme.surface,
+              color: apart.surface,
               elevation: 1,
               shadowColor: Colors.black26,
               shape: const CircleBorder(),
@@ -91,12 +92,12 @@ class _AnnouncementsListScreenState
                               decoration: BoxDecoration(
                                 color: active
                                     ? AppTheme.primary
-                                    : AppTheme.surface,
+                                    : apart.surface,
                                 borderRadius: BorderRadius.circular(999),
                                 border: Border.all(
                                   color: active
                                       ? AppTheme.primary
-                                      : AppTheme.outlineMuted,
+                                      : apart.outlineMuted,
                                 ),
                               ),
                               alignment: Alignment.center,
@@ -105,7 +106,7 @@ class _AnnouncementsListScreenState
                                 style: TextStyle(
                                   color: active
                                       ? Colors.white
-                                      : AppTheme.onSurfaceVariant,
+                                      : apart.onSurfaceVariant,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -192,22 +193,16 @@ class _AnnouncementCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final outer = Theme.of(context);
-    // Cards use a fixed light surface; in dark mode inherited TextTheme colors
-    // stay light-on-dark — text becomes invisible on white unless we scope a
-    // light text theme here.
-    final theme = outer.brightness == Brightness.dark
-        ? outer.copyWith(textTheme: AppTheme.light().textTheme)
-        : outer;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
     final timeLine = row.read
         ? '${row.relativeTime} · ${l10n.announcementsReadLabel}'
         : row.relativeTime;
 
     // Avoid `Ink` here: inside sliver lists it can size to zero and show an
     // empty white box while decoration still paints.
-    return Theme(
-      data: theme,
-      child: Material(
+    return Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(12),
         clipBehavior: Clip.antiAlias,
@@ -216,12 +211,12 @@ class _AnnouncementCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: AppTheme.surface,
+              color: apart.surface,
               borderRadius: BorderRadius.circular(12),
-              boxShadow: AppTheme.cardShadow,
+              boxShadow: apart.cardShadow,
               // Uniform border color required when using borderRadius (Flutter
               // assertion). Pinned accent is drawn as a separate strip below.
-              border: Border.all(color: AppTheme.outlineMuted),
+              border: Border.all(color: apart.outlineMuted),
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(12),
@@ -260,7 +255,7 @@ class _AnnouncementCard extends StatelessWidget {
                             Text(
                               timeLine,
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: AppTheme.onSurfaceTertiary,
+                                color: apart.onSurfaceTertiary,
                               ),
                             ),
                           ],
@@ -273,8 +268,8 @@ class _AnnouncementCard extends StatelessWidget {
                             fontSize: isPinned ? 16 : 15,
                             height: 1.25,
                             color: row.read
-                                ? AppTheme.onSurfaceVariant
-                                : const Color(0xFF1A1A1A),
+                                ? apart.onSurfaceVariant
+                                : scheme.onSurface,
                           ),
                         ),
                         if (row.snippet.isNotEmpty) ...[
@@ -284,7 +279,7 @@ class _AnnouncementCard extends StatelessWidget {
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: theme.textTheme.bodySmall?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                               height: 1.35,
                             ),
                           ),
@@ -302,35 +297,35 @@ class _AnnouncementCard extends StatelessWidget {
                               child: Text(
                                 '${row.authorName} · ${row.roleLabel}',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppTheme.onSurfaceVariant,
+                                  color: apart.onSurfaceVariant,
                                   fontWeight: FontWeight.w500,
                                 ),
                               ),
                             ),
-                            const Icon(
+                            Icon(
                               Icons.visibility_outlined,
                               size: 15,
-                              color: AppTheme.onSurfaceTertiary,
+                              color: apart.onSurfaceTertiary,
                             ),
                             const SizedBox(width: 4),
                             Text(
                               '${row.viewCount}',
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: AppTheme.onSurfaceTertiary,
+                                color: apart.onSurfaceTertiary,
                               ),
                             ),
                             if (row.commentCount > 0) ...[
                               const SizedBox(width: 12),
-                              const Icon(
+                              Icon(
                                 Icons.chat_bubble_outline_rounded,
                                 size: 14,
-                                color: AppTheme.onSurfaceTertiary,
+                                color: apart.onSurfaceTertiary,
                               ),
                               const SizedBox(width: 4),
                               Text(
                                 '${row.commentCount}',
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppTheme.onSurfaceTertiary,
+                                  color: apart.onSurfaceTertiary,
                                 ),
                               ),
                             ],
@@ -344,7 +339,6 @@ class _AnnouncementCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }
@@ -360,25 +354,26 @@ class _CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final (fg, bg, label) = switch (category) {
       AnnouncementUiCategory.pinned => (
         const Color(0xFFB57400),
-        AppTheme.secondaryContainer,
+        scheme.secondaryContainer,
         '⭐ ${l10n.announcementCatPinned}',
       ),
       AnnouncementUiCategory.info => (
-        AppTheme.info,
-        AppTheme.infoContainer,
+        scheme.tertiary,
+        scheme.tertiaryContainer,
         l10n.homeAnnouncementTagInfo,
       ),
       AnnouncementUiCategory.maintenance => (
-        AppTheme.warning,
-        AppTheme.warningContainer,
+        scheme.secondary,
+        scheme.secondaryContainer,
         l10n.announcementCatMaintenance,
       ),
       AnnouncementUiCategory.urgent => (
-        AppTheme.error,
-        AppTheme.errorContainer,
+        scheme.error,
+        scheme.errorContainer,
         l10n.announcementCatUrgent,
       ),
     };

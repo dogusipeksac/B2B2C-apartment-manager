@@ -12,6 +12,8 @@ class PaymentSuccessScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
 
     return Scaffold(
       body: SafeArea(
@@ -33,16 +35,17 @@ class PaymentSuccessScreen extends StatelessWidget {
                           Container(
                             width: 144,
                             height: 144,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFF4FAF5),
+                            decoration: BoxDecoration(
+                              color: scheme.primaryContainer
+                                  .withValues(alpha: 0.45),
                               shape: BoxShape.circle,
                             ),
                           ),
                           Container(
                             width: 116,
                             height: 116,
-                            decoration: const BoxDecoration(
-                              color: Color(0xFFE8F5E9),
+                            decoration: BoxDecoration(
+                              color: scheme.primaryContainer,
                               shape: BoxShape.circle,
                             ),
                           ),
@@ -84,7 +87,7 @@ class PaymentSuccessScreen extends StatelessWidget {
                       l10n.paymentSuccessBody,
                       textAlign: TextAlign.center,
                       style: theme.textTheme.bodyMedium?.copyWith(
-                        color: AppTheme.onSurfaceVariant,
+                        color: apart.onSurfaceVariant,
                       ),
                     ),
                     const SizedBox(height: 24),
@@ -200,7 +203,7 @@ class _ReceiptRow extends StatelessWidget {
         Text(
           label,
           style: theme.textTheme.labelSmall?.copyWith(
-            color: AppTheme.onSurfaceVariant,
+            color: context.apart.onSurfaceVariant,
             letterSpacing: 0.5,
           ),
         ),

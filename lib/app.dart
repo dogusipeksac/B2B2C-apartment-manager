@@ -14,7 +14,7 @@ class App extends ConsumerWidget {
     return MaterialApp.router(
       onGenerateTitle: (context) => AppLocalizations.of(context)!.appTitle,
       theme: AppTheme.light(),
-      darkTheme: AppTheme.dark(),
+      themeMode: ThemeMode.light,
       locale: const Locale('tr', 'TR'),
       supportedLocales: const [Locale('tr'), Locale('en')],
       localizationsDelegates: const [

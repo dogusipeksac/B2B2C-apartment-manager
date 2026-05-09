@@ -43,7 +43,13 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
     }
   }
 
-  ({Color bg, Color fg, Color border}) _chipPalette(int i, bool selected) {
+  ({Color bg, Color fg, Color border}) _chipPalette(
+    BuildContext context,
+    int i,
+    bool selected,
+  ) {
+    final apart = context.apart;
+    final scheme = Theme.of(context).colorScheme;
     if (selected) {
       return switch (i) {
         0 => (
@@ -70,24 +76,24 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
     }
     return switch (i) {
       0 => (
-        bg: AppTheme.surface,
-        fg: AppTheme.onSurfaceVariant,
-        border: AppTheme.outlineMuted,
+        bg: apart.surface,
+        fg: apart.onSurfaceVariant,
+        border: apart.outlineMuted,
       ),
       1 => (
-        bg: AppTheme.infoContainer,
-        fg: AppTheme.info,
-        border: AppTheme.info.withValues(alpha: 0.35),
+        bg: scheme.tertiaryContainer,
+        fg: scheme.tertiary,
+        border: scheme.tertiary.withValues(alpha: 0.35),
       ),
       2 => (
-        bg: AppTheme.warningContainer,
-        fg: AppTheme.warning,
-        border: AppTheme.warning.withValues(alpha: 0.35),
+        bg: scheme.secondaryContainer,
+        fg: scheme.secondary,
+        border: scheme.secondary.withValues(alpha: 0.35),
       ),
       _ => (
-        bg: AppTheme.primaryContainer,
-        fg: AppTheme.primary,
-        border: AppTheme.primary.withValues(alpha: 0.35),
+        bg: scheme.primaryContainer,
+        fg: scheme.primary,
+        border: scheme.primary.withValues(alpha: 0.35),
       ),
     };
   }
@@ -97,15 +103,18 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final async = ref.watch(issuesListProvider);
 
+    final apart = context.apart;
+    final scheme = Theme.of(context).colorScheme;
+
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
         title: Text(l10n.issuesTitle),
         actions: [
           Padding(
             padding: const EdgeInsets.only(right: 8),
             child: Material(
-              color: AppTheme.surface,
+              color: apart.surface,
               elevation: 1,
               shadowColor: Colors.black26,
               shape: const CircleBorder(),
@@ -121,7 +130,7 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: AppTheme.secondary,
-        foregroundColor: const Color(0xFF1A1A1A),
+        foregroundColor: scheme.onSecondary,
         elevation: 2,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
@@ -145,7 +154,7 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
                     child: Row(
                       children: List.generate(labels.length, (i) {
                         final active = _filterIdx == i;
-                        final p = _chipPalette(i, active);
+                        final p = _chipPalette(context, i, active);
                         return Padding(
                           padding: EdgeInsets.only(
                             right: i < labels.length - 1 ? 8 : 0,
@@ -203,6 +212,7 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
   }
 }
 
+
 class _IssueCard extends StatelessWidget {
   const _IssueCard({
     required this.row,
@@ -222,43 +232,43 @@ class _IssueCard extends StatelessWidget {
     };
   }
 
-  ({Color bg, Color fg}) _statusBadgeColors() {
+  ({Color bg, Color fg}) _statusBadgeColors(ColorScheme scheme) {
     return switch (row.status) {
       IssueUiStatus.open => (
-        bg: AppTheme.infoContainer,
-        fg: AppTheme.info,
+        bg: scheme.tertiaryContainer,
+        fg: scheme.tertiary,
       ),
       IssueUiStatus.inProgress => (
-        bg: AppTheme.warningContainer,
-        fg: AppTheme.warning,
+        bg: scheme.secondaryContainer,
+        fg: scheme.secondary,
       ),
       IssueUiStatus.resolved => (
-        bg: AppTheme.primaryContainer,
-        fg: AppTheme.success,
+        bg: scheme.primaryContainer,
+        fg: scheme.primary,
       ),
     };
   }
 
-  (Color bg, Color fg, IconData icon) _categoryVisual() {
+  (Color bg, Color fg, IconData icon) _categoryVisual(ColorScheme scheme) {
     return switch (row.category) {
       IssueUiCategory.plumbing => (
-        AppTheme.infoContainer,
-        AppTheme.info,
+        scheme.tertiaryContainer,
+        scheme.tertiary,
         Icons.water_drop_outlined,
       ),
       IssueUiCategory.electric => (
-        AppTheme.warningContainer,
-        AppTheme.warning,
+        scheme.secondaryContainer,
+        scheme.secondary,
         Icons.electric_bolt_outlined,
       ),
       IssueUiCategory.mechanical => (
-        AppTheme.secondaryContainer,
-        const Color(0xFFE65100),
+        scheme.secondaryContainer,
+        scheme.secondary,
         Icons.edit_outlined,
       ),
       IssueUiCategory.other => (
-        AppTheme.primaryContainer,
-        AppTheme.primary,
+        scheme.primaryContainer,
+        scheme.primary,
         Icons.build_outlined,
       ),
     };
@@ -275,23 +285,19 @@ class _IssueCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final outer = Theme.of(context);
-    final theme = outer.brightness == Brightness.dark
-        ? outer.copyWith(textTheme: AppTheme.light().textTheme)
-        : outer;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
     final resolved = row.status == IssueUiStatus.resolved;
     final metaMuted = resolved
-        ? AppTheme.onSurfaceVariant
-        : AppTheme.onSurfaceTertiary;
-    final titleColor = resolved
-        ? AppTheme.onSurfaceVariant
-        : const Color(0xFF1A1A1A);
-    final sb = _statusBadgeColors();
-    final (catBg, catFg, catIcon) = _categoryVisual();
+        ? apart.onSurfaceVariant
+        : apart.onSurfaceTertiary;
+    final titleColor =
+        resolved ? apart.onSurfaceVariant : scheme.onSurface;
+    final sb = _statusBadgeColors(scheme);
+    final (catBg, catFg, catIcon) = _categoryVisual(scheme);
 
-    return Theme(
-      data: theme,
-      child: Material(
+    return Material(
         color: Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         clipBehavior: Clip.antiAlias,
@@ -300,10 +306,10 @@ class _IssueCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           child: DecoratedBox(
             decoration: BoxDecoration(
-              color: AppTheme.surface,
+              color: apart.surface,
               borderRadius: BorderRadius.circular(16),
-              boxShadow: AppTheme.cardShadow,
-              border: Border.all(color: AppTheme.outlineMuted),
+              boxShadow: apart.cardShadow,
+              border: Border.all(color: apart.outlineMuted),
             ),
             child: Padding(
               padding: const EdgeInsets.fromLTRB(14, 12, 14, 12),
@@ -377,7 +383,7 @@ class _IssueCard extends StatelessWidget {
                             Text(
                               row.subtitle,
                               style: theme.textTheme.bodySmall?.copyWith(
-                                color: AppTheme.onSurfaceVariant,
+                                color: apart.onSurfaceVariant,
                                 height: 1.3,
                               ),
                             ),
@@ -428,22 +434,22 @@ class _IssueCard extends StatelessWidget {
                                     row.footerAssigneeName,
                                   ),
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                               fontWeight: FontWeight.w500,
                             ),
                           ),
                         ),
                         if (row.commentCount > 0) ...[
-                          const Icon(
+                          Icon(
                             Icons.chat_bubble_outline_rounded,
                             size: 15,
-                            color: AppTheme.onSurfaceTertiary,
+                            color: apart.onSurfaceTertiary,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${row.commentCount}',
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: AppTheme.onSurfaceTertiary,
+                              color: apart.onSurfaceTertiary,
                             ),
                           ),
                         ],
@@ -455,7 +461,6 @@ class _IssueCard extends StatelessWidget {
             ),
           ),
         ),
-      ),
     );
   }
 }

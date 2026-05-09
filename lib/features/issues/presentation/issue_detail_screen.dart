@@ -38,6 +38,8 @@ class IssueDetailScreen extends ConsumerWidget {
         }
 
         final theme = Theme.of(context);
+        final scheme = theme.colorScheme;
+        final apart = context.apart;
         return Scaffold(
           appBar: AppBar(
             leading: IconButton(
@@ -75,13 +77,13 @@ class IssueDetailScreen extends ConsumerWidget {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: AppTheme.errorContainer,
+                        color: scheme.errorContainer,
                         borderRadius: BorderRadius.circular(999),
                       ),
                       child: Text(
                         '▲ ${l10n.issuePriorityHigh}',
-                        style: const TextStyle(
-                          color: AppTheme.error,
+                        style: TextStyle(
+                          color: scheme.error,
                           fontSize: 10,
                           fontWeight: FontWeight.w600,
                         ),
@@ -101,7 +103,7 @@ class IssueDetailScreen extends ConsumerWidget {
               Text(
                 row.subtitle,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppTheme.onSurfaceVariant,
+                  color: apart.onSurfaceVariant,
                 ),
               ),
               if (row.photoCount > 0) ...[
@@ -145,7 +147,7 @@ class IssueDetailScreen extends ConsumerWidget {
               Text(
                 row.description,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: const Color(0xFF2A2A2A),
+                  color: scheme.onSurface,
                   height: 1.5,
                 ),
               ),
@@ -153,7 +155,7 @@ class IssueDetailScreen extends ConsumerWidget {
               Text(
                 l10n.issueTimelineSection,
                 style: theme.textTheme.labelSmall?.copyWith(
-                  color: AppTheme.onSurfaceVariant,
+                  color: apart.onSurfaceVariant,
                   letterSpacing: 0.6,
                   fontWeight: FontWeight.w600,
                 ),
@@ -235,6 +237,8 @@ class _TimelineCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
+    final scheme = theme.colorScheme;
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(14),
@@ -243,7 +247,7 @@ class _TimelineCard extends StatelessWidget {
           children: [
             _TimelineRow(
               dotColor: AppTheme.success,
-              ring: const Color(0xFFF4FAF5),
+              ring: scheme.primaryContainer,
               title: l10n.issueTimelineReported,
               time: '11:24',
               caption: l10n.issueDemoReportedBy,
@@ -251,7 +255,7 @@ class _TimelineCard extends StatelessWidget {
             const Divider(height: 20),
             _TimelineRow(
               dotColor: AppTheme.info,
-              ring: const Color(0xFFE3EDF9),
+              ring: scheme.tertiaryContainer,
               title: l10n.issueTimelineSeen,
               time: '11:42',
               caption: l10n.issueTimelineSeenBody(row.assigneeLabel),
@@ -280,7 +284,7 @@ class _TimelineCard extends StatelessWidget {
                         l10n.issueTimelineResolved,
                         style: TextStyle(
                           fontSize: 13,
-                          color: AppTheme.onSurfaceTertiary,
+                          color: apart.onSurfaceTertiary,
                         ),
                       ),
                       Text(
@@ -288,7 +292,7 @@ class _TimelineCard extends StatelessWidget {
                             ? '10:00'
                             : l10n.issueTimelinePending,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceTertiary,
+                          color: apart.onSurfaceTertiary,
                         ),
                       ),
                     ],
@@ -325,6 +329,7 @@ class _TimelineRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -355,7 +360,7 @@ class _TimelineRow extends StatelessWidget {
                   Text(
                     time,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceTertiary,
+                      color: apart.onSurfaceTertiary,
                     ),
                   ),
                 ],
@@ -364,7 +369,7 @@ class _TimelineRow extends StatelessWidget {
                 Text(
                   caption!,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppTheme.onSurfaceVariant,
+                    color: apart.onSurfaceVariant,
                   ),
                 ),
               if (note != null) ...[
@@ -373,7 +378,7 @@ class _TimelineRow extends StatelessWidget {
                   width: double.infinity,
                   padding: const EdgeInsets.all(10),
                   decoration: BoxDecoration(
-                    color: AppTheme.scaffoldBg,
+                    color: apart.scaffoldBg,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Column(
@@ -383,7 +388,7 @@ class _TimelineRow extends StatelessWidget {
                         '"$note"',
                         style: theme.textTheme.bodySmall?.copyWith(
                           fontStyle: FontStyle.italic,
-                          color: const Color(0xFF3A3A3A),
+                          color: theme.colorScheme.onSurfaceVariant,
                         ),
                       ),
                       if (noteFooter != null)
@@ -392,7 +397,7 @@ class _TimelineRow extends StatelessWidget {
                           child: Text(
                             noteFooter!,
                             style: theme.textTheme.labelSmall?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                             ),
                           ),
                         ),
@@ -411,14 +416,16 @@ class _TimelineRow extends StatelessWidget {
 class _DotOutline extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final apart = context.apart;
     return Container(
       width: 16,
       height: 16,
       margin: const EdgeInsets.only(top: 2),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: scheme.surface,
         shape: BoxShape.circle,
-        border: Border.all(color: AppTheme.outlineMuted, width: 2),
+        border: Border.all(color: apart.outlineMuted, width: 2),
       ),
     );
   }

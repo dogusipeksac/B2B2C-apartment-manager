@@ -38,9 +38,11 @@ class AnnouncementDetailScreen extends ConsumerWidget {
         }
 
         final theme = Theme.of(context);
+        final scheme = theme.colorScheme;
+        final apart = context.apart;
 
         return Scaffold(
-          backgroundColor: AppTheme.scaffoldBg,
+          backgroundColor: apart.scaffoldBg,
           appBar: AppBar(
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
@@ -84,10 +86,10 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                       const SizedBox(height: 14),
                       Container(
                         padding: const EdgeInsets.symmetric(vertical: 10),
-                        decoration: const BoxDecoration(
+                        decoration: BoxDecoration(
                           border: Border(
-                            top: BorderSide(color: AppTheme.outlineMuted),
-                            bottom: BorderSide(color: AppTheme.outlineMuted),
+                            top: BorderSide(color: apart.outlineMuted),
+                            bottom: BorderSide(color: apart.outlineMuted),
                           ),
                         ),
                         child: Row(
@@ -117,7 +119,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                                           vertical: 2,
                                         ),
                                         decoration: BoxDecoration(
-                                          color: AppTheme.primaryContainer,
+                                          color: scheme.primaryContainer,
                                           borderRadius:
                                               BorderRadius.circular(999),
                                         ),
@@ -125,7 +127,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                                           row.roleLabel,
                                           style: theme.textTheme.labelSmall
                                               ?.copyWith(
-                                            color: AppTheme.primaryDark,
+                                            color: scheme.onPrimaryContainer,
                                             fontWeight: FontWeight.w600,
                                             fontSize: 9,
                                           ),
@@ -140,7 +142,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                                           '${row.viewCount}',
                                         ),
                                     style: theme.textTheme.labelSmall?.copyWith(
-                                      color: AppTheme.onSurfaceVariant,
+                                      color: apart.onSurfaceVariant,
                                     ),
                                   ),
                                 ],
@@ -171,7 +173,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
               SafeArea(
                 top: false,
                 child: Material(
-                  color: AppTheme.surface,
+                  color: apart.surface,
                   elevation: 4,
                   shadowColor: Colors.black26,
                   child: Padding(
@@ -213,7 +215,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                                 '${row.commentCount}',
                               ),
                               filled: true,
-                              fillColor: AppTheme.scaffoldBg,
+                              fillColor: apart.scaffoldBg,
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(20),
                                 borderSide: BorderSide.none,
@@ -223,7 +225,7 @@ class AnnouncementDetailScreen extends ConsumerWidget {
                                 vertical: 10,
                               ),
                               hintStyle: theme.textTheme.bodySmall?.copyWith(
-                                color: AppTheme.onSurfaceTertiary,
+                                color: apart.onSurfaceTertiary,
                               ),
                             ),
                           ),
@@ -243,15 +245,16 @@ class AnnouncementDetailScreen extends ConsumerWidget {
   /// `**bold**` segments + paragraph breaks (`\n\n`).
   List<Widget> _bodyParagraphs(BuildContext context, String body) {
     final theme = Theme.of(context);
+    final onSurf = theme.colorScheme.onSurface;
     final base = theme.textTheme.bodyMedium?.copyWith(
-          color: const Color(0xFF2A2A2A),
+          color: onSurf,
           height: 1.55,
           fontSize: 15,
         ) ??
-        const TextStyle(
+        TextStyle(
           fontSize: 15,
           height: 1.55,
-          color: Color(0xFF2A2A2A),
+          color: onSurf,
         );
     final bold = base.copyWith(fontWeight: FontWeight.w700);
     final paras = body.split('\n\n');
@@ -302,6 +305,7 @@ class _DetailTagBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
     final text = _tagText(l10n);
     if (text.isEmpty) {
       return const SizedBox.shrink();
@@ -309,13 +313,13 @@ class _DetailTagBanner extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
       decoration: BoxDecoration(
-        color: AppTheme.secondaryContainer,
+        color: scheme.secondaryContainer,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Text(
         text,
         style: Theme.of(context).textTheme.labelMedium?.copyWith(
-              color: const Color(0xFFB57400),
+              color: scheme.secondary,
               fontWeight: FontWeight.w700,
               letterSpacing: 0.2,
             ),
@@ -382,8 +386,9 @@ class _AttachmentTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
     return Material(
-      color: AppTheme.surface,
+      color: apart.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onDownload,
@@ -392,7 +397,7 @@ class _AttachmentTile extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.outlineMuted),
+            border: Border.all(color: apart.outlineMuted),
           ),
           child: Row(
             children: [
@@ -400,14 +405,14 @@ class _AttachmentTile extends StatelessWidget {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: AppTheme.errorContainer,
+                  color: theme.colorScheme.errorContainer,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 alignment: Alignment.center,
                 child: Text(
                   'PDF',
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppTheme.error,
+                    color: theme.colorScheme.error,
                     fontWeight: FontWeight.w800,
                     fontSize: 10,
                   ),
@@ -428,7 +433,7 @@ class _AttachmentTile extends StatelessWidget {
                       Text(
                         sizeLabel,
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceVariant,
+                          color: apart.onSurfaceVariant,
                         ),
                       ),
                   ],
@@ -436,7 +441,7 @@ class _AttachmentTile extends StatelessWidget {
               ),
               Icon(
                 Icons.download_rounded,
-                color: AppTheme.onSurfaceTertiary,
+                color: apart.onSurfaceTertiary,
                 size: 20,
               ),
             ],

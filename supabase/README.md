@@ -1,0 +1,89 @@
+# Supabase — şema ve Edge Functions
+
+Bu klasör veritabanı tanımları ve `redeem_code` Edge Function kaynağını içerir.
+
+## Dosyalar
+
+| Dosya | Açıklama |
+|--------|-----------|
+| `schema.sql` | İlk kurulum (enum’lar, çekirdek tablolar, tetikleyiciler) |
+| `schema_v2.sql` | Davet kodu modeli: `invite_codes`, `devices`, `profiles` gevşetme |
+| `rls.sql` | Row Level Security politikaları (`schema.sql` sonrası uygulanır) |
+| `functions/redeem_code/index.ts` | Kod kullanımı (admin / unit) — **service role** |
+
+## Veritabanını güncelleme sırası
+
+Yeni bir projede:
+
+1. SQL Editor’da `schema.sql` çalıştırın.
+2. Ardından `schema_v2.sql` çalıştırın.
+3. `rls.sql` çalıştırın (varsa mevcut politikalarla çakışma olursa önce yedek alın).
+
+Mevcut projede sadece davet kodu eklemek için: **`schema_v2.sql`** yeterlidir (önceki şema ile uyumludur).
+
+> **Not:** `schema_v2.sql`, `profiles.id` üzerindeki `auth.users` FK’sını kaldırır ve `full_name` alanını opsiyonel yapar. Mevcut `auth.users` ile eşleşen satırlar tabloda kalır; test kullanıcısına dokunmanız gerekmez.
+
+## Edge Function: `redeem_code`
+
+### Ne yapar?
+
+- **POST** ile `{ "code", "device_id", "full_name?" }` alır.
+- Aktif ve süresi dolmamış `invite_codes` satırını bulur; atomik olarak `used` yapar.
+- **admin:** `devices` satırı (`role = building_admin`, bina henüz yok).
+- **unit:** `profiles` + `memberships` + `devices` (`role = resident`).
+- Yanıt: `{ success, role, building_id?, unit_id?, profile_id?, session_token }`.
+
+Service role kullanıldığı için RLS bypass edilir; istemci **anon key** ile function URL’sine istek atabilir (Supabase Gateway JWT doğrulaması function için yapılandırmanıza bağlıdır — genelde `Authorization: Bearer <anon>` + `apikey`).
+
+### Yerelde çalıştırma (Supabase CLI)
+
+[Gerekli: Supabase CLI](https://supabase.com/docs/guides/cli)
+
+```bash
+# Proje kökünden
+supabase login
+supabase link --project-ref <PROJECT_REF>
+supabase functions serve redeem_code --env-file supabase/.env.local
+```
+
+Örnek `.env.local` (yerel deneme; gerçek anahtarları repoya koymayın):
+
+```env
+SUPABASE_URL=https://xxxx.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=eyJ...
+```
+
+### Deploy (production)
+
+```bash
+supabase functions deploy redeem_code --project-ref <PROJECT_REF>
+```
+
+Supabase Dashboard → **Edge Functions** altında `redeem_code` görünür. Aşağıdaki ortam değişkenleri deploy sırasında projeye bağlıdır (hosted Edge’de genelde otomatik):
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+
+Dashboard’dan da ekleyebilirsiniz: **Project Settings → Edge Functions → Secrets**.
+
+### HTTP örneği
+
+```bash
+curl -s -X POST \
+  'https://<PROJECT_REF>.supabase.co/functions/v1/redeem_code' \
+  -H "Authorization: Bearer <SUPABASE_ANON_KEY>" \
+  -H "apikey: <SUPABASE_ANON_KEY>" \
+  -H "Content-Type: application/json" \
+  -d '{"code":"A3F9K","device_id":"my-stable-device-uuid","full_name":"Ali Veli"}'
+```
+
+Admin kodu için `full_name` göndermeyebilirsiniz.
+
+## Kodları elle üretme (beta)
+
+`invite_codes` tablosuna satır ekleyin (`code` büyük harf önerilir):
+
+- **Admin:** `code_type = 'admin'`, `building_id` / `unit_id` NULL.
+- **Unit:** `code_type = 'unit'`, ilgili `building_id` ve istenirse `unit_id`.
+
+`expires_at` ve `notes` alanlarını ihtiyaca göre doldurun.

@@ -33,6 +33,7 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final apart = context.apart;
 
     return Scaffold(
       appBar: AppBar(
@@ -64,7 +65,7 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
                   Text(
                     l10n.issueCategorySection,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
+                      color: apart.onSurfaceVariant,
                       letterSpacing: 0.6,
                       fontWeight: FontWeight.w600,
                     ),
@@ -79,7 +80,7 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
                   Text(
                     l10n.issueLocationSection,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
+                      color: apart.onSurfaceVariant,
                       letterSpacing: 0.6,
                       fontWeight: FontWeight.w600,
                     ),
@@ -106,7 +107,7 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
                   Text(
                     l10n.issuePrioritySection,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
+                      color: apart.onSurfaceVariant,
                       letterSpacing: 0.6,
                       fontWeight: FontWeight.w600,
                     ),
@@ -243,7 +244,7 @@ class _LabeledField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                color: AppTheme.onSurfaceVariant,
+                color: context.apart.onSurfaceVariant,
                 letterSpacing: 0.6,
                 fontWeight: FontWeight.w600,
               ),
@@ -324,9 +325,11 @@ class _CategoryCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = selected ? AppTheme.primary : AppTheme.onSurfaceVariant;
+    final scheme = Theme.of(context).colorScheme;
+    final apart = context.apart;
+    final fg = selected ? scheme.primary : apart.onSurfaceVariant;
     return Material(
-      color: selected ? AppTheme.primaryContainer : AppTheme.surface,
+      color: selected ? scheme.primaryContainer : apart.surface,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
@@ -336,7 +339,7 @@ class _CategoryCell extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
-              color: selected ? AppTheme.primary : AppTheme.outlineMuted,
+              color: selected ? scheme.primary : apart.outlineMuted,
               width: selected ? 2 : 1,
             ),
           ),
@@ -373,8 +376,10 @@ class _LocationChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final apart = context.apart;
     return Material(
-      color: selected ? AppTheme.primary : AppTheme.surface,
+      color: selected ? scheme.primary : apart.surface,
       borderRadius: BorderRadius.circular(999),
       child: InkWell(
         onTap: onTap,
@@ -386,13 +391,13 @@ class _LocationChip extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(999),
             border: Border.all(
-              color: selected ? AppTheme.primary : AppTheme.outlineMuted,
+              color: selected ? scheme.primary : apart.outlineMuted,
             ),
           ),
           child: Text(
             label,
             style: TextStyle(
-              color: selected ? Colors.white : AppTheme.onSurfaceVariant,
+              color: selected ? scheme.onPrimary : apart.onSurfaceVariant,
               fontSize: 12,
               fontWeight: FontWeight.w600,
             ),
@@ -418,10 +423,12 @@ class _PriorityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final apart = context.apart;
     final amberPick = selected && accent;
     final greenPick = selected && !accent;
     return Material(
-      color: amberPick ? AppTheme.secondaryContainer : AppTheme.surface,
+      color: amberPick ? scheme.secondaryContainer : apart.surface,
       borderRadius: BorderRadius.circular(8),
       child: InkWell(
         onTap: onTap,
@@ -432,10 +439,10 @@ class _PriorityCard extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             border: Border.all(
               color: amberPick
-                  ? AppTheme.secondary
+                  ? scheme.secondary
                   : greenPick
-                      ? AppTheme.primary
-                      : AppTheme.outlineMuted,
+                      ? scheme.primary
+                      : apart.outlineMuted,
               width: selected ? 2 : 1,
             ),
           ),
@@ -446,10 +453,10 @@ class _PriorityCard extends StatelessWidget {
               fontSize: 13,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
               color: amberPick
-                  ? const Color(0xFF8A5A00)
+                  ? scheme.onSecondaryContainer
                   : greenPick
-                      ? AppTheme.primaryDark
-                      : AppTheme.onSurfaceVariant,
+                      ? scheme.primary
+                      : apart.onSurfaceVariant,
             ),
           ),
         ),
@@ -471,6 +478,7 @@ class _PhotoSlot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final apart = context.apart;
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(12),
@@ -480,7 +488,7 @@ class _PhotoSlot extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: AppTheme.onSurfaceVariant,
+            color: apart.onSurfaceVariant,
             width: dashed ? 1.5 : 1,
           ),
         ),
@@ -490,7 +498,7 @@ class _PhotoSlot extends StatelessWidget {
             Icon(
               Icons.photo_camera_outlined,
               size: 20,
-              color: AppTheme.onSurfaceTertiary,
+              color: apart.onSurfaceTertiary,
             ),
             const SizedBox(height: 4),
             Text(

@@ -1,12 +1,16 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/widgets/app_button.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-/// Manager wizard steps (demo prefilled). Maps to `buildings` + structure fields.
+/// Manager flow: 4-step building setup (mockup 3.3–3.5).
+/// Persists UI-only until API.
 class BuildingSetupWizardScreen extends StatefulWidget {
   const BuildingSetupWizardScreen({super.key});
 
@@ -23,151 +27,470 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
     text: Env.demoMode ? 'Yeşil Vadi Apartmanı' : '',
   );
   final _address = TextEditingController(
-    text: Env.demoMode ? 'Mahalle, sokak, no' : '',
+    text: Env.demoMode ? '' : '',
   );
+  final _yearBuilt = TextEditingController(
+    text: Env.demoMode ? '2008' : '',
+  );
+
+  /// İl / ilçe seçimi — MVP sabit liste.
+  final _districtIndex = ValueNotifier<int>(0);
+
+  static const _districts = <(String, String)>[
+    ('İstanbul', 'Kadıköy'),
+    ('İstanbul', 'Beşiktaş'),
+    ('Ankara', 'Çankaya'),
+  ];
+
+  final _singleBlock = ValueNotifier<bool>(true);
   final _floors = ValueNotifier<int>(Env.demoMode ? 6 : 1);
   final _perFloor = ValueNotifier<int>(Env.demoMode ? 3 : 1);
+
+  final _namingAutomatic = ValueNotifier<bool>(true);
+  final _showAllFloors = ValueNotifier<bool>(false);
+  final _highlightUnit = ValueNotifier<String?>(
+    Env.demoMode ? '3A' : null,
+  );
+
+  /// Tutar kuruş cinsinden (₺1.500,00 → 150000).
+  final _duesKurus = ValueNotifier<int>(150_000);
+  final _dueDay = ValueNotifier<int>(5);
+  final _lateFeeEnabled = ValueNotifier<bool>(true);
+  final _smsReminder = ValueNotifier<bool>(false);
+
+  static const _dueDayChoices = <int>[1, 5, 10, 15, 20];
 
   @override
   void dispose() {
     _page.dispose();
     _name.dispose();
     _address.dispose();
+    _yearBuilt.dispose();
+    _districtIndex.dispose();
+    _singleBlock.dispose();
     _floors.dispose();
     _perFloor.dispose();
+    _namingAutomatic.dispose();
+    _showAllFloors.dispose();
+    _highlightUnit.dispose();
+    _duesKurus.dispose();
+    _dueDay.dispose();
+    _lateFeeEnabled.dispose();
+    _smsReminder.dispose();
     super.dispose();
+  }
+
+  int get _totalUnits => _floors.value * _perFloor.value;
+
+  String _formatTry(int kurus) {
+    final fmt = NumberFormat.currency(
+      locale: 'tr_TR',
+      symbol: '₺',
+      decimalDigits: 2,
+    );
+    return fmt.format(kurus / 100);
+  }
+
+  void _goHome(BuildContext context) {
+    context.go('/home');
+  }
+
+  void _back(BuildContext context) {
+    if (_step == 0) {
+      context.go('/setup/account-type');
+      return;
+    }
+    setState(() => _step -= 1);
+    unawaited(
+      _page.previousPage(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      ),
+    );
+  }
+
+  void _next(BuildContext context) {
+    if (_step >= 3) {
+      _goHome(context);
+      return;
+    }
+    setState(() => _step += 1);
+    unawaited(
+      _page.nextPage(
+        duration: const Duration(milliseconds: 220),
+        curve: Curves.easeOutCubic,
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final apart = context.apart;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.setupWizardTitle)),
-      body: Column(
+      backgroundColor: apart.scaffoldBg,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 0, 8, 0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: (_step + 1) / 4,
+                  minHeight: 4,
+                  backgroundColor: apart.outlineMuted,
+                ),
+              ),
+            ),
+            Expanded(
+              child: PageView(
+                controller: _page,
+                physics: const NeverScrollableScrollPhysics(),
+                children: [
+                  _stepBuilding(context, l10n),
+                  _stepStructure(context, l10n),
+                  _stepUnits(context, l10n),
+                  _stepDues(context, l10n),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  filledButtonTheme: FilledButtonThemeData(
+                    style: FilledButton.styleFrom(
+                      minimumSize: const Size(64, 48),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: AppButton(
+                        variant: AppButtonVariant.outlined,
+                        onPressed: () => _back(context),
+                        child: Text(l10n.navBack),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: AppButton(
+                        onPressed: () => _next(context),
+                        child: _step >= 3
+                            ? Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(l10n.setupCompleteWizard),
+                                  const SizedBox(width: 6),
+                                  const Icon(
+                                    Icons.check_rounded,
+                                    size: 18,
+                                  ),
+                                ],
+                              )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(l10n.setupWizardProceed),
+                                  const SizedBox(width: 8),
+                                  const Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 18,
+                                  ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _wizardTopBar(
+    BuildContext context,
+    AppLocalizations l10n, {
+    required int stepIndex,
+    required String stepShortTitle,
+    VoidCallback? onSkip,
+    Widget? preferredTrailing,
+  }) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+
+    final trailing = preferredTrailing ??
+        TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: AppTheme.primary,
+            textStyle: theme.textTheme.labelLarge?.copyWith(
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          onPressed: onSkip,
+          child: Text(l10n.setupWizardSkip),
+        );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(4, 8, 8, 12),
+      child: Row(
         children: [
-          LinearProgressIndicator(value: (_step + 1) / 4),
+          IconButton(
+            icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
+            onPressed: () => _back(context),
+          ),
           Expanded(
-            child: PageView(
-              controller: _page,
-              physics: const NeverScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _stepBuilding(context, l10n),
-                _stepStructure(context, l10n),
-                _stepPlaceholder(context, l10n.setupWizardStepUnitsPlaceholder),
-                _stepPlaceholder(context, l10n.setupWizardStepDuesPlaceholder),
-              ],
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    variant: AppButtonVariant.secondary,
-                    onPressed: () {
-                      if (_step == 0) {
-                        context.pop();
-                        return;
-                      }
-                      setState(() => _step -= 1);
-                      unawaited(
-                        _page.previousPage(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.ease,
-                        ),
-                      );
-                    },
-                    child: Text(l10n.navBack),
+                Text(
+                  l10n.setupWizardStepProgress(stepIndex + 1, 4),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: apart.onSurfaceVariant,
+                    letterSpacing: 0.4,
                   ),
                 ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: AppButton(
-                    onPressed: () {
-                      if (_step >= 3) {
-                        context.go('/home');
-                        return;
-                      }
-                      setState(() => _step += 1);
-                      unawaited(
-                        _page.nextPage(
-                          duration: const Duration(milliseconds: 200),
-                          curve: Curves.ease,
-                        ),
-                      );
-                    },
-                    child: Text(l10n.continueButton),
+                Text(
+                  stepShortTitle,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
               ],
             ),
           ),
+          trailing,
         ],
       ),
     );
   }
 
   Widget _stepBuilding(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
+        _wizardTopBar(
+          context,
+          l10n,
+          stepIndex: 0,
+          stepShortTitle: l10n.setupWizardStep1AppBar,
+          onSkip: () => _goHome(context),
+        ),
+        Text(
+          l10n.setupWizardLetsMeetBuilding,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.setupWizardChangeLaterShort,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: apart.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 20),
         TextField(
           controller: _name,
-          decoration: InputDecoration(labelText: l10n.setupBuildingNameLabel),
+          textCapitalization: TextCapitalization.words,
+          decoration: InputDecoration(
+            labelText: l10n.setupBuildingNameLabel,
+          ),
         ),
+        const SizedBox(height: 12),
+        ValueListenableBuilder<int>(
+          valueListenable: _districtIndex,
+          builder: (context, idx, _) {
+            final safe = idx.clamp(0, _districts.length - 1);
+            return DropdownMenu<int>(
+              key: ValueKey<int>(safe),
+              initialSelection: safe,
+              label: Text(l10n.setupDistrictLabel),
+              expandedInsets: EdgeInsets.zero,
+              onSelected: (v) {
+                if (v != null) {
+                  _districtIndex.value = v;
+                }
+              },
+              dropdownMenuEntries: List.generate(
+                _districts.length,
+                (i) {
+                  final (city, dist) = _districts[i];
+                  return DropdownMenuEntry<int>(
+                    value: i,
+                    label: '$city · $dist',
+                  );
+                },
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
         TextField(
           controller: _address,
-          decoration: InputDecoration(labelText: l10n.setupAddressLabel),
           maxLines: 3,
+          decoration: InputDecoration(
+            labelText: l10n.setupAddressLabel,
+            hintText: l10n.setupAddressHint,
+          ),
+        ),
+        const SizedBox(height: 12),
+        TextField(
+          controller: _yearBuilt,
+          keyboardType: TextInputType.number,
+          decoration: InputDecoration(
+            labelText: l10n.setupYearBuiltOptional,
+            hintText: l10n.setupYearBuiltHint,
+          ),
         ),
       ],
     );
   }
 
   Widget _stepStructure(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
+
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       children: [
-        Text(l10n.demoInvitePreviewSubtitle),
+        _wizardTopBar(
+          context,
+          l10n,
+          stepIndex: 1,
+          stepShortTitle: l10n.setupWizardStep2AppBar,
+          onSkip: () => _goHome(context),
+        ),
+        Text(
+          l10n.setupWizardStructureHeadline,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.setupWizardStructureSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: apart.onSurfaceVariant,
+            height: 1.45,
+          ),
+        ),
         const SizedBox(height: 16),
-        ValueListenableBuilder<int>(
-          valueListenable: _floors,
-          builder: (context, v, _) {
+        Text(
+          l10n.setupBlockCountLabel,
+          style: theme.textTheme.labelMedium?.copyWith(
+            letterSpacing: 0.6,
+            fontWeight: FontWeight.w600,
+            color: apart.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ValueListenableBuilder<bool>(
+          valueListenable: _singleBlock,
+          builder: (context, single, _) {
             return Row(
               children: [
-                Expanded(child: Text(l10n.setupFloorCountLabel)),
-                IconButton(
-                  onPressed: () => _floors.value = (v - 1).clamp(1, 40),
-                  icon: const Icon(Icons.remove),
+                Expanded(
+                  child: _StructureBlockCard(
+                    title: l10n.setupSingleBlock,
+                    selected: single,
+                    onTap: () => _singleBlock.value = true,
+                  ),
                 ),
-                Text('$v'),
-                IconButton(
-                  onPressed: () => _floors.value = (v + 1).clamp(1, 40),
-                  icon: const Icon(Icons.add),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _StructureBlockCard(
+                    title: l10n.setupMultipleBlocks,
+                    selected: !single,
+                    onTap: () => _singleBlock.value = false,
+                  ),
                 ),
               ],
             );
           },
         ),
+        const SizedBox(height: 16),
+        _StepperCard(
+          label: l10n.setupFloorCountLabel,
+          notifier: _floors,
+          min: 1,
+          max: 40,
+        ),
         const SizedBox(height: 12),
+        _StepperCard(
+          label: l10n.setupWizardPerFloorLabel,
+          notifier: _perFloor,
+          min: 1,
+          max: 12,
+        ),
+        const SizedBox(height: 16),
         ValueListenableBuilder<int>(
-          valueListenable: _perFloor,
-          builder: (context, v, _) {
-            return Row(
-              children: [
-                Expanded(child: Text(l10n.setupWizardPerFloorLabel)),
-                IconButton(
-                  onPressed: () => _perFloor.value = (v - 1).clamp(1, 12),
-                  icon: const Icon(Icons.remove),
-                ),
-                Text('$v'),
-                IconButton(
-                  onPressed: () => _perFloor.value = (v + 1).clamp(1, 12),
-                  icon: const Icon(Icons.add),
-                ),
-              ],
+          valueListenable: _floors,
+          builder: (context, floors, _) {
+            return ValueListenableBuilder<int>(
+              valueListenable: _perFloor,
+              builder: (context, per, _) {
+                final count = floors * per;
+                return Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppTheme.warningContainer,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Icon(Icons.info_outline_rounded, color: scheme.secondary),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text.rich(
+                          TextSpan(
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              height: 1.35,
+                              color: scheme.onSurface,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: l10n.setupStructureCountBold('$count'),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w800,
+                                ),
+                              ),
+                              const TextSpan(text: ' '),
+                              TextSpan(
+                                text: l10n.setupStructureSummaryTail(
+                                  '$floors',
+                                  '$per',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
             );
           },
         ),
@@ -175,7 +498,722 @@ class _BuildingSetupWizardScreenState extends State<BuildingSetupWizardScreen> {
     );
   }
 
-  Widget _stepPlaceholder(BuildContext context, String title) {
-    return Center(child: Text(title));
+  Widget _stepUnits(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        _wizardTopBar(
+          context,
+          l10n,
+          stepIndex: 2,
+          stepShortTitle: l10n.setupWizardUnitsCountLabel('$_totalUnits'),
+          preferredTrailing: TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: AppTheme.primary,
+              textStyle: theme.textTheme.labelLarge?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(l10n.homeFeatureSoon)),
+              );
+            },
+            child: Text(l10n.setupWizardUnitsEdit),
+          ),
+        ),
+        Text(
+          l10n.setupWizardUnitsInstruction,
+          style: theme.textTheme.bodyLarge?.copyWith(
+            color: apart.onSurfaceVariant,
+            height: 1.45,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ValueListenableBuilder<bool>(
+          valueListenable: _namingAutomatic,
+          builder: (context, auto, _) {
+            return Container(
+              padding: const EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: apart.chipInactiveBg,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _NamingToggleChip(
+                      label: l10n.setupNamingAutomatic,
+                      selected: auto,
+                      onTap: () => _namingAutomatic.value = true,
+                    ),
+                  ),
+                  Expanded(
+                    child: _NamingToggleChip(
+                      label: l10n.setupNamingCustom,
+                      selected: !auto,
+                      onTap: () => _namingAutomatic.value = false,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        ValueListenableBuilder<bool>(
+          valueListenable: _showAllFloors,
+          builder: (context, expanded, _) {
+            return ValueListenableBuilder<int>(
+              valueListenable: _floors,
+              builder: (context, floors, _) {
+                return ValueListenableBuilder<int>(
+                  valueListenable: _perFloor,
+                  builder: (context, perFloor, _) {
+                    return ValueListenableBuilder<String?>(
+                      valueListenable: _highlightUnit,
+                      builder: (context, highlight, _) {
+                        final limit =
+                            expanded ? floors : math.min(3, floors);
+                        final children = <Widget>[];
+                        for (var fi = 1; fi <= limit; fi++) {
+                          children.add(
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                top: 10,
+                                bottom: 6,
+                              ),
+                              child: Row(
+                                children: [
+                                  Expanded(
+                                    child: Text(
+                                      l10n.managerFloorHeading('$fi'),
+                                      style:
+                                          theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    l10n.managerFloorUnitCount('$perFloor'),
+                                    style:
+                                        theme.textTheme.labelMedium?.copyWith(
+                                      color: apart.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                          final rowLabels = <String>[];
+                          for (var k = 0; k < perFloor; k++) {
+                            rowLabels.add(
+                              '$fi${String.fromCharCode(65 + k)}',
+                            );
+                          }
+                          children.add(
+                            Wrap(
+                              spacing: 8,
+                              runSpacing: 8,
+                              children: rowLabels.map((label) {
+                                final selected = highlight == label;
+                                return _UnitPill(
+                                  label: label,
+                                  selected: selected,
+                                  onTap: () => _highlightUnit.value = label,
+                                );
+                              }).toList(),
+                            ),
+                          );
+                        }
+                        if (floors > 3) {
+                          final tail = List.generate(
+                            floors - 3,
+                            (i) => '${i + 4}',
+                          ).join(', ');
+                          children.add(
+                            TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor: AppTheme.primary,
+                              ),
+                              onPressed: () {
+                                _showAllFloors.value = !expanded;
+                              },
+                              child: Text(
+                                expanded
+                                    ? l10n.setupWizardCollapseFloors
+                                    : l10n.setupShowMoreFloorsDetail(
+                                        tail,
+                                      ),
+                              ),
+                            ),
+                          );
+                        }
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: children,
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _stepDues(BuildContext context, AppLocalizations l10n) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      children: [
+        _wizardTopBar(
+          context,
+          l10n,
+          stepIndex: 3,
+          stepShortTitle: l10n.setupWizardStep4AppBar,
+          onSkip: () => _goHome(context),
+        ),
+        Text(
+          l10n.setupDuesHeadline,
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          l10n.setupDuesSubtitle,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: apart.onSurfaceVariant,
+          ),
+        ),
+        const SizedBox(height: 16),
+        ValueListenableBuilder<int>(
+          valueListenable: _duesKurus,
+          builder: (context, kurus, _) {
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 14),
+              decoration: BoxDecoration(
+                color: AppTheme.primary,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  Text(
+                    l10n.setupDuesMonthlyPerUnitLabel,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.92),
+                      letterSpacing: 1,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    _formatTry(kurus),
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.headlineMedium?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    l10n.setupPerApartmentSuffix,
+                    textAlign: TextAlign.center,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: Colors.white.withValues(alpha: 0.88),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      _MoneyAdjChip(
+                        label: '−100',
+                        onTap: () => _duesKurus.value =
+                            math.max(0, _duesKurus.value - 10_000),
+                        variant: _MoneyAdjVariant.negative,
+                      ),
+                      _MoneyAdjChip(
+                        label: '−50',
+                        onTap: () => _duesKurus.value =
+                            math.max(0, _duesKurus.value - 5_000),
+                        variant: _MoneyAdjVariant.negative,
+                      ),
+                      _MoneyAdjChip(
+                        label: '+50',
+                        onTap: () => _duesKurus.value += 5_000,
+                        variant: _MoneyAdjVariant.positive,
+                      ),
+                      _MoneyAdjChip(
+                        label: '+100',
+                        onTap: () => _duesKurus.value += 10_000,
+                        variant: _MoneyAdjVariant.positive,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 20),
+        Text(
+          l10n.setupDueDayLabel,
+          style: theme.textTheme.labelMedium?.copyWith(
+            letterSpacing: 0.6,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        const SizedBox(height: 8),
+        ValueListenableBuilder<int>(
+          valueListenable: _dueDay,
+          builder: (context, day, _) {
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: _dueDayChoices.map((d) {
+                final sel = day == d;
+                return _DueDayChip(
+                  day: d,
+                  selected: sel,
+                  onTap: () => _dueDay.value = d,
+                );
+              }).toList(),
+            );
+          },
+        ),
+        const SizedBox(height: 16),
+        ValueListenableBuilder<bool>(
+          valueListenable: _lateFeeEnabled,
+          builder: (context, v, _) {
+            return SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.setupLateFeeTitle),
+              subtitle: Text(
+                l10n.setupLateFeeSubtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: apart.onSurfaceVariant,
+                ),
+              ),
+              value: v,
+              activeThumbColor: AppTheme.primary,
+              onChanged: (x) => _lateFeeEnabled.value = x,
+            );
+          },
+        ),
+        ValueListenableBuilder<bool>(
+          valueListenable: _smsReminder,
+          builder: (context, v, _) {
+            return SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: Text(l10n.setupSmsReminderTitle),
+              subtitle: Text(
+                l10n.setupSmsReminderSubtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: apart.onSurfaceVariant,
+                ),
+              ),
+              value: v,
+              activeThumbColor: AppTheme.primary,
+              onChanged: (x) => _smsReminder.value = x,
+            );
+          },
+        ),
+        const SizedBox(height: 12),
+        ValueListenableBuilder<int>(
+          valueListenable: _duesKurus,
+          builder: (context, kurus, _) {
+            final total = kurus * _totalUnits;
+            return Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 14,
+                vertical: 12,
+              ),
+              decoration: BoxDecoration(
+                color: AppTheme.primaryContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    l10n.setupTotalMonthlyCollection,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  Text(
+                    _formatTry(total),
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppTheme.primaryDark,
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+
+enum _MoneyAdjVariant { negative, positive }
+
+class _MoneyAdjChip extends StatelessWidget {
+  const _MoneyAdjChip({
+    required this.label,
+    required this.onTap,
+    required this.variant,
+  });
+
+  final String label;
+  final VoidCallback onTap;
+  final _MoneyAdjVariant variant;
+
+  @override
+  Widget build(BuildContext context) {
+    final apart = context.apart;
+    final positive = variant == _MoneyAdjVariant.positive;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+        decoration: BoxDecoration(
+          color: positive ? AppTheme.secondary : apart.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: positive ? AppTheme.secondary : apart.outlineMuted,
+          ),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            fontWeight: FontWeight.w700,
+            fontSize: 13,
+            color: positive
+                ? const Color(0xFF1A1A1A)
+                : AppTheme.onSurfaceVariant,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _DueDayChip extends StatelessWidget {
+  const _DueDayChip({
+    required this.day,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final int day;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        width: 44,
+        height: 42,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: selected ? AppTheme.primary : apart.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? AppTheme.primary : apart.outlineMuted,
+          ),
+        ),
+        child: Text(
+          '$day',
+          style: theme.textTheme.titleSmall?.copyWith(
+            color: selected ? Colors.white : theme.colorScheme.onSurface,
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StructureBlockCard extends StatelessWidget {
+  const _StructureBlockCard({
+    required this.title,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String title;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+    return Material(
+      color: selected ? theme.colorScheme.primaryContainer : apart.surface,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: selected ? AppTheme.primary : apart.outlineMuted,
+              width: selected ? 2 : 1,
+            ),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: selected ? AppTheme.primary : Colors.transparent,
+                  border: Border.all(
+                    color: selected ? AppTheme.primary : apart.outlineMuted,
+                    width: 2,
+                  ),
+                ),
+                child: selected
+                    ? const Center(
+                        child: SizedBox(
+                          width: 8,
+                          height: 8,
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                        ),
+                      )
+                    : null,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepperCard extends StatelessWidget {
+  const _StepperCard({
+    required this.label,
+    required this.notifier,
+    required this.min,
+    required this.max,
+  });
+
+  final String label;
+  final ValueNotifier<int> notifier;
+  final int min;
+  final int max;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+
+    return ValueListenableBuilder<int>(
+      valueListenable: notifier,
+      builder: (context, value, _) {
+        return Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: apart.surface,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: apart.outlineMuted),
+          ),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  label,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+              _RoundGreenIconButton(
+                icon: Icons.remove,
+                onPressed: () =>
+                    notifier.value = (value - 1).clamp(min, max),
+              ),
+              SizedBox(
+                width: 36,
+                child: Center(
+                  child: Text(
+                    '$value',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              _RoundGreenIconButton(
+                icon: Icons.add,
+                onPressed: () =>
+                    notifier.value = (value + 1).clamp(min, max),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _RoundGreenIconButton extends StatelessWidget {
+  const _RoundGreenIconButton({
+    required this.icon,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4),
+      child: Material(
+        color: AppTheme.primary,
+        shape: const CircleBorder(),
+        child: InkWell(
+          customBorder: const CircleBorder(),
+          onTap: onPressed,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Icon(icon, size: 18, color: Colors.white),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _NamingToggleChip extends StatelessWidget {
+  const _NamingToggleChip({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final apart = context.apart;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        color: selected ? apart.surface : Colors.transparent,
+        borderRadius: BorderRadius.circular(10),
+        boxShadow: selected ? AppTheme.cardShadow : null,
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(10),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 6),
+            child: Center(
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                  color: selected
+                      ? theme.colorScheme.onSurface
+                      : apart.onSurfaceVariant,
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _UnitPill extends StatelessWidget {
+  const _UnitPill({
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(10),
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? scheme.primaryContainer : apart.surface,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: selected ? AppTheme.primary : apart.outlineMuted,
+            width: selected ? 2 : 1,
+          ),
+        ),
+        child: Text(
+          label,
+          style: theme.textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+      ),
+    );
   }
 }

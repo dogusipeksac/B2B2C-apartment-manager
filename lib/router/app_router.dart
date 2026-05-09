@@ -1,14 +1,8 @@
-import 'dart:async';
-
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona_storage.dart';
 import 'package:apartment_manager/features/announcements/presentation/announcement_detail_screen.dart';
-import 'package:apartment_manager/features/auth/data/auth_repository.dart';
-import 'package:apartment_manager/features/auth/domain/profile.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
-import 'package:apartment_manager/features/auth/presentation/screens/email_entry_screen.dart';
-import 'package:apartment_manager/features/auth/presentation/screens/otp_verification_screen.dart';
-import 'package:apartment_manager/features/auth/presentation/screens/profile_setup_screen.dart';
+import 'package:apartment_manager/features/auth/presentation/screens/login_placeholder_screen.dart';
 import 'package:apartment_manager/features/demo/presentation/demo_role_screen.dart';
 import 'package:apartment_manager/features/dues/presentation/dues_detail_screen.dart';
 import 'package:apartment_manager/features/dues/presentation/payment_checkout_screen.dart';
@@ -22,31 +16,15 @@ import 'package:apartment_manager/features/manager/presentation/invite_resident_
 import 'package:apartment_manager/features/manager/presentation/periods_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/units_screen.dart';
 import 'package:apartment_manager/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:apartment_manager/features/setup/presentation/account_role_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
-import 'package:apartment_manager/features/setup/presentation/invite_code_screen.dart';
+import 'package:apartment_manager/features/setup/presentation/resident_invite_placeholder_screen.dart';
 import 'package:apartment_manager/features/splash/presentation/splash_screen.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class GoRouterRefreshStream extends ChangeNotifier {
-  GoRouterRefreshStream(Stream<dynamic> stream) {
-    _sub = stream.listen((_) => notifyListeners());
-  }
-
-  late final StreamSubscription<dynamic> _sub;
-
-  @override
-  void dispose() {
-    unawaited(_sub.cancel());
-    super.dispose();
-  }
-}
-
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final sessionStream = ref.watch(sessionStreamProvider);
-  final refreshListenable = GoRouterRefreshStream(sessionStream);
-  ref.onDispose(refreshListenable.dispose);
+  final refreshListenable = ref.watch(sessionRefreshNotifierProvider);
 
   return GoRouter(
     initialLocation: '/splash',
@@ -62,24 +40,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/login',
-        builder: (context, state) => const EmailEntryScreen(),
-      ),
-      GoRoute(
-        path: '/verify-otp',
-        builder: (context, state) {
-          final identifier = state.uri.queryParameters['identifier'] ?? '';
-          final channelRaw = state.uri.queryParameters['channel'] ?? 'email';
-          final channel =
-              channelRaw == 'phone' ? OtpChannel.phone : OtpChannel.email;
-          return OtpVerificationScreen(
-            identifier: identifier,
-            channel: channel,
-          );
-        },
-      ),
-      GoRoute(
-        path: '/profile-setup',
-        builder: (context, state) => const ProfileSetupScreen(),
+        builder: (context, state) => const LoginPlaceholderScreen(),
       ),
       GoRoute(
         path: '/demo-role',
@@ -112,7 +73,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           announcementId: state.pathParameters['id'] ?? '',
         ),
       ),
-      // Literal path must not overlap `/issues/:id` (e.g. id "new" → empty detail).
       GoRoute(
         path: '/issues/create',
         builder: (context, state) => const IssueCreateScreen(),
@@ -128,8 +88,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         ),
       ),
       GoRoute(
-        path: '/setup/invite',
-        builder: (context, state) => const InviteCodeScreen(),
+        path: '/setup/account-type',
+        builder: (context, state) => const AccountRoleScreen(),
+      ),
+      GoRoute(
+        path: '/setup/resident-invite',
+        builder: (context, state) => const ResidentInvitePlaceholderScreen(),
       ),
       GoRoute(
         path: '/setup/wizard',
@@ -161,51 +125,38 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      final sessionAsync = ref.read(currentSessionProvider);
-      if (sessionAsync.isLoading) {
+      final localAsync = ref.read(localSessionProvider);
+      if (localAsync.isLoading) {
         return null;
       }
 
-      final session = sessionAsync.maybeWhen(
+      final local = localAsync.maybeWhen(
         data: (value) => value,
         orElse: () => null,
       );
 
-      if (session != null && location == '/onboarding') {
+      if (local != null && location == '/onboarding') {
         return '/home';
       }
 
       final isLogin = location == '/login';
-      final isVerify = location == '/verify-otp';
-      final isProfileSetup = location == '/profile-setup';
       final isOnboarding = location == '/onboarding';
+      final isAccountType = location == '/setup/account-type';
+      final isResidentInvite = location == '/setup/resident-invite';
+      final isSetupWizard = location == '/setup/wizard';
       final isDemoRole = location == '/demo-role';
 
       if (!Env.demoMode && isDemoRole) {
         return '/home';
       }
 
-      if (session == null) {
-        return (isLogin || isVerify || isOnboarding) ? null : '/login';
-      }
-
-      Profile? profile;
-      try {
-        profile = await ref.read(currentProfileProvider.future);
-      } on Object catch (e, st) {
-        if (kDebugMode) {
-          debugPrint('router redirect: currentProfileProvider failed: $e');
-          debugPrintStack(stackTrace: st);
-        }
-        // If profile lookup fails, allow user to proceed to profile setup
-        // instead of blocking navigation.
-        return isProfileSetup ? null : '/profile-setup';
-      }
-      final fullName = profile?.fullName.trim() ?? '';
-      final profileComplete = fullName.isNotEmpty;
-
-      if (!profileComplete) {
-        return isProfileSetup ? null : '/profile-setup';
+      if (local == null) {
+        final allowedUnauth = isLogin ||
+            isOnboarding ||
+            isAccountType ||
+            isResidentInvite ||
+            isSetupWizard;
+        return allowedUnauth ? null : '/setup/account-type';
       }
 
       if (Env.demoMode && !isDemoRole) {
@@ -223,7 +174,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return null;
       }
 
-      if (isLogin || isVerify || isProfileSetup) {
+      if (isLogin) {
         return '/home';
       }
 

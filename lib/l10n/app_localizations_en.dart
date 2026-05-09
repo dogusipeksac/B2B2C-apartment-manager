@@ -1272,6 +1272,163 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupAddressLabel => 'Street address';
 
   @override
+  String get accountRoleHeadline => 'How are you joining your building?';
+
+  @override
+  String get accountRoleSubtitle => 'You can change this later.';
+
+  @override
+  String get accountRoleResidentShortTitle => 'I\'m a resident';
+
+  @override
+  String get accountRoleManagerShortTitle => 'I\'m a manager';
+
+  @override
+  String get accountRoleResidentShortBody =>
+      'Connect to your unit with the invite code from your manager.';
+
+  @override
+  String get accountRoleManagerShortBody =>
+      'Set up your building from scratch and invite residents.';
+
+  @override
+  String get residentInvitePlaceholderTitle => 'Invite code';
+
+  @override
+  String get residentInvitePlaceholderBody =>
+      'This flow will be wired next. You can finish manager setup for now.';
+
+  @override
+  String get residentInviteBackToRole => 'Back to account type';
+
+  @override
+  String setupWizardStepProgress(Object step, Object total) {
+    return 'STEP $step / $total';
+  }
+
+  @override
+  String get setupWizardStep1AppBar => 'Building info';
+
+  @override
+  String get setupWizardStep2AppBar => 'Structure';
+
+  @override
+  String get setupWizardStep3AppBar => 'Units';
+
+  @override
+  String setupWizardUnitsCountLabel(Object count) {
+    return 'Units · $count';
+  }
+
+  @override
+  String get setupWizardStep4AppBar => 'Dues plan';
+
+  @override
+  String get setupWizardSkip => 'Skip';
+
+  @override
+  String get setupWizardLetsMeetBuilding => 'Let\'s get to know your building';
+
+  @override
+  String get setupWizardChangeLaterShort =>
+      'You can change this later in settings.';
+
+  @override
+  String get setupDistrictLabel => 'CITY / DISTRICT';
+
+  @override
+  String get setupYearBuiltOptional => 'YEAR BUILT (OPTIONAL)';
+
+  @override
+  String get setupYearBuiltHint => 'e.g. 2008';
+
+  @override
+  String get setupAddressHint => 'Neighborhood, street, no.';
+
+  @override
+  String get setupWizardStructureHeadline => 'Building structure';
+
+  @override
+  String get setupWizardStructureSubtitle =>
+      'Blocks and floors — units are created automatically in the next step.';
+
+  @override
+  String get setupBlockCountLabel => 'BLOCK COUNT';
+
+  @override
+  String get setupSingleBlock => 'Single block';
+
+  @override
+  String get setupMultipleBlocks => 'Multiple blocks';
+
+  @override
+  String setupStructureCountBold(Object count) {
+    return '$count units';
+  }
+
+  @override
+  String setupStructureSummaryTail(Object floors, Object perFloor) {
+    return 'will be created ($floors floors × $perFloor units). You can edit in the next step.';
+  }
+
+  @override
+  String get setupWizardUnitsInstruction =>
+      'Review the auto-generated list; add or remove units if needed.';
+
+  @override
+  String get setupWizardUnitsEdit => 'Edit';
+
+  @override
+  String setupShowMoreFloorsDetail(Object floors) {
+    return '+ Show more (floors $floors)';
+  }
+
+  @override
+  String get setupWizardCollapseFloors => 'Show less';
+
+  @override
+  String get setupNamingAutomatic => 'Automatic (1A–6C)';
+
+  @override
+  String get setupNamingCustom => 'Custom names';
+
+  @override
+  String get setupWizardProceed => 'Continue';
+
+  @override
+  String get setupDuesHeadline => 'Set dues';
+
+  @override
+  String get setupDuesSubtitle => 'Monthly amount residents will see and pay.';
+
+  @override
+  String get setupDueDayLabel => 'DUE DAY';
+
+  @override
+  String get setupDuesMonthlyPerUnitLabel => 'MONTHLY PER UNIT';
+
+  @override
+  String get setupLateFeeTitle => 'Automatic late fee';
+
+  @override
+  String get setupLateFeeSubtitle => '2% / month';
+
+  @override
+  String get setupSmsReminderTitle => 'Reminder SMS';
+
+  @override
+  String get setupSmsReminderSubtitle => '3 days before due date';
+
+  @override
+  String get setupTotalMonthlyCollection => 'Total monthly collection';
+
+  @override
+  String get setupCompleteWizard => 'Complete setup';
+
+  @override
+  String get setupPerApartmentSuffix => 'monthly / unit';
+
+  @override
   String get profileSetupDemoResident => 'Continue as resident';
 
   @override

@@ -55,9 +55,11 @@ class ManagerHomeView extends StatelessWidget {
     final tr = Localizations.localeOf(context).languageCode == 'tr';
     final deltaLabel =
         tr ? '%${data.incomeDeltaPercent}' : '${data.incomeDeltaPercent}%';
+    final apart = context.apart;
+    final scheme = theme.colorScheme;
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       drawer: Drawer(
         child: SafeArea(
           child: ListTile(
@@ -121,7 +123,7 @@ class ManagerHomeView extends StatelessWidget {
                           color: AppTheme.secondary,
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.surface,
+                            color: apart.surface,
                             width: 2,
                           ),
                         ),
@@ -129,7 +131,7 @@ class ManagerHomeView extends StatelessWidget {
                           '${data.notificationBadgeCount}',
                           textAlign: TextAlign.center,
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: const Color(0xFF1A1A1A),
+                            color: scheme.onSecondary,
                             fontWeight: FontWeight.w700,
                             fontSize: 9,
                             height: 1,
@@ -281,7 +283,7 @@ class ManagerHomeView extends StatelessWidget {
                         ),
                         icon: Icon(
                           Icons.more_horiz_rounded,
-                          color: AppTheme.onSurfaceTertiary,
+                          color: apart.onSurfaceTertiary,
                           size: 18,
                         ),
                         onPressed: () => _soon(context, l10n),
@@ -381,7 +383,7 @@ class ManagerHomeView extends StatelessWidget {
           Text(
             l10n.homeQuickActionsSection,
             style: theme.textTheme.labelMedium?.copyWith(
-              color: AppTheme.onSurfaceVariant,
+              color: apart.onSurfaceVariant,
               letterSpacing: 0.52,
               fontWeight: FontWeight.w500,
             ),
@@ -396,29 +398,29 @@ class ManagerHomeView extends StatelessWidget {
             childAspectRatio: 2.4,
             children: [
               _QuickTile(
-                iconBoxBg: AppTheme.primaryContainer,
-                iconBoxFg: AppTheme.primary,
+                iconBoxBg: scheme.primaryContainer,
+                iconBoxFg: scheme.primary,
                 icon: Icons.add_rounded,
                 label: l10n.homeQuickNewPeriod,
                 onTap: () => _open(context, '/manager/periods'),
               ),
               _QuickTile(
-                iconBoxBg: AppTheme.secondaryContainer,
-                iconBoxFg: const Color(0xFFB57400),
+                iconBoxBg: scheme.secondaryContainer,
+                iconBoxFg: scheme.secondary,
                 icon: Icons.campaign_outlined,
                 label: l10n.homeQuickSendAnnouncement,
                 onTap: () => _soon(context, l10n),
               ),
               _QuickTile(
-                iconBoxBg: AppTheme.infoContainer,
-                iconBoxFg: AppTheme.info,
+                iconBoxBg: scheme.tertiaryContainer,
+                iconBoxFg: scheme.tertiary,
                 icon: Icons.mail_outline_rounded,
                 label: l10n.homeQuickSendInvite,
                 onTap: () => _open(context, '/manager/invite'),
               ),
               _QuickTile(
-                iconBoxBg: AppTheme.errorContainer,
-                iconBoxFg: AppTheme.error,
+                iconBoxBg: scheme.errorContainer,
+                iconBoxFg: scheme.error,
                 icon: Icons.payments_outlined,
                 label: l10n.homeQuickAddExpense,
                 onTap: () => _open(context, '/manager/expense/new'),
@@ -452,7 +454,7 @@ class _SummaryCard extends StatelessWidget {
             Text(
               title,
               style: theme.textTheme.labelMedium?.copyWith(
-                color: AppTheme.onSurfaceVariant,
+                color: context.apart.onSurfaceVariant,
                 letterSpacing: 0.48,
                 fontSize: 12,
                 height: 16 / 12,
@@ -520,7 +522,7 @@ class _QuickTile extends StatelessWidget {
       color: theme.colorScheme.surface,
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(8),
-        side: const BorderSide(color: AppTheme.outlineMuted),
+        side: BorderSide(color: context.apart.outlineMuted),
       ),
       child: InkWell(
         onTap: onTap,

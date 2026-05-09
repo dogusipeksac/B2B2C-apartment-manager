@@ -10,9 +10,10 @@ class UnitsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final apart = context.apart;
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
         title: Text('${l10n.managerUnitsTitle} · 18'),
         actions: [
@@ -39,7 +40,7 @@ class UnitsScreen extends StatelessWidget {
                     Text(
                       l10n.managerFloorHeading('${floor + 1}'),
                       style: theme.textTheme.labelMedium?.copyWith(
-                        color: AppTheme.onSurfaceVariant,
+                        color: apart.onSurfaceVariant,
                         letterSpacing: 0.48,
                         fontWeight: FontWeight.w600,
                       ),
@@ -47,7 +48,7 @@ class UnitsScreen extends StatelessWidget {
                     Text(
                       l10n.managerFloorUnitCount('3'),
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppTheme.onSurfaceTertiary,
+                        color: apart.onSurfaceTertiary,
                       ),
                     ),
                   ],
@@ -90,13 +91,15 @@ class _UnitCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
+    final scheme = theme.colorScheme;
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 12),
       decoration: BoxDecoration(
-        color: highlight ? AppTheme.primaryContainer : AppTheme.surface,
+        color: highlight ? scheme.primaryContainer : apart.surface,
         borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: highlight ? AppTheme.primary : AppTheme.outlineMuted,
+          color: highlight ? AppTheme.primary : apart.outlineMuted,
           width: highlight ? 2 : 1,
         ),
       ),

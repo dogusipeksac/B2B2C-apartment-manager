@@ -564,6 +564,80 @@
   "setupWizardPerFloorLabel": "Units per floor",
   "setupBuildingNameLabel": "Building name",
   "setupAddressLabel": "Street address",
+  "accountRoleHeadline": "How are you joining your building?",
+  "accountRoleSubtitle": "You can change this later.",
+  "accountRoleResidentShortTitle": "I'm a resident",
+  "accountRoleManagerShortTitle": "I'm a manager",
+  "accountRoleResidentShortBody": "Connect to your unit with the invite code from your manager.",
+  "accountRoleManagerShortBody": "Set up your building from scratch and invite residents.",
+  "residentInvitePlaceholderTitle": "Invite code",
+  "residentInvitePlaceholderBody": "This flow will be wired next. You can finish manager setup for now.",
+  "residentInviteBackToRole": "Back to account type",
+  "setupWizardStepProgress": "STEP {step} / {total}",
+  "@setupWizardStepProgress": {
+    "placeholders": {
+      "step": {},
+      "total": {}
+    }
+  },
+  "setupWizardStep1AppBar": "Building info",
+  "setupWizardStep2AppBar": "Structure",
+  "setupWizardStep3AppBar": "Units",
+  "setupWizardUnitsCountLabel": "Units · {count}",
+  "@setupWizardUnitsCountLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "setupWizardStep4AppBar": "Dues plan",
+  "setupWizardSkip": "Skip",
+  "setupWizardLetsMeetBuilding": "Let's get to know your building",
+  "setupWizardChangeLaterShort": "You can change this later in settings.",
+  "setupDistrictLabel": "CITY / DISTRICT",
+  "setupYearBuiltOptional": "YEAR BUILT (OPTIONAL)",
+  "setupYearBuiltHint": "e.g. 2008",
+  "setupAddressHint": "Neighborhood, street, no.",
+  "setupWizardStructureHeadline": "Building structure",
+  "setupWizardStructureSubtitle": "Blocks and floors — units are created automatically in the next step.",
+  "setupBlockCountLabel": "BLOCK COUNT",
+  "setupSingleBlock": "Single block",
+  "setupMultipleBlocks": "Multiple blocks",
+  "setupStructureCountBold": "{count} units",
+  "@setupStructureCountBold": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "setupStructureSummaryTail": "will be created ({floors} floors × {perFloor} units). You can edit in the next step.",
+  "@setupStructureSummaryTail": {
+    "placeholders": {
+      "floors": {},
+      "perFloor": {}
+    }
+  },
+  "setupWizardUnitsInstruction": "Review the auto-generated list; add or remove units if needed.",
+  "setupWizardUnitsEdit": "Edit",
+  "setupShowMoreFloorsDetail": "+ Show more (floors {floors})",
+  "@setupShowMoreFloorsDetail": {
+    "placeholders": {
+      "floors": {}
+    }
+  },
+  "setupWizardCollapseFloors": "Show less",
+  "setupNamingAutomatic": "Automatic (1A–6C)",
+  "setupNamingCustom": "Custom names",
+  "setupWizardProceed": "Continue",
+  "setupDuesHeadline": "Set dues",
+  "setupDuesSubtitle": "Monthly amount residents will see and pay.",
+  "setupDueDayLabel": "DUE DAY",
+  "setupDuesMonthlyPerUnitLabel": "MONTHLY PER UNIT",
+  "setupLateFeeTitle": "Automatic late fee",
+  "setupLateFeeSubtitle": "2% / month",
+  "setupSmsReminderTitle": "Reminder SMS",
+  "setupSmsReminderSubtitle": "3 days before due date",
+  "setupTotalMonthlyCollection": "Total monthly collection",
+  "setupCompleteWizard": "Complete setup",
+  "setupPerApartmentSuffix": "monthly / unit",
   "profileSetupDemoResident": "Continue as resident",
   "profileSetupDemoManager": "Continue as manager"
 }

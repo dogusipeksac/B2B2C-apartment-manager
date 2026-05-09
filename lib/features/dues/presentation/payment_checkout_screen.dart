@@ -37,6 +37,8 @@ class _PaymentCheckoutScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final apart = context.apart;
+    final scheme = theme.colorScheme;
     final repo = ref.watch(duesRepositoryProvider);
 
     return FutureBuilder<DuesInvoiceUi?>(
@@ -63,7 +65,7 @@ class _PaymentCheckoutScreenState
                     Text(
                       'iyzico',
                       style: theme.textTheme.labelSmall?.copyWith(
-                        color: AppTheme.onSurfaceVariant,
+                        color: apart.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -84,7 +86,7 @@ class _PaymentCheckoutScreenState
                             vertical: 12,
                           ),
                           decoration: BoxDecoration(
-                            color: AppTheme.scaffoldBg,
+                            color: apart.scaffoldBg,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
@@ -129,7 +131,7 @@ class _PaymentCheckoutScreenState
                         Text(
                           'KAYITLI KART',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppTheme.onSurfaceVariant,
+                            color: apart.onSurfaceVariant,
                             letterSpacing: 0.6,
                             fontWeight: FontWeight.w500,
                           ),
@@ -151,7 +153,7 @@ class _PaymentCheckoutScreenState
                         Text(
                           'CVV',
                           style: theme.textTheme.labelSmall?.copyWith(
-                            color: AppTheme.onSurfaceVariant,
+                            color: apart.onSurfaceVariant,
                             letterSpacing: 0.6,
                             fontWeight: FontWeight.w500,
                           ),
@@ -168,15 +170,15 @@ class _PaymentCheckoutScreenState
                               counterText: '',
                               hintText: '•••',
                               filled: true,
-                              fillColor: AppTheme.surface,
+                              fillColor: apart.surface,
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 14,
                                 vertical: 14,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: const BorderSide(
-                                  color: AppTheme.outlineMuted,
+                                borderSide: BorderSide(
+                                  color: apart.outlineMuted,
                                   width: 1.5,
                                 ),
                               ),
@@ -194,16 +196,16 @@ class _PaymentCheckoutScreenState
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppTheme.infoContainer,
+                            color: scheme.tertiaryContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.shield_outlined,
                                 size: 18,
-                                color: AppTheme.info,
+                                color: scheme.tertiary,
                               ),
                               const SizedBox(width: 8),
                               Expanded(
@@ -211,7 +213,7 @@ class _PaymentCheckoutScreenState
                                   TextSpan(
                                     style: theme.textTheme.labelMedium
                                         ?.copyWith(
-                                      color: const Color(0xFF0E4E92),
+                                      color: scheme.onTertiaryContainer,
                                       height: 1.4,
                                     ),
                                     children: const [
@@ -238,10 +240,10 @@ class _PaymentCheckoutScreenState
                             horizontal: 0,
                             vertical: 10,
                           ),
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             border: Border(
                               top: BorderSide(
-                                color: AppTheme.outlineMuted,
+                                color: apart.outlineMuted,
                                 style: BorderStyle.solid,
                               ),
                             ),
@@ -253,7 +255,7 @@ class _PaymentCheckoutScreenState
                               Text(
                                 'Toplam',
                                 style: theme.textTheme.bodySmall?.copyWith(
-                                  color: AppTheme.onSurfaceVariant,
+                                  color: apart.onSurfaceVariant,
                                 ),
                               ),
                               Text(
@@ -290,7 +292,7 @@ class _PaymentCheckoutScreenState
                     '3D Secure · iyzico ile korunmaktadır',
                     textAlign: TextAlign.center,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceTertiary,
+                      color: apart.onSurfaceTertiary,
                     ),
                   ),
                 ],
@@ -319,15 +321,17 @@ class _CardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
     return GestureDetector(
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(14),
         decoration: BoxDecoration(
-          color: selected ? AppTheme.primaryContainer : AppTheme.surface,
+          color: selected ? scheme.primaryContainer : apart.surface,
           borderRadius: BorderRadius.circular(8),
           border: Border.all(
-            color: selected ? AppTheme.primary : AppTheme.outlineMuted,
+            color: selected ? AppTheme.primary : apart.outlineMuted,
             width: selected ? 2 : 1,
           ),
         ),
@@ -370,7 +374,7 @@ class _CardTile extends StatelessWidget {
                   Text(
                     sublabel,
                     style: theme.textTheme.labelSmall?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
+                      color: apart.onSurfaceVariant,
                     ),
                   ),
                 ],
@@ -398,6 +402,7 @@ class _NewCardTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
     return GestureDetector(
       onTap: onTap,
       child: Opacity(
@@ -405,9 +410,9 @@ class _NewCardTile extends StatelessWidget {
         child: Container(
           padding: const EdgeInsets.all(14),
           decoration: BoxDecoration(
-            color: AppTheme.surface,
+            color: apart.surface,
             borderRadius: BorderRadius.circular(8),
-            border: Border.all(color: AppTheme.outlineMuted),
+            border: Border.all(color: apart.outlineMuted),
           ),
           child: Row(
             children: [
@@ -416,16 +421,16 @@ class _NewCardTile extends StatelessWidget {
                 height: 30,
                 decoration: BoxDecoration(
                   border: Border.all(
-                    color: AppTheme.onSurfaceVariant,
+                    color: apart.onSurfaceVariant,
                     width: 1.5,
                     style: BorderStyle.solid,
                   ),
                   borderRadius: BorderRadius.circular(6),
                 ),
-                child: const Icon(
+                child: Icon(
                   Icons.add,
                   size: 14,
-                  color: AppTheme.onSurfaceTertiary,
+                  color: apart.onSurfaceTertiary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -453,6 +458,7 @@ class _RadioDot extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final apart = context.apart;
     return Container(
       width: 18,
       height: 18,
@@ -460,7 +466,7 @@ class _RadioDot extends StatelessWidget {
         shape: BoxShape.circle,
         color: selected ? AppTheme.primary : Colors.transparent,
         border: Border.all(
-          color: selected ? AppTheme.primary : AppTheme.outlineMuted,
+          color: selected ? AppTheme.primary : apart.outlineMuted,
           width: 2,
         ),
       ),

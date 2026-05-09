@@ -1,6 +1,7 @@
+import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
-enum AppButtonVariant { primary, secondary, text }
+enum AppButtonVariant { primary, secondary, outlined, text }
 
 class AppButton extends StatelessWidget {
   const AppButton({
@@ -52,6 +53,43 @@ class AppButton extends StatelessWidget {
                 onPressed: effectiveOnPressed,
                 icon: iconWidget,
                 label: themedChild,
+              );
+      case AppButtonVariant.outlined:
+        return iconWidget == null
+            ? OutlinedButton(
+                onPressed: effectiveOnPressed,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  backgroundColor: AppTheme.surface,
+                  side: const BorderSide(color: AppTheme.primary, width: 1.5),
+                  minimumSize: const Size(64, 48),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+                child: themedChild,
+              )
+            : OutlinedButton.icon(
+                onPressed: effectiveOnPressed,
+                icon: iconWidget,
+                label: themedChild,
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primary,
+                  backgroundColor: AppTheme.surface,
+                  side: const BorderSide(color: AppTheme.primary, width: 1.5),
+                  minimumSize: const Size(64, 48),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
               );
       case AppButtonVariant.text:
         return iconWidget == null

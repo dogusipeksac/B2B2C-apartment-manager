@@ -43,7 +43,8 @@ class _ResidentHomeShellState extends ConsumerState<ResidentHomeShell> {
       if (Env.demoMode) {
         await ref.read(demoPersonaProvider.notifier).clear();
       }
-      await ref.read(authRepositoryProvider).signOut();
+      await ref.read(localSessionRepositoryProvider).clear();
+      ref.notifyLocalSessionChanged();
       if (!context.mounted) {
         return;
       }
@@ -62,9 +63,10 @@ class _ResidentHomeShellState extends ConsumerState<ResidentHomeShell> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final data = _data(l10n);
+    final apart = context.apart;
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       body: IndexedStack(
         index: _tabIndex,
         children: [
@@ -139,6 +141,8 @@ class _ResidentDashboardTab extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
     final name = displayName.isEmpty ? '—' : displayName;
 
     return CustomScrollView(
@@ -181,10 +185,9 @@ class _ResidentDashboardTab extends StatelessWidget {
                   ),
                 ),
               Container(
-                color: AppTheme.surface,
+                color: apart.surface,
                 padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       child: Column(
@@ -193,7 +196,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                           Text(
                             l10n.demoBuildingHeaderLine,
                             style: theme.textTheme.labelMedium?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                               letterSpacing: 0.48,
                               fontWeight: FontWeight.w500,
                               fontSize: 12,
@@ -231,7 +234,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                                 color: AppTheme.error,
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppTheme.surface,
+                                  color: apart.surface,
                                   width: 2,
                                 ),
                               ),
@@ -328,7 +331,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                               child: FilledButton(
                                 style: FilledButton.styleFrom(
                                   backgroundColor: AppTheme.secondary,
-                                  foregroundColor: const Color(0xFF1A1A1A),
+                                  foregroundColor: scheme.onSecondary,
                                   minimumSize: const Size.fromHeight(48),
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(12),
@@ -354,7 +357,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                       )
                     else
                       Card(
-                        color: AppTheme.primaryContainer,
+                        color: scheme.primaryContainer,
                         child: Padding(
                           padding: const EdgeInsets.all(16),
                           child: Row(
@@ -473,7 +476,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                                                   style: theme
                                                       .textTheme.labelMedium
                                                       ?.copyWith(
-                                                    color: AppTheme
+                                                    color: apart
                                                         .onSurfaceVariant,
                                                     fontSize: 12,
                                                     height: 16 / 12,
@@ -557,12 +560,12 @@ class _ResidentDashboardTab extends StatelessWidget {
                                       width: 36,
                                       height: 36,
                                       decoration: BoxDecoration(
-                                        color: AppTheme.infoContainer,
+                                        color: scheme.tertiaryContainer,
                                         borderRadius: BorderRadius.circular(10),
                                       ),
                                       child: Icon(
                                         Icons.water_drop_outlined,
-                                        color: AppTheme.info,
+                                        color: scheme.tertiary,
                                         size: 22,
                                       ),
                                     ),
@@ -586,7 +589,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                                             '${l10n.homeIssueUpdatedAgo(item.updatedTimePhrase)}',
                                             style: theme.textTheme.labelMedium
                                                 ?.copyWith(
-                                              color: AppTheme.onSurfaceVariant,
+                                              color: apart.onSurfaceVariant,
                                               fontSize: 12,
                                               height: 16 / 12,
                                             ),
@@ -646,7 +649,7 @@ class _AnnouncementTagChip extends StatelessWidget {
         return Container(
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
           decoration: BoxDecoration(
-            color: AppTheme.secondaryContainer,
+            color: theme.colorScheme.secondaryContainer,
             borderRadius: BorderRadius.circular(999),
           ),
           child: Row(

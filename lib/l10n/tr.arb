@@ -564,6 +564,80 @@
   "setupWizardPerFloorLabel": "Her katta daire",
   "setupBuildingNameLabel": "Bina adı",
   "setupAddressLabel": "Açık adres",
+  "accountRoleHeadline": "Apartmanına nasıl katılıyorsun?",
+  "accountRoleSubtitle": "Bunu sonradan da değiştirebilirsin.",
+  "accountRoleResidentShortTitle": "Sakinim",
+  "accountRoleManagerShortTitle": "Yöneticiyim",
+  "accountRoleResidentShortBody": "Yöneticiden aldığın davet kodu ile dairene bağlan.",
+  "accountRoleManagerShortBody": "Apartmanını sıfırdan kur, sakinleri davet et.",
+  "residentInvitePlaceholderTitle": "Davet kodu",
+  "residentInvitePlaceholderBody": "Bu akış bir sonraki adımda bağlanacak. Şimdilik yönetici kurulumunu tamamlayabilirsin.",
+  "residentInviteBackToRole": "Hesap türüne dön",
+  "setupWizardStepProgress": "ADIM {step} / {total}",
+  "@setupWizardStepProgress": {
+    "placeholders": {
+      "step": {},
+      "total": {}
+    }
+  },
+  "setupWizardStep1AppBar": "Bina bilgileri",
+  "setupWizardStep2AppBar": "Yapı",
+  "setupWizardStep3AppBar": "Daireler",
+  "setupWizardUnitsCountLabel": "Daireler · {count} adet",
+  "@setupWizardUnitsCountLabel": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "setupWizardStep4AppBar": "Aidat planı",
+  "setupWizardSkip": "Atla",
+  "setupWizardLetsMeetBuilding": "Apartmanını tanıyalım",
+  "setupWizardChangeLaterShort": "Sonradan ayarlardan değiştirebilirsin.",
+  "setupDistrictLabel": "İL / İLÇE",
+  "setupYearBuiltOptional": "YAPIM YILI (OPS.)",
+  "setupYearBuiltHint": "Örn. 2008",
+  "setupAddressHint": "Mahalle, sokak, no",
+  "setupWizardStructureHeadline": "Apartmanın yapısı",
+  "setupWizardStructureSubtitle": "Blok ve kat sayısı — bir sonraki adımda daireler otomatik oluşur.",
+  "setupBlockCountLabel": "BLOK SAYISI",
+  "setupSingleBlock": "Tek blok",
+  "setupMultipleBlocks": "Çok blok",
+  "setupStructureCountBold": "{count} daire",
+  "@setupStructureCountBold": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "setupStructureSummaryTail": "oluşturulacak ({floors} kat × {perFloor} daire). Sonraki adımda düzenleyebilirsin.",
+  "@setupStructureSummaryTail": {
+    "placeholders": {
+      "floors": {},
+      "perFloor": {}
+    }
+  },
+  "setupWizardUnitsInstruction": "Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.",
+  "setupWizardUnitsEdit": "Düzenle",
+  "setupShowMoreFloorsDetail": "+ Daha fazla göster (kat {floors})",
+  "@setupShowMoreFloorsDetail": {
+    "placeholders": {
+      "floors": {}
+    }
+  },
+  "setupWizardCollapseFloors": "Daha az göster",
+  "setupNamingAutomatic": "Otomatik (1A–6C)",
+  "setupNamingCustom": "Özel adlandır",
+  "setupWizardProceed": "İlerle",
+  "setupDuesHeadline": "Aidat ayarla",
+  "setupDuesSubtitle": "Sakinlerin görüp ödeyebileceği aylık tutar.",
+  "setupDueDayLabel": "VADE GÜNÜ",
+  "setupDuesMonthlyPerUnitLabel": "DAİRE BAŞINA AYLIK",
+  "setupLateFeeTitle": "Otomatik gecikme faizi",
+  "setupLateFeeSubtitle": "%2 / ay",
+  "setupSmsReminderTitle": "Hatırlatma SMS gönder",
+  "setupSmsReminderSubtitle": "Vade öncesi 3 gün",
+  "setupTotalMonthlyCollection": "Toplam aylık tahsilat",
+  "setupCompleteWizard": "Kurulumu tamamla",
+  "setupPerApartmentSuffix": "aylık / daire",
   "profileSetupDemoResident": "Sakin ile devam et",
   "profileSetupDemoManager": "Yönetici ile devam et"
 }

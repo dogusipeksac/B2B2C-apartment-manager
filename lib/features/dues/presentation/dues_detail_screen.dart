@@ -40,6 +40,7 @@ class DuesDetailScreen extends ConsumerWidget {
         }
 
         final theme = Theme.of(context);
+        final apart = context.apart;
         final isOverdue = row.status == DuesInvoiceUiStatus.overdue;
         final dueStr = formatTL(row.amountDueKurus / 100);
 
@@ -109,7 +110,7 @@ class DuesDetailScreen extends ConsumerWidget {
                       Text(
                         'ÖDENECEK TUTAR',
                         style: theme.textTheme.labelSmall?.copyWith(
-                          color: AppTheme.onSurfaceVariant,
+                          color: apart.onSurfaceVariant,
                           letterSpacing: 0.6,
                         ),
                       ),
@@ -121,7 +122,7 @@ class DuesDetailScreen extends ConsumerWidget {
                           Text(
                             '₺',
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(width: 4),
@@ -137,7 +138,7 @@ class DuesDetailScreen extends ConsumerWidget {
                           Text(
                             _amountDecimal(row.amountDueKurus / 100),
                             style: theme.textTheme.bodyLarge?.copyWith(
-                              color: AppTheme.onSurfaceVariant,
+                              color: apart.onSurfaceVariant,
                             ),
                           ),
                         ],
@@ -190,7 +191,7 @@ class DuesDetailScreen extends ConsumerWidget {
               ),
               TextButton.icon(
                 style: TextButton.styleFrom(
-                  foregroundColor: AppTheme.onSurfaceVariant,
+                  foregroundColor: apart.onSurfaceVariant,
                   minimumSize: const Size.fromHeight(40),
                 ),
                 onPressed: () {},
@@ -295,6 +296,7 @@ class _MetaRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
       child: Row(
@@ -303,7 +305,7 @@ class _MetaRow extends StatelessWidget {
           Text(
             label,
             style: theme.textTheme.bodySmall?.copyWith(
-              color: AppTheme.onSurfaceVariant,
+              color: apart.onSurfaceVariant,
               fontSize: 14,
             ),
           ),

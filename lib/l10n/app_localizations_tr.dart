@@ -1270,6 +1270,163 @@ class AppLocalizationsTr extends AppLocalizations {
   String get setupAddressLabel => 'Açık adres';
 
   @override
+  String get accountRoleHeadline => 'Apartmanına nasıl katılıyorsun?';
+
+  @override
+  String get accountRoleSubtitle => 'Bunu sonradan da değiştirebilirsin.';
+
+  @override
+  String get accountRoleResidentShortTitle => 'Sakinim';
+
+  @override
+  String get accountRoleManagerShortTitle => 'Yöneticiyim';
+
+  @override
+  String get accountRoleResidentShortBody =>
+      'Yöneticiden aldığın davet kodu ile dairene bağlan.';
+
+  @override
+  String get accountRoleManagerShortBody =>
+      'Apartmanını sıfırdan kur, sakinleri davet et.';
+
+  @override
+  String get residentInvitePlaceholderTitle => 'Davet kodu';
+
+  @override
+  String get residentInvitePlaceholderBody =>
+      'Bu akış bir sonraki adımda bağlanacak. Şimdilik yönetici kurulumunu tamamlayabilirsin.';
+
+  @override
+  String get residentInviteBackToRole => 'Hesap türüne dön';
+
+  @override
+  String setupWizardStepProgress(Object step, Object total) {
+    return 'ADIM $step / $total';
+  }
+
+  @override
+  String get setupWizardStep1AppBar => 'Bina bilgileri';
+
+  @override
+  String get setupWizardStep2AppBar => 'Yapı';
+
+  @override
+  String get setupWizardStep3AppBar => 'Daireler';
+
+  @override
+  String setupWizardUnitsCountLabel(Object count) {
+    return 'Daireler · $count adet';
+  }
+
+  @override
+  String get setupWizardStep4AppBar => 'Aidat planı';
+
+  @override
+  String get setupWizardSkip => 'Atla';
+
+  @override
+  String get setupWizardLetsMeetBuilding => 'Apartmanını tanıyalım';
+
+  @override
+  String get setupWizardChangeLaterShort =>
+      'Sonradan ayarlardan değiştirebilirsin.';
+
+  @override
+  String get setupDistrictLabel => 'İL / İLÇE';
+
+  @override
+  String get setupYearBuiltOptional => 'YAPIM YILI (OPS.)';
+
+  @override
+  String get setupYearBuiltHint => 'Örn. 2008';
+
+  @override
+  String get setupAddressHint => 'Mahalle, sokak, no';
+
+  @override
+  String get setupWizardStructureHeadline => 'Apartmanın yapısı';
+
+  @override
+  String get setupWizardStructureSubtitle =>
+      'Blok ve kat sayısı — bir sonraki adımda daireler otomatik oluşur.';
+
+  @override
+  String get setupBlockCountLabel => 'BLOK SAYISI';
+
+  @override
+  String get setupSingleBlock => 'Tek blok';
+
+  @override
+  String get setupMultipleBlocks => 'Çok blok';
+
+  @override
+  String setupStructureCountBold(Object count) {
+    return '$count daire';
+  }
+
+  @override
+  String setupStructureSummaryTail(Object floors, Object perFloor) {
+    return 'oluşturulacak ($floors kat × $perFloor daire). Sonraki adımda düzenleyebilirsin.';
+  }
+
+  @override
+  String get setupWizardUnitsInstruction =>
+      'Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.';
+
+  @override
+  String get setupWizardUnitsEdit => 'Düzenle';
+
+  @override
+  String setupShowMoreFloorsDetail(Object floors) {
+    return '+ Daha fazla göster (kat $floors)';
+  }
+
+  @override
+  String get setupWizardCollapseFloors => 'Daha az göster';
+
+  @override
+  String get setupNamingAutomatic => 'Otomatik (1A–6C)';
+
+  @override
+  String get setupNamingCustom => 'Özel adlandır';
+
+  @override
+  String get setupWizardProceed => 'İlerle';
+
+  @override
+  String get setupDuesHeadline => 'Aidat ayarla';
+
+  @override
+  String get setupDuesSubtitle => 'Sakinlerin görüp ödeyebileceği aylık tutar.';
+
+  @override
+  String get setupDueDayLabel => 'VADE GÜNÜ';
+
+  @override
+  String get setupDuesMonthlyPerUnitLabel => 'DAİRE BAŞINA AYLIK';
+
+  @override
+  String get setupLateFeeTitle => 'Otomatik gecikme faizi';
+
+  @override
+  String get setupLateFeeSubtitle => '%2 / ay';
+
+  @override
+  String get setupSmsReminderTitle => 'Hatırlatma SMS gönder';
+
+  @override
+  String get setupSmsReminderSubtitle => 'Vade öncesi 3 gün';
+
+  @override
+  String get setupTotalMonthlyCollection => 'Toplam aylık tahsilat';
+
+  @override
+  String get setupCompleteWizard => 'Kurulumu tamamla';
+
+  @override
+  String get setupPerApartmentSuffix => 'aylık / daire';
+
+  @override
   String get profileSetupDemoResident => 'Sakin ile devam et';
 
   @override

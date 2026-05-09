@@ -21,6 +21,8 @@ class ProfileHomeTab extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
     final demo = Env.demoMode;
     final personaAsync = ref.watch(demoPersonaProvider);
 
@@ -37,7 +39,7 @@ class ProfileHomeTab extends ConsumerWidget {
         : '?';
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: apart.scaffoldBg,
       body: CustomScrollView(
         slivers: [
           // Dark green header
@@ -175,7 +177,7 @@ class ProfileHomeTab extends ConsumerWidget {
                           width: 42,
                           height: 42,
                           decoration: BoxDecoration(
-                            color: AppTheme.primaryContainer,
+                            color: scheme.primaryContainer,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: const Icon(
@@ -198,16 +200,16 @@ class ProfileHomeTab extends ConsumerWidget {
                               Text(
                                 l10n.demoInvitePreviewSubtitle,
                                 style: theme.textTheme.labelSmall?.copyWith(
-                                  color: AppTheme.onSurfaceVariant,
+                                  color: apart.onSurfaceVariant,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                        const Icon(
+                        Icon(
                           Icons.chevron_right_rounded,
                           size: 16,
-                          color: AppTheme.onSurfaceTertiary,
+                          color: apart.onSurfaceTertiary,
                         ),
                       ],
                     ),
@@ -301,7 +303,7 @@ class ProfileHomeTab extends ConsumerWidget {
                 Text(
                   l10n.profileVersionFooter,
                   style: theme.textTheme.labelSmall?.copyWith(
-                    color: AppTheme.onSurfaceTertiary,
+                    color: apart.onSurfaceTertiary,
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -351,7 +353,7 @@ class _SectionLabel extends StatelessWidget {
     return Text(
       label,
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppTheme.onSurfaceVariant,
+            color: context.apart.onSurfaceVariant,
             letterSpacing: 0.6,
             fontWeight: FontWeight.w500,
           ),
@@ -378,7 +380,10 @@ class _MenuRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final fg = isDestructive ? AppTheme.error : const Color(0xFF404040);
+    final scheme = Theme.of(context).colorScheme;
+    final apart = context.apart;
+    final fg =
+        isDestructive ? AppTheme.error : scheme.onSurface;
     return Column(
       children: [
         InkWell(
@@ -406,7 +411,7 @@ class _MenuRow extends StatelessWidget {
                     height: 20,
                     padding: const EdgeInsets.symmetric(horizontal: 8),
                     decoration: BoxDecoration(
-                      color: AppTheme.outlineMuted,
+                      color: apart.chipInactiveBg,
                       borderRadius: BorderRadius.circular(999),
                     ),
                     alignment: Alignment.center,
@@ -421,10 +426,10 @@ class _MenuRow extends StatelessWidget {
                   const SizedBox(width: 4),
                 ],
                 if (!isDestructive)
-                  const Icon(
+                  Icon(
                     Icons.chevron_right_rounded,
                     size: 14,
-                    color: AppTheme.onSurfaceTertiary,
+                    color: apart.onSurfaceTertiary,
                   ),
               ],
             ),

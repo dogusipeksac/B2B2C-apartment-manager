@@ -24,6 +24,10 @@ flutter run
 - `lib/router/`: `go_router` yapılandırması
 - `lib/l10n/`: çeviri dosyaları
 
+## Supabase
+
+Davet kodu şeması (`schema_v2.sql`) ve `redeem_code` Edge Function deploy adımları için bkz. **[supabase/README.md](supabase/README.md)**.
+
 ## Phase 1
 
 - Spec’e göre bağımlılıklar eklendi

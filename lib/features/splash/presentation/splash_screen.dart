@@ -31,16 +31,17 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         if (kDebugMode) {
           debugPrint('splash: timer fired, checking session');
         }
-        final session = ref.read(authRepositoryProvider).currentSession;
+        final localSession =
+            await ref.read(localSessionRepositoryProvider).load();
         if (!mounted) {
           return;
         }
 
         if (kDebugMode) {
-          final label = session == null ? 'null' : 'non-null';
-          debugPrint('splash: session is $label');
+          final label = localSession == null ? 'null' : 'non-null';
+          debugPrint('splash: local session is $label');
         }
-        if (session == null) {
+        if (localSession == null) {
           final seenOnboarding =
               await OnboardingStorage.hasSeenOnboarding();
           if (!mounted) {
@@ -54,32 +55,16 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
             return;
           }
           if (kDebugMode) {
-            debugPrint('splash: go(/login)');
+            debugPrint('splash: go(/setup/account-type)');
           }
-          context.go('/login');
+          context.go('/setup/account-type');
           return;
         }
 
         if (kDebugMode) {
-          debugPrint('splash: fetching profile');
+          debugPrint('splash: go(/home)');
         }
-        final profile = await ref.read(currentProfileProvider.future);
-        if (!mounted) {
-          return;
-        }
-
-        final fullName = profile?.fullName.trim() ?? '';
-        if (fullName.isEmpty) {
-          if (kDebugMode) {
-            debugPrint('splash: go(/profile-setup)');
-          }
-          context.go('/profile-setup');
-        } else {
-          if (kDebugMode) {
-            debugPrint('splash: go(/home)');
-          }
-          context.go('/home');
-        }
+        context.go('/home');
       } on AppException catch (e) {
         if (!mounted) {
           return;
@@ -90,7 +75,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(e.userMessage)),
         );
-        context.go('/login');
+        context.go('/setup/account-type');
       } on Object catch (e, st) {
         if (!mounted) {
           return;
@@ -103,7 +88,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(l10n.errorGeneric)),
         );
-        context.go('/login');
+        context.go('/setup/account-type');
       }
     });
   }

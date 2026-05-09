@@ -2444,6 +2444,288 @@ abstract class AppLocalizations {
   /// **'Açık adres'**
   String get setupAddressLabel;
 
+  /// No description provided for @accountRoleHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanına nasıl katılıyorsun?'**
+  String get accountRoleHeadline;
+
+  /// No description provided for @accountRoleSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bunu sonradan da değiştirebilirsin.'**
+  String get accountRoleSubtitle;
+
+  /// No description provided for @accountRoleResidentShortTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakinim'**
+  String get accountRoleResidentShortTitle;
+
+  /// No description provided for @accountRoleManagerShortTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticiyim'**
+  String get accountRoleManagerShortTitle;
+
+  /// No description provided for @accountRoleResidentShortBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticiden aldığın davet kodu ile dairene bağlan.'**
+  String get accountRoleResidentShortBody;
+
+  /// No description provided for @accountRoleManagerShortBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanını sıfırdan kur, sakinleri davet et.'**
+  String get accountRoleManagerShortBody;
+
+  /// No description provided for @residentInvitePlaceholderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get residentInvitePlaceholderTitle;
+
+  /// No description provided for @residentInvitePlaceholderBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu akış bir sonraki adımda bağlanacak. Şimdilik yönetici kurulumunu tamamlayabilirsin.'**
+  String get residentInvitePlaceholderBody;
+
+  /// No description provided for @residentInviteBackToRole.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hesap türüne dön'**
+  String get residentInviteBackToRole;
+
+  /// No description provided for @setupWizardStepProgress.
+  ///
+  /// In tr, this message translates to:
+  /// **'ADIM {step} / {total}'**
+  String setupWizardStepProgress(Object step, Object total);
+
+  /// No description provided for @setupWizardStep1AppBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bina bilgileri'**
+  String get setupWizardStep1AppBar;
+
+  /// No description provided for @setupWizardStep2AppBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yapı'**
+  String get setupWizardStep2AppBar;
+
+  /// No description provided for @setupWizardStep3AppBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daireler'**
+  String get setupWizardStep3AppBar;
+
+  /// No description provided for @setupWizardUnitsCountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daireler · {count} adet'**
+  String setupWizardUnitsCountLabel(Object count);
+
+  /// No description provided for @setupWizardStep4AppBar.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat planı'**
+  String get setupWizardStep4AppBar;
+
+  /// No description provided for @setupWizardSkip.
+  ///
+  /// In tr, this message translates to:
+  /// **'Atla'**
+  String get setupWizardSkip;
+
+  /// No description provided for @setupWizardLetsMeetBuilding.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanını tanıyalım'**
+  String get setupWizardLetsMeetBuilding;
+
+  /// No description provided for @setupWizardChangeLaterShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonradan ayarlardan değiştirebilirsin.'**
+  String get setupWizardChangeLaterShort;
+
+  /// No description provided for @setupDistrictLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İL / İLÇE'**
+  String get setupDistrictLabel;
+
+  /// No description provided for @setupYearBuiltOptional.
+  ///
+  /// In tr, this message translates to:
+  /// **'YAPIM YILI (OPS.)'**
+  String get setupYearBuiltOptional;
+
+  /// No description provided for @setupYearBuiltHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. 2008'**
+  String get setupYearBuiltHint;
+
+  /// No description provided for @setupAddressHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Mahalle, sokak, no'**
+  String get setupAddressHint;
+
+  /// No description provided for @setupWizardStructureHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanın yapısı'**
+  String get setupWizardStructureHeadline;
+
+  /// No description provided for @setupWizardStructureSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Blok ve kat sayısı — bir sonraki adımda daireler otomatik oluşur.'**
+  String get setupWizardStructureSubtitle;
+
+  /// No description provided for @setupBlockCountLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'BLOK SAYISI'**
+  String get setupBlockCountLabel;
+
+  /// No description provided for @setupSingleBlock.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek blok'**
+  String get setupSingleBlock;
+
+  /// No description provided for @setupMultipleBlocks.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çok blok'**
+  String get setupMultipleBlocks;
+
+  /// No description provided for @setupStructureCountBold.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} daire'**
+  String setupStructureCountBold(Object count);
+
+  /// No description provided for @setupStructureSummaryTail.
+  ///
+  /// In tr, this message translates to:
+  /// **'oluşturulacak ({floors} kat × {perFloor} daire). Sonraki adımda düzenleyebilirsin.'**
+  String setupStructureSummaryTail(Object floors, Object perFloor);
+
+  /// No description provided for @setupWizardUnitsInstruction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.'**
+  String get setupWizardUnitsInstruction;
+
+  /// No description provided for @setupWizardUnitsEdit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Düzenle'**
+  String get setupWizardUnitsEdit;
+
+  /// No description provided for @setupShowMoreFloorsDetail.
+  ///
+  /// In tr, this message translates to:
+  /// **'+ Daha fazla göster (kat {floors})'**
+  String setupShowMoreFloorsDetail(Object floors);
+
+  /// No description provided for @setupWizardCollapseFloors.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daha az göster'**
+  String get setupWizardCollapseFloors;
+
+  /// No description provided for @setupNamingAutomatic.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otomatik (1A–6C)'**
+  String get setupNamingAutomatic;
+
+  /// No description provided for @setupNamingCustom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel adlandır'**
+  String get setupNamingCustom;
+
+  /// No description provided for @setupWizardProceed.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlerle'**
+  String get setupWizardProceed;
+
+  /// No description provided for @setupDuesHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aidat ayarla'**
+  String get setupDuesHeadline;
+
+  /// No description provided for @setupDuesSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakinlerin görüp ödeyebileceği aylık tutar.'**
+  String get setupDuesSubtitle;
+
+  /// No description provided for @setupDueDayLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'VADE GÜNÜ'**
+  String get setupDueDayLabel;
+
+  /// No description provided for @setupDuesMonthlyPerUnitLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'DAİRE BAŞINA AYLIK'**
+  String get setupDuesMonthlyPerUnitLabel;
+
+  /// No description provided for @setupLateFeeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Otomatik gecikme faizi'**
+  String get setupLateFeeTitle;
+
+  /// No description provided for @setupLateFeeSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'%2 / ay'**
+  String get setupLateFeeSubtitle;
+
+  /// No description provided for @setupSmsReminderTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Hatırlatma SMS gönder'**
+  String get setupSmsReminderTitle;
+
+  /// No description provided for @setupSmsReminderSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Vade öncesi 3 gün'**
+  String get setupSmsReminderSubtitle;
+
+  /// No description provided for @setupTotalMonthlyCollection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Toplam aylık tahsilat'**
+  String get setupTotalMonthlyCollection;
+
+  /// No description provided for @setupCompleteWizard.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kurulumu tamamla'**
+  String get setupCompleteWizard;
+
+  /// No description provided for @setupPerApartmentSuffix.
+  ///
+  /// In tr, this message translates to:
+  /// **'aylık / daire'**
+  String get setupPerApartmentSuffix;
+
   /// No description provided for @profileSetupDemoResident.
   ///
   /// In tr, this message translates to:

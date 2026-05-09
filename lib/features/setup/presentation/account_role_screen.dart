@@ -1,21 +1,24 @@
-import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
-import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-/// Mockup **3.1** — rol seçimi: sakin vs yönetici.
-class DemoRoleScreen extends ConsumerStatefulWidget {
-  const DemoRoleScreen({super.key});
-
-  @override
-  ConsumerState<DemoRoleScreen> createState() => _DemoRoleScreenState();
+/// Post-splash entry: resident vs manager (mockup 3.1).
+enum SetupAccountRole {
+  resident,
+  manager,
 }
 
-class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
-  DemoPersona _selected = DemoPersona.resident;
+/// Hesap türü seçimi — yönetici kurulum / sakin davet kodu girişi.
+class AccountRoleScreen extends StatefulWidget {
+  const AccountRoleScreen({super.key});
+
+  @override
+  State<AccountRoleScreen> createState() => _AccountRoleScreenState();
+}
+
+class _AccountRoleScreenState extends State<AccountRoleScreen> {
+  SetupAccountRole _selected = SetupAccountRole.resident;
 
   @override
   Widget build(BuildContext context) {
@@ -25,11 +28,8 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
     final apart = context.apart;
 
     return Scaffold(
+      backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-          onPressed: () => context.go('/setup/account-type'),
-        ),
         title: Text(l10n.demoPersonaScreenTitle),
       ),
       body: Column(
@@ -42,7 +42,7 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    l10n.demoPersonaScreenSubtitle,
+                    l10n.accountRoleHeadline,
                     style: theme.textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.w600,
                       letterSpacing: -0.2,
@@ -50,32 +50,32 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Bunu sonradan da değiştirebilirsin.',
+                    l10n.accountRoleSubtitle,
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: apart.onSurfaceVariant,
                     ),
                   ),
                   const SizedBox(height: 24),
-                  _RoleCard(
+                  _SetupRoleCard(
                     iconBoxBg: AppTheme.primary,
                     iconBoxFg: Colors.white,
                     icon: Icons.person_outline,
-                    title: l10n.demoPersonaResidentTitle,
-                    subtitle: l10n.demoPersonaResidentBody,
-                    selected: _selected == DemoPersona.resident,
+                    title: l10n.accountRoleResidentShortTitle,
+                    subtitle: l10n.accountRoleResidentShortBody,
+                    selected: _selected == SetupAccountRole.resident,
                     onTap: () =>
-                        setState(() => _selected = DemoPersona.resident),
+                        setState(() => _selected = SetupAccountRole.resident),
                   ),
                   const SizedBox(height: 12),
-                  _RoleCard(
+                  _SetupRoleCard(
                     iconBoxBg: scheme.secondaryContainer,
                     iconBoxFg: scheme.secondary,
                     icon: Icons.shield_outlined,
-                    title: l10n.demoPersonaManagerTitle,
-                    subtitle: l10n.demoPersonaManagerBody,
-                    selected: _selected == DemoPersona.manager,
+                    title: l10n.accountRoleManagerShortTitle,
+                    subtitle: l10n.accountRoleManagerShortBody,
+                    selected: _selected == SetupAccountRole.manager,
                     onTap: () =>
-                        setState(() => _selected = DemoPersona.manager),
+                        setState(() => _selected = SetupAccountRole.manager),
                   ),
                   const SizedBox(height: 16),
                   Container(
@@ -94,20 +94,11 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
                         ),
                         const SizedBox(width: 8),
                         Expanded(
-                          child: Text.rich(
-                            TextSpan(
-                              style: theme.textTheme.labelMedium?.copyWith(
-                                color: scheme.onTertiaryContainer,
-                                height: 1.4,
-                              ),
-                              children: const [
-                                TextSpan(text: 'İlk 30 gün '),
-                                TextSpan(
-                                  text: 'ücretsiz',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                                TextSpan(text: '. Kart bilgisi gerekmez.'),
-                              ],
+                          child: Text(
+                            l10n.demoPersonaTrialBanner,
+                            style: theme.textTheme.labelMedium?.copyWith(
+                              color: scheme.onTertiaryContainer,
+                              height: 1.4,
                             ),
                           ),
                         ),
@@ -121,12 +112,11 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: FilledButton(
-              onPressed: () async {
-                await ref
-                    .read(demoPersonaProvider.notifier)
-                    .choose(_selected);
-                if (context.mounted) {
-                  context.go('/home');
+              onPressed: () {
+                if (_selected == SetupAccountRole.manager) {
+                  context.go('/setup/wizard');
+                } else {
+                  context.go('/setup/resident-invite');
                 }
               },
               child: Text(l10n.continueButton),
@@ -138,8 +128,8 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
   }
 }
 
-class _RoleCard extends StatelessWidget {
-  const _RoleCard({
+class _SetupRoleCard extends StatelessWidget {
+  const _SetupRoleCard({
     required this.iconBoxBg,
     required this.iconBoxFg,
     required this.icon,
@@ -178,7 +168,6 @@ class _RoleCard extends StatelessWidget {
             ),
           ),
           child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Container(
                 width: 48,
@@ -201,12 +190,14 @@ class _RoleCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(
-                      subtitle,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: apart.onSurfaceVariant,
-                        fontSize: 12,
-                        height: 1.4,
+                    Text.rich(
+                      TextSpan(
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: apart.onSurfaceVariant,
+                          fontSize: 12,
+                          height: 1.4,
+                        ),
+                        children: _inviteBoldSpan(subtitle),
                       ),
                     ),
                   ],
@@ -220,6 +211,24 @@ class _RoleCard extends StatelessWidget {
       ),
     );
   }
+}
+
+List<InlineSpan> _inviteBoldSpan(String text) {
+  const marker = 'davet kodu';
+  final lower = text.toLowerCase();
+  final idx = lower.indexOf(marker);
+  if (idx < 0) {
+    return [TextSpan(text: text)];
+  }
+  final end = idx + marker.length;
+  return [
+    TextSpan(text: text.substring(0, idx)),
+    TextSpan(
+      text: text.substring(idx, end),
+      style: const TextStyle(fontWeight: FontWeight.w700),
+    ),
+    TextSpan(text: text.substring(end)),
+  ];
 }
 
 class _RadioDot extends StatelessWidget {
@@ -242,13 +251,15 @@ class _RadioDot extends StatelessWidget {
         ),
       ),
       child: selected
-          ? Center(
-              child: Container(
+          ? const Center(
+              child: SizedBox(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(
-                  color: Colors.white,
-                  shape: BoxShape.circle,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    shape: BoxShape.circle,
+                  ),
                 ),
               ),
             )

@@ -1,7 +1,6 @@
 import 'package:apartment_manager/core/onboarding/onboarding_storage.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/widgets/app_button.dart';
-import 'package:apartment_manager/features/auth/presentation/theme/auth_shell_colors.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
@@ -31,13 +30,16 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     if (!mounted) {
       return;
     }
-    context.go('/login');
+    context.go('/setup/account-type');
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final scheme = Theme.of(context).colorScheme;
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+    final apart = context.apart;
+    final isDark = theme.brightness == Brightness.dark;
 
     final slides = [
       (
@@ -55,7 +57,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     ];
 
     return Scaffold(
-      backgroundColor: AppTheme.scaffoldBg,
+      backgroundColor: context.apart.scaffoldBg,
       body: SafeArea(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -81,6 +83,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 onPageChanged: (i) => setState(() => _page = i),
                 itemBuilder: (context, index) {
                   final (title, body) = slides[index];
+                  final heroGradient = isDark
+                      ? LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            scheme.primaryContainer,
+                            scheme.surfaceContainerHighest,
+                          ],
+                        )
+                      : const LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Color(0xFFE8F2E9),
+                            Color(0xFFF5F7F5),
+                          ],
+                        );
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 24),
                     child: Column(
@@ -91,14 +110,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                           child: DecoratedBox(
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(24),
-                              gradient: const LinearGradient(
-                                begin: Alignment.topCenter,
-                                end: Alignment.bottomCenter,
-                                colors: [
-                                  Color(0xFFE8F2E9),
-                                  Color(0xFFF5F7F5),
-                                ],
-                              ),
+                              gradient: heroGradient,
                             ),
                             child: Center(
                               child: Container(
@@ -106,21 +118,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 height: 140,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(32),
-                                  color: AppTheme.primary,
+                                  color: isDark
+                                      ? scheme.primary
+                                      : AppTheme.primary,
                                   boxShadow: [
                                     BoxShadow(
                                       color: Colors.black.withValues(
-                                        alpha: 0.15,
+                                        alpha: isDark ? 0.35 : 0.15,
                                       ),
                                       blurRadius: 24,
                                       offset: const Offset(0, 12),
                                     ),
                                   ],
                                 ),
-                                child: const Icon(
+                                child: Icon(
                                   Icons.apartment_rounded,
                                   size: 64,
-                                  color: Colors.white,
+                                  color:
+                                      isDark ? scheme.onPrimary : Colors.white,
                                 ),
                               ),
                             ),
@@ -129,21 +144,19 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         const SizedBox(height: 24),
                         Text(
                           title,
-                          style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: -0.2,
-                                color: const Color(0xFF1A1A1A),
-                              ),
+                          style: theme.textTheme.headlineSmall?.copyWith(
+                            fontWeight: FontWeight.w600,
+                            letterSpacing: -0.2,
+                            color: scheme.onSurface,
+                          ),
                         ),
                         const SizedBox(height: 8),
                         Text(
                           body,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(
-                                color: AuthShellColors.textMuted,
-                                height: 1.45,
-                              ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: apart.onSurfaceVariant,
+                            height: 1.45,
+                          ),
                         ),
                       ],
                     ),
@@ -167,8 +180,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(999),
                           color: _page == i
-                              ? AppTheme.primary
-                              : const Color(0xFFD1D5DB),
+                              ? scheme.primary
+                              : apart.outlineMuted,
                         ),
                       ),
                     ),

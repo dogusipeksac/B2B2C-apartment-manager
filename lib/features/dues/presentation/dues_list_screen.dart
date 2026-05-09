@@ -25,6 +25,8 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final apart = context.apart;
+    final scheme = theme.colorScheme;
     final asyncInvoices = ref.watch(duesInvoicesProvider);
     final asyncDebt = ref.watch(duesDebtSummaryProvider);
 
@@ -120,7 +122,7 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
                             TextButton(
                               style: TextButton.styleFrom(
                                 backgroundColor: AppTheme.secondary,
-                                foregroundColor: const Color(0xFF1A1A1A),
+                                foregroundColor: scheme.onSecondary,
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 14,
                                   vertical: 8,
@@ -180,12 +182,12 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
                               decoration: BoxDecoration(
                                 color: active
                                     ? AppTheme.primary
-                                    : AppTheme.surface,
+                                    : apart.surface,
                                 borderRadius: BorderRadius.circular(999),
                                 border: Border.all(
                                   color: active
                                       ? AppTheme.primary
-                                      : AppTheme.outlineMuted,
+                                      : apart.outlineMuted,
                                 ),
                               ),
                               alignment: Alignment.center,
@@ -194,7 +196,7 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
                                 style: TextStyle(
                                   color: active
                                       ? Colors.white
-                                      : AppTheme.onSurfaceVariant,
+                                      : apart.onSurfaceVariant,
                                   fontSize: 12,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -213,7 +215,7 @@ class _DuesListScreenState extends ConsumerState<DuesListScreen> {
                   child: Text(
                     '2026',
                     style: theme.textTheme.labelMedium?.copyWith(
-                      color: AppTheme.onSurfaceVariant,
+                      color: apart.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
                       letterSpacing: 0.48,
                     ),
@@ -278,11 +280,12 @@ class _InvoiceListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final apart = context.apart;
     final (badgeBg, badgeFg, chipBg, chipFg, chipLabel) =
         _statusTokens(context, row.status);
 
     return Material(
-      color: AppTheme.surface,
+      color: apart.surface,
       borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
@@ -291,7 +294,7 @@ class _InvoiceListItem extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: AppTheme.outlineMuted),
+            border: Border.all(color: apart.outlineMuted),
           ),
           child: Row(
             children: [
@@ -317,7 +320,7 @@ class _InvoiceListItem extends StatelessWidget {
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: row.status == DuesInvoiceUiStatus.overdue
                             ? AppTheme.error
-                            : AppTheme.onSurfaceVariant,
+                            : apart.onSurfaceVariant,
                       ),
                     ),
                   ],
@@ -332,7 +335,7 @@ class _InvoiceListItem extends StatelessWidget {
                     style: theme.textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
                       color: row.status == DuesInvoiceUiStatus.paid
-                          ? AppTheme.onSurfaceVariant
+                          ? apart.onSurfaceVariant
                           : null,
                     ),
                   ),

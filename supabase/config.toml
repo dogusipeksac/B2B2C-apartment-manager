@@ -1,0 +1,4 @@
+project_id = "hmrzrjngcyvmbkwceauz"
+
+[functions.redeem_code]
+verify_jwt = false
