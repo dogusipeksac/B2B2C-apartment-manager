@@ -5,6 +5,7 @@ import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/manager/data/manager_invite_repository.dart';
+import 'package:apartment_manager/features/superadmin/data/superadmin_repository.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -19,11 +20,15 @@ class UnitInviteDetailScreen extends ConsumerStatefulWidget {
   const UnitInviteDetailScreen({
     required this.unitId,
     this.initialUnit,
+    this.superadminBuildingId,
     super.key,
   });
 
   final String unitId;
   final ManagerUnitOption? initialUnit;
+
+  /// When set, loads/creates invites via [SuperadminRepository] for this building.
+  final String? superadminBuildingId;
 
   @override
   ConsumerState<UnitInviteDetailScreen> createState() =>
@@ -68,8 +73,17 @@ class _UnitInviteDetailScreenState
         setState(() => _loading = false);
         return;
       }
-      final repo = ref.read(managerInviteRepositoryProvider);
-      final result = await repo.listUnits(session);
+      final ManagerInviteListResult result;
+      if (widget.superadminBuildingId != null) {
+        final srepo = ref.read(superadminRepositoryProvider);
+        result = await srepo.listUnitsForBuilding(
+          session,
+          widget.superadminBuildingId!,
+        );
+      } else {
+        final repo = ref.read(managerInviteRepositoryProvider);
+        result = await repo.listUnits(session);
+      }
       if (!mounted) {
         return;
       }
@@ -109,11 +123,21 @@ class _UnitInviteDetailScreenState
         context.go('/setup/account-type');
         return;
       }
-      final repo = ref.read(managerInviteRepositoryProvider);
-      final result = await repo.createInvite(
-        session,
-        unitId: widget.unitId,
-      );
+      final CreatedUnitInvite result;
+      if (widget.superadminBuildingId != null) {
+        final srepo = ref.read(superadminRepositoryProvider);
+        result = await srepo.createUnitInvite(
+          session,
+          buildingId: widget.superadminBuildingId!,
+          unitId: widget.unitId,
+        );
+      } else {
+        final repo = ref.read(managerInviteRepositoryProvider);
+        result = await repo.createInvite(
+          session,
+          unitId: widget.unitId,
+        );
+      }
       if (!mounted) {
         return;
       }

@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.session_metadata]
 verify_jwt = false
+
+[functions.superadmin_ops]
+verify_jwt = false

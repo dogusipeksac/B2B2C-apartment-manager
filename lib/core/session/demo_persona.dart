@@ -2,4 +2,5 @@
 enum DemoPersona {
   resident,
   manager,
+  superAdmin,
 }

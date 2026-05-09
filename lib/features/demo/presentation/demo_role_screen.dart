@@ -77,6 +77,17 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
                     onTap: () =>
                         setState(() => _selected = DemoPersona.manager),
                   ),
+                  const SizedBox(height: 12),
+                  _RoleCard(
+                    iconBoxBg: scheme.errorContainer,
+                    iconBoxFg: scheme.error,
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: l10n.demoPersonaSuperAdminTitle,
+                    subtitle: l10n.demoPersonaSuperAdminBody,
+                    selected: _selected == DemoPersona.superAdmin,
+                    onTap: () =>
+                        setState(() => _selected = DemoPersona.superAdmin),
+                  ),
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),

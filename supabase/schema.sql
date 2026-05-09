@@ -183,7 +183,7 @@ create table public.votes (
   poll_id uuid not null references polls(id) on delete cascade,
   option_id uuid not null references poll_options(id) on delete cascade,
   voter_id uuid references profiles(id),
-  unit_id uuid references units(id),
+  unit_id uuid references units(id) on delete set null,
   weight numeric(7,4) default 1,
   created_at timestamptz default now(),
   unique(poll_id, unit_id)

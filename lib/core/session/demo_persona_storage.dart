@@ -17,6 +17,8 @@ abstract final class DemoPersonaStorage {
         return DemoPersona.resident;
       case 'manager':
         return DemoPersona.manager;
+      case 'superAdmin':
+        return DemoPersona.superAdmin;
       default:
         return null;
     }

@@ -8,6 +8,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+import { isMissingColumn } from "../_shared/db_compat.ts";
+
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -52,24 +54,43 @@ async function assertManagerSession(
 > {
   const clientTok = sessionToken.trim();
 
-  const { data: deviceRow, error: devFetchErr } = await supabase
+  const full = await supabase
     .from("devices")
     .select("profile_id, building_id, role, session_token")
     .eq("device_id", deviceId)
     .maybeSingle();
 
-  if (devFetchErr) {
-    console.error("devices select", devFetchErr);
+  let deviceRow: Record<string, unknown> | null = null;
+  let legacyNoSessionColumn = false;
+
+  if (full.error && isMissingColumn(full.error, "session_token")) {
+    const leg = await supabase
+      .from("devices")
+      .select("profile_id, building_id, role")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+    if (leg.error) {
+      console.error("devices select legacy", leg.error);
+      return { ok: false, status: 500, error: "database_error" };
+    }
+    deviceRow = leg.data as Record<string, unknown> | null;
+    legacyNoSessionColumn = true;
+  } else if (full.error) {
+    console.error("devices select", full.error);
     return { ok: false, status: 500, error: "database_error" };
+  } else {
+    deviceRow = full.data as Record<string, unknown> | null;
   }
 
   if (!deviceRow) {
     return { ok: false, status: 404, error: "device_not_found" };
   }
 
-  let dbTok = String(deviceRow.session_token ?? "").trim();
+  let dbTok = legacyNoSessionColumn
+    ? ""
+    : String(deviceRow.session_token ?? "").trim();
 
-  if (dbTok !== clientTok) {
+  if (!legacyNoSessionColumn && dbTok !== clientTok) {
     const roleOk = deviceRow.role === "building_admin";
     const noBuilding =
       deviceRow.building_id === null ||
@@ -92,7 +113,11 @@ async function assertManagerSession(
     }
   }
 
-  if (dbTok !== clientTok) {
+  if (legacyNoSessionColumn) {
+    if (!clientTok) {
+      return { ok: false, status: 401, error: "invalid_session" };
+    }
+  } else if (dbTok !== clientTok) {
     return { ok: false, status: 401, error: "invalid_session" };
   }
 
@@ -110,7 +135,7 @@ async function assertManagerSession(
     device: {
       ...deviceRow,
       building_id: String(bid),
-    },
+    } as DeviceRow & { building_id: string },
   };
 }
 

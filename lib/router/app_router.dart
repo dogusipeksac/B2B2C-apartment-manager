@@ -24,6 +24,8 @@ import 'package:apartment_manager/features/setup/presentation/admin_invite_scree
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/resident_invite_screen.dart';
 import 'package:apartment_manager/features/splash/presentation/splash_screen.dart';
+import 'package:apartment_manager/features/superadmin/presentation/superadmin_access_screen.dart';
+import 'package:apartment_manager/features/superadmin/presentation/superadmin_building_invite_screen.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
@@ -104,6 +106,24 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AdminInviteScreen(),
       ),
       GoRoute(
+        path: '/setup/superadmin-access',
+        builder: (context, state) => const SuperadminAccessScreen(),
+      ),
+      GoRoute(
+        path: '/superadmin/building/:buildingId',
+        builder: (context, state) {
+          final id = state.pathParameters['buildingId'] ?? '';
+          final nameRaw = state.uri.queryParameters['name'];
+          final name = nameRaw != null && nameRaw.isNotEmpty
+              ? Uri.decodeComponent(nameRaw)
+              : null;
+          return SuperadminBuildingInviteScreen(
+            buildingId: id,
+            buildingName: name,
+          );
+        },
+      ),
+      GoRoute(
         path: '/setup/wizard',
         builder: (context, state) => const BuildingSetupWizardScreen(),
       ),
@@ -127,6 +147,25 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           return UnitInviteDetailScreen(
             unitId: unitId,
             initialUnit: initial,
+          );
+        },
+      ),
+      GoRoute(
+        path:
+            '/superadmin/building/:buildingId/invite/unit/:unitId',
+        builder: (context, state) {
+          final unitId = state.pathParameters['unitId'] ?? '';
+          final buildingId = state.pathParameters['buildingId'] ?? '';
+          final extra = state.extra;
+          ManagerUnitOption? initial;
+          if (extra is ManagerUnitOption) {
+            initial = extra;
+          }
+          return UnitInviteDetailScreen(
+            unitId: unitId,
+            initialUnit: initial,
+            superadminBuildingId:
+                buildingId.isEmpty ? null : buildingId,
           );
         },
       ),
@@ -167,6 +206,7 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       final isAccountType = location == '/setup/account-type';
       final isResidentInvite = location == '/setup/resident-invite';
       final isAdminInvite = location == '/setup/admin-invite';
+      final isSuperadminAccess = location == '/setup/superadmin-access';
       final isSetupWizard = location == '/setup/wizard';
       final isDemoRole = location == '/demo-role';
 
@@ -187,8 +227,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
             isAccountType ||
             isResidentInvite ||
             isAdminInvite ||
+            isSuperadminAccess ||
             (isSetupWizard && Env.demoMode);
         return allowedUnauth ? null : '/setup/account-type';
+      }
+
+      final isSuperadminRoute = location.startsWith('/superadmin/');
+      if (isSuperadminRoute && local.role != UserRole.superAdmin) {
+        return '/home';
       }
 
       if (isAdminInvite) {

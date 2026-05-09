@@ -25,6 +25,8 @@
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
+import { isMissingColumn } from "../_shared/db_compat.ts";
+
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
@@ -182,15 +184,32 @@ serve(async (req: Request): Promise<Response> => {
     return jsonResponse(422, { success: false, error: msg });
   }
 
-  const { data: deviceRow, error: devFetchErr } = await supabase
+  const full = await supabase
     .from("devices")
     .select("id, profile_id, building_id, role, session_token")
     .eq("device_id", deviceId)
     .maybeSingle();
 
-  if (devFetchErr) {
-    console.error("devices select", devFetchErr);
+  let deviceRow: Record<string, unknown> | null = null;
+  let legacyNoSessionColumn = false;
+
+  if (full.error && isMissingColumn(full.error, "session_token")) {
+    const leg = await supabase
+      .from("devices")
+      .select("id, profile_id, building_id, role")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+    if (leg.error) {
+      console.error("devices select legacy", leg.error);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+    deviceRow = leg.data as Record<string, unknown> | null;
+    legacyNoSessionColumn = true;
+  } else if (full.error) {
+    console.error("devices select", full.error);
     return jsonResponse(500, { success: false, error: "database_error" });
+  } else {
+    deviceRow = full.data as Record<string, unknown> | null;
   }
 
   if (!deviceRow) {
@@ -198,10 +217,12 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   const clientTok = sessionToken.trim();
-  let dbTok = String(deviceRow.session_token ?? "").trim();
+  let dbTok = legacyNoSessionColumn
+    ? ""
+    : String(deviceRow.session_token ?? "").trim();
 
   // Heal legacy rows where redeem ran before session_token was persisted correctly.
-  if (dbTok !== clientTok) {
+  if (!legacyNoSessionColumn && dbTok !== clientTok) {
     const roleOk = deviceRow.role === "building_admin";
     const noBuilding =
       deviceRow.building_id === null ||
@@ -226,7 +247,11 @@ serve(async (req: Request): Promise<Response> => {
     }
   }
 
-  if (dbTok !== clientTok) {
+  if (legacyNoSessionColumn) {
+    if (!clientTok) {
+      return jsonResponse(401, { success: false, error: "invalid_session" });
+    }
+  } else if (dbTok !== clientTok) {
     return jsonResponse(401, { success: false, error: "invalid_session" });
   }
 

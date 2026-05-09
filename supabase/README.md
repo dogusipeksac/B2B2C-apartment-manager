@@ -8,8 +8,12 @@ Bu klasör veritabanı tanımları ve `redeem_code` Edge Function kaynağını i
 |--------|-----------|
 | `schema.sql` | İlk kurulum (enum’lar, çekirdek tablolar, tetikleyiciler) |
 | `schema_v2.sql` | Davet kodu modeli: `invite_codes`, `devices`, `profiles` gevşetme |
+| `schema_v5_votes_unit_fk.sql` | `votes.unit_id` → `ON DELETE SET NULL` (bina silinirken FK hatası önleme) |
+| `schema_v6_invite_admin_redeem_policy.sql` | `invite_codes.admin_redeem_policy` — yönetici kodu tek kullanımlı / yeniden kullanılabilir |
+| `schema_after_v2_bundle.sql` | **Tek çalıştırmada** `schema_v3` + `schema_v6` — sıfır DB’de süper yönetici panelinden kod üretimi için önerilir |
 | `rls.sql` | Row Level Security politikaları (`schema.sql` sonrası uygulanır) |
-| `functions/redeem_code/index.ts` | Kod kullanımı (admin / unit) — **service role** |
+| `functions/redeem_code/index.ts` | Kod kullanımı (admin / unit) — **service role**; opsiyonel `SUPERADMIN_ACCESS_CODE` ile süper yönetici oturumu |
+| `functions/superadmin_ops/index.ts` | Süper yönetici: tüm binalar, yönetici/daire davet kodları — **service role** |
 | `functions/manager_invite/index.ts` | Yönetici: daire listesi + sakin davet kodu üretimi — **service role** |
 | `functions/finalize_building_setup/index.ts` | Kurulum sonrası bina/daire kaydı |
 
@@ -24,7 +28,16 @@ supabase login
 supabase link --project-ref <PROJECT_REF>
 supabase functions deploy manager_invite --project-ref <PROJECT_REF>
 supabase functions deploy redeem_code --project-ref <PROJECT_REF>
+supabase functions deploy superadmin_ops --project-ref <PROJECT_REF>
 ```
+
+### Süper yönetici
+
+1. Supabase Dashboard → Edge Functions → **Secrets**: `SUPERADMIN_ACCESS_CODE` değerini ayarlayın (ör. `DOGUSADMIN`; harf büyüklüğü önemli değil, normalize edilir).
+2. `redeem_code` yeniden deploy edilir; uygulama **Hesap türü → Sistem yöneticisiyim → Erişim kodu** ekranından aynı kodu gönderir ve `devices.role = super_admin` oturumu alır.
+3. `superadmin_ops` deploy edilmezse panel istekleri başarısız olur.
+
+**Apartman silme:** `superadmin_ops` içinde `delete_building` aksiyonu, önce `devices` ve `audit_logs` üzerindeki bina referanslarını temizler, sonra `buildings` satırını siler; şemada `ON DELETE CASCADE` olan tablolar (birimler, üyelikler, aidat dönemleri vb.) otomatik temizlenir. Storage’daki dosyalar silinmez — gerekirse ayrıca temizlenmelidir.
 
 `config.toml` içinde `[functions.manager_invite] verify_jwt = false` ile anon key üzerinden çağrıya izin verilir (Dashboard’da da function için JWT kapalı olmalı).
 
@@ -51,7 +64,11 @@ Yeni bir projede:
 
 1. SQL Editor’da `schema.sql` çalıştırın.
 2. Ardından `schema_v2.sql` çalıştırın.
-3. `rls.sql` çalıştırın (varsa mevcut politikalarla çakışma olursa önce yedek alın).
+3. **`schema_after_v2_bundle.sql`** çalıştırın (`devices.session_token` + `invite_codes.admin_redeem_policy`). Süper yönetici panelinden yönetici kodu üretmek ve kodda **tek kullanımlı / çoklu kurulum** seçeneğinin veritabanına yazılması için gereklidir.
+4. İsterseniz `schema_v5_votes_unit_fk.sql` (oylar tablosu varsa bina silme uyumu).
+5. `rls.sql` çalıştırın (varsa mevcut politikalarla çakışma olursa önce yedek alın).
+
+**Sıfır veritabanı — süper yönetici akışı:** Dashboard → Edge Secrets içinde `SUPERADMIN_ACCESS_CODE` tanımlı olsun → `redeem_code` deploy → uygulamada **Sistem yöneticisi** erişim kodu ile giriş → panelde **Tek kullanımlı** veya **Çoklu kurulum** seçip **Yeni yönetici kodu oluştur**. Edge fonksiyonları (`superadmin_ops`, `redeem_code`) güncel deploy edilmiş olmalı.
 
 Mevcut projede sadece davet kodu eklemek için: **`schema_v2.sql`** yeterlidir (önceki şema ile uyumludur).
 

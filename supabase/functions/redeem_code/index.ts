@@ -6,9 +6,13 @@
  *
  * Admin (8-char): full_name optional — creates device row, building wizard fills building later.
  * Unit (5-char): full_name required (≥3 chars) — creates profile + membership + device.
+ * Optional env SUPERADMIN_ACCESS_CODE: matching normalized code issues super_admin device session.
+ * Admin invite_codes.admin_redeem_policy: single_use (consume) | reusable (repeat redeem).
  */
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+
+import { isMissingColumn } from "../_shared/db_compat.ts";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
@@ -28,6 +32,32 @@ function jsonResponse(
 
 function normalizeCode(raw: string): string {
   return raw.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
+}
+
+type DeviceUpsertRow = {
+  device_id: string;
+  profile_id: string | null;
+  building_id: string | null;
+  unit_id: string | null;
+  role: string;
+  session_token: string;
+  last_seen_at: string;
+};
+
+async function upsertDeviceForgivingMissingSessionColumn(
+  supabase: ReturnType<typeof createClient>,
+  row: DeviceUpsertRow,
+): Promise<{ error: { message?: string } | null }> {
+  let res = await supabase.from("devices").upsert(row, {
+    onConflict: "device_id",
+  });
+  if (!res.error) return res;
+  if (!isMissingColumn(res.error, "session_token")) return res;
+  const { session_token: _st, ...legacy } = row;
+  void _st;
+  return await supabase.from("devices").upsert(legacy, {
+    onConflict: "device_id",
+  });
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -75,17 +105,65 @@ serve(async (req: Request): Promise<Response> => {
 
   const sessionToken = crypto.randomUUID();
 
-  const { data: row, error: findErr } = await supabase
+  const superAccess = Deno.env.get("SUPERADMIN_ACCESS_CODE")?.trim();
+  if (superAccess && superAccess.length >= 4) {
+    const secretNorm = normalizeCode(superAccess);
+    if (secretNorm.length >= 4 && code === secretNorm) {
+      const nowIso = new Date().toISOString();
+      const { error: devErr } = await upsertDeviceForgivingMissingSessionColumn(
+        supabase,
+        {
+          device_id: deviceId,
+          profile_id: null,
+          building_id: null,
+          unit_id: null,
+          role: "super_admin",
+          session_token: sessionToken,
+          last_seen_at: nowIso,
+        },
+      );
+
+      if (devErr) {
+        console.error("devices upsert super_admin", devErr);
+        return jsonResponse(500, { success: false, error: "database_error" });
+      }
+
+      return jsonResponse(200, {
+        success: true,
+        role: "super_admin",
+        building_id: null,
+        unit_id: null,
+        profile_id: null,
+        session_token: sessionToken,
+      });
+    }
+  }
+
+  let row: Record<string, unknown> | null = null;
+  const primary = await supabase
     .from("invite_codes")
     .select(
-      "id, code_type, status, building_id, unit_id, expires_at",
+      "id, code_type, status, building_id, unit_id, expires_at, admin_redeem_policy",
     )
     .eq("code", code)
     .maybeSingle();
 
-  if (findErr) {
-    console.error("invite_codes select", findErr);
+  if (primary.error && isMissingColumn(primary.error, "admin_redeem_policy")) {
+    const legacy = await supabase
+      .from("invite_codes")
+      .select("id, code_type, status, building_id, unit_id, expires_at")
+      .eq("code", code)
+      .maybeSingle();
+    if (legacy.error) {
+      console.error("invite_codes select legacy", legacy.error);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+    row = legacy.data as Record<string, unknown> | null;
+  } else if (primary.error) {
+    console.error("invite_codes select", primary.error);
     return jsonResponse(500, { success: false, error: "database_error" });
+  } else {
+    row = primary.data as Record<string, unknown> | null;
   }
 
   if (!row) {
@@ -119,6 +197,11 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   const codeType = row.code_type as string;
+  const rawAdminPolicy = (row as Record<string, unknown>).admin_redeem_policy;
+  const adminRedeemPolicy =
+    typeof rawAdminPolicy === "string" && rawAdminPolicy.trim() === "reusable"
+      ? "reusable"
+      : "single_use";
 
   if (codeType === "unit") {
     if (!fullName || fullName.length < 3) {
@@ -132,33 +215,36 @@ serve(async (req: Request): Promise<Response> => {
 
   const nowIso = new Date().toISOString();
 
-  const { data: locked, error: updErr } = await supabase
-    .from("invite_codes")
-    .update({
-      status: "used",
-      used_at: nowIso,
-      used_by_device_id: deviceId,
-    })
-    .eq("id", row.id)
-    .eq("status", "active")
-    .select("id")
-    .maybeSingle();
-
-  if (updErr) {
-    console.error("invite_codes update", updErr);
-    return jsonResponse(500, { success: false, error: "database_error" });
-  }
-
-  if (!locked) {
-    return jsonResponse(409, {
-      success: false,
-      error: "code_already_used",
-      message: "Bu kod daha önce kullanılmış.",
-    });
-  }
-
   if (codeType === "admin") {
-    const { error: devErr } = await supabase.from("devices").upsert(
+    if (adminRedeemPolicy !== "reusable") {
+      const { data: locked, error: updErr } = await supabase
+        .from("invite_codes")
+        .update({
+          status: "used",
+          used_at: nowIso,
+          used_by_device_id: deviceId,
+        })
+        .eq("id", row.id)
+        .eq("status", "active")
+        .select("id")
+        .maybeSingle();
+
+      if (updErr) {
+        console.error("invite_codes update admin", updErr);
+        return jsonResponse(500, { success: false, error: "database_error" });
+      }
+
+      if (!locked) {
+        return jsonResponse(409, {
+          success: false,
+          error: "code_already_used",
+          message: "Bu kod daha önce kullanılmış.",
+        });
+      }
+    }
+
+    const { error: devErr } = await upsertDeviceForgivingMissingSessionColumn(
+      supabase,
       {
         device_id: deviceId,
         profile_id: null,
@@ -168,7 +254,6 @@ serve(async (req: Request): Promise<Response> => {
         session_token: sessionToken,
         last_seen_at: nowIso,
       },
-      { onConflict: "device_id" },
     );
 
     if (devErr) {
@@ -187,6 +272,31 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   if (codeType === "unit") {
+    const { data: locked, error: updErr } = await supabase
+      .from("invite_codes")
+      .update({
+        status: "used",
+        used_at: nowIso,
+        used_by_device_id: deviceId,
+      })
+      .eq("id", row.id)
+      .eq("status", "active")
+      .select("id")
+      .maybeSingle();
+
+    if (updErr) {
+      console.error("invite_codes update unit", updErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    if (!locked) {
+      return jsonResponse(409, {
+        success: false,
+        error: "code_already_used",
+        message: "Bu kod daha önce kullanılmış.",
+      });
+    }
+
     const buildingId = row.building_id as string | null;
     const unitId = row.unit_id as string | null;
 
@@ -227,7 +337,8 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
-    const { error: dErr } = await supabase.from("devices").upsert(
+    const { error: dErr } = await upsertDeviceForgivingMissingSessionColumn(
+      supabase,
       {
         device_id: deviceId,
         profile_id: profileId,
@@ -237,7 +348,6 @@ serve(async (req: Request): Promise<Response> => {
         session_token: sessionToken,
         last_seen_at: nowIso,
       },
-      { onConflict: "device_id" },
     );
 
     if (dErr) {

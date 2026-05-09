@@ -7,6 +7,7 @@ import 'package:apartment_manager/features/auth/presentation/providers/auth_prov
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/features/home/presentation/manager_home_view.dart';
 import 'package:apartment_manager/features/home/presentation/resident_home_shell.dart';
+import 'package:apartment_manager/features/superadmin/presentation/superadmin_home_view.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -37,6 +38,10 @@ class HomeScreen extends ConsumerWidget {
           );
         },
         data: (session) {
+          if (session != null && session.role == UserRole.superAdmin) {
+            return const SuperAdminHomeView();
+          }
+
           final isManager = session != null &&
               session.role == UserRole.buildingAdmin &&
               session.buildingId != null &&
@@ -109,6 +114,15 @@ class HomeScreen extends ConsumerWidget {
               });
               return const Scaffold(
                 body: Center(child: CircularProgressIndicator()),
+              );
+            }
+            if (persona == DemoPersona.superAdmin) {
+              return SuperAdminHomeView(
+                onSwitchPersona: () async {
+                  await ref.read(demoPersonaProvider.notifier).choose(
+                        DemoPersona.manager,
+                      );
+                },
               );
             }
             if (persona == DemoPersona.manager) {

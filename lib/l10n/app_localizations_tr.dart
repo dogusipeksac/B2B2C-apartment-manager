@@ -1727,4 +1727,126 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get demoModuleLockedBody =>
       'Gerçek veriler bağlanınca burası açılacak.';
+
+  @override
+  String get accountRoleSuperAdminShortTitle => 'Sistem yöneticisiyim';
+
+  @override
+  String get accountRoleSuperAdminShortBody =>
+      'Tüm apartmanları gör, yönetici ve daire kodları üret.';
+
+  @override
+  String get demoPersonaSuperAdminTitle => 'Sistem yöneticisi';
+
+  @override
+  String get demoPersonaSuperAdminBody =>
+      'Demo: platform genelinde kod ve bina yönetimi.';
+
+  @override
+  String get superadminAccessTitle => 'Sistem erişimi';
+
+  @override
+  String get superadminAccessHeadline => 'Özel erişim kodun';
+
+  @override
+  String get superadminAccessBody =>
+      'Sunucuda tanımlı süper yönetici kodunu girin. Bu kod uygulamada saklanmaz; yalnızca Edge doğrulaması yapılır.';
+
+  @override
+  String get superadminAccessFieldLabel => 'ERİŞİM KODU';
+
+  @override
+  String get superadminAccessContinue => 'Giriş yap';
+
+  @override
+  String get superadminAccessCodeTooShort => 'Kod en az 4 karakter olmalı.';
+
+  @override
+  String get superadminAccessWrongRole =>
+      'Bu kod sistem yöneticisi oturumu vermedi.';
+
+  @override
+  String get superadminAccessUnexpectedError =>
+      'Giriş yapılamadı. Kodu ve bağlantını kontrol edin.';
+
+  @override
+  String get superadminDashboardTitle => 'Sistem paneli';
+
+  @override
+  String get superadminRefresh => 'Yenile';
+
+  @override
+  String get superadminDemoBanner =>
+      'Demo modda yerel örnek veriler gösterilir.';
+
+  @override
+  String get superadminDemoSwitch => 'Demo: rol değiştir';
+
+  @override
+  String get superadminSectionManagerCodes => 'Yönetici davet kodları';
+
+  @override
+  String get superadminCreateManagerCode => 'Yeni yönetici kodu oluştur';
+
+  @override
+  String get superadminManagerCodeCreated => 'Yönetici kodu panoya kopyalandı.';
+
+  @override
+  String get superadminNoAdminCodesYet =>
+      'Henüz liste için kod yok; yeni kod oluşturabilirsiniz.';
+
+  @override
+  String get superadminSectionBuildings => 'Apartmanlar';
+
+  @override
+  String get superadminNoBuildings => 'Kayıtlı apartman yok.';
+
+  @override
+  String get superadminCopied => 'Kopyalandı';
+
+  @override
+  String get superadminBuildingInviteTitle => 'Sakin daveti';
+
+  @override
+  String get superadminDeleteBuildingTitle => 'Apartmanı sil';
+
+  @override
+  String get superadminDeleteBuildingBody =>
+      'Bu apartman ve bağlı tüm kayıtlar (daireler, üyelikler, aidatlar, duyurular vb.) kalıcı olarak silinir. Bu işlem geri alınamaz.';
+
+  @override
+  String get superadminDeleteBuildingConfirm => 'Sil';
+
+  @override
+  String get superadminBuildingDeleted => 'Apartman silindi.';
+
+  @override
+  String get superadminDeleteBuildingFailed => 'Apartman silinemedi.';
+
+  @override
+  String get superadminAdminCodePolicySingle => 'Tek kurulum (kod bir kez)';
+
+  @override
+  String get superadminAdminCodePolicyReusable =>
+      'Çoklu kurulum (aynı kod tekrar)';
+
+  @override
+  String get superadminAdminCodePolicyHint =>
+      'Tek kurulum: kod ilk yönetici kaydında kullanılır ve kapanır. Çoklu kurulum: aynı kodla (süre dolmadan) başka cihazdan veya uygulama yeniden kurulunca tekrar yönetici girişi yapılabilir.';
+
+  @override
+  String get superadminRevokeAdminCode => 'Kodu iptal et';
+
+  @override
+  String get superadminRevokeAdminCodeTitle => 'Yönetici kodunu iptal et';
+
+  @override
+  String get superadminRevokeAdminCodeBody =>
+      'Bu kod artık kullanılamaz. Emin misiniz?';
+
+  @override
+  String get superadminRevokeAdminCodeConfirm => 'İptal et';
+
+  @override
+  String get superadminCodeRevoked => 'Kod iptal edildi.';
 }

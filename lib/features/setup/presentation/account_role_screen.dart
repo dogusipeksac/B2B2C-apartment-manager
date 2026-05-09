@@ -1,24 +1,28 @@
 import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
+import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Post-splash entry: resident vs manager (mockup 3.1).
 enum SetupAccountRole {
   resident,
   manager,
+  superAdmin,
 }
 
 /// Hesap türü seçimi — yönetici kurulum / sakin davet kodu girişi.
-class AccountRoleScreen extends StatefulWidget {
+class AccountRoleScreen extends ConsumerStatefulWidget {
   const AccountRoleScreen({super.key});
 
   @override
-  State<AccountRoleScreen> createState() => _AccountRoleScreenState();
+  ConsumerState<AccountRoleScreen> createState() => _AccountRoleScreenState();
 }
 
-class _AccountRoleScreenState extends State<AccountRoleScreen> {
+class _AccountRoleScreenState extends ConsumerState<AccountRoleScreen> {
   SetupAccountRole _selected = SetupAccountRole.resident;
 
   @override
@@ -78,6 +82,17 @@ class _AccountRoleScreenState extends State<AccountRoleScreen> {
                     onTap: () =>
                         setState(() => _selected = SetupAccountRole.manager),
                   ),
+                  const SizedBox(height: 12),
+                  _SetupRoleCard(
+                    iconBoxBg: scheme.errorContainer,
+                    iconBoxFg: scheme.error,
+                    icon: Icons.admin_panel_settings_outlined,
+                    title: l10n.accountRoleSuperAdminShortTitle,
+                    subtitle: l10n.accountRoleSuperAdminShortBody,
+                    selected: _selected == SetupAccountRole.superAdmin,
+                    onTap: () =>
+                        setState(() => _selected = SetupAccountRole.superAdmin),
+                  ),
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -113,12 +128,23 @@ class _AccountRoleScreenState extends State<AccountRoleScreen> {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: FilledButton(
-              onPressed: () {
+              onPressed: () async {
                 if (_selected == SetupAccountRole.manager) {
                   if (Env.demoMode) {
                     context.go('/setup/wizard');
                   } else {
                     context.go('/setup/admin-invite');
+                  }
+                } else if (_selected == SetupAccountRole.superAdmin) {
+                  if (Env.demoMode) {
+                    await ref
+                        .read(demoPersonaProvider.notifier)
+                        .choose(DemoPersona.superAdmin);
+                    if (context.mounted) {
+                      context.go('/home');
+                    }
+                  } else {
+                    context.go('/setup/superadmin-access');
                   }
                 } else {
                   context.go('/setup/resident-invite');

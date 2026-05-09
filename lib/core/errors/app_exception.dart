@@ -34,6 +34,9 @@ sealed class AppException with _$AppException implements Exception {
       if (code == 'not_building_admin') {
         return 'Bu işlem yalnızca apartman yöneticisi içindir.';
       }
+      if (code == 'not_super_admin') {
+        return 'Bu işlem yalnızca sistem yöneticisi oturumu ile yapılabilir.';
+      }
       return 'Oturumunuzla ilgili bir sorun oluştu. Lütfen tekrar giriş '
           'yapın.';
     },
@@ -64,6 +67,10 @@ sealed class AppException with _$AppException implements Exception {
           return 'Oturum bilgisi eksik. Uygulamayı yeniden başlatıp tekrar '
               'deneyin.';
         case 'unknown_action':
+          return 'Sunucu bu işlemi tanımıyor. Supabase’te '
+              '`superadmin_ops` Edge fonksiyonunun güncel sürümünü '
+              'deploy ettiğinizden emin olun '
+              '(ör. silme için delete_building desteği).';
         case 'invalid_json':
           return 'İstek geçersiz. Uygulamayı güncelleyin.';
         case 'method_not_allowed':
@@ -75,8 +82,15 @@ sealed class AppException with _$AppException implements Exception {
               'geçin.';
         case 'database_error':
           return 'Veritabanı hatası. Biraz sonra tekrar deneyin.';
+        case 'delete_failed':
+          return 'Apartman silinemedi. Bağlı kayıtlar veya veritabanı '
+              'kısıtı olabilir; biraz sonra tekrar deneyin.';
+        case 'building_id_required':
+          return 'Bina bilgisi eksik. Sayfayı yenileyip tekrar deneyin.';
         case 'code_not_found_or_expired':
           return 'Kod bulunamadı veya süresi dolmuş.';
+        case 'code_not_found_or_revoked':
+          return 'Kod bulunamadı veya zaten iptal edilmiş.';
         case 'code_already_used':
           return 'Bu kod daha önce kullanılmış.';
         case 'full_name_required':

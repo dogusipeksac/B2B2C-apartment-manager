@@ -3253,6 +3253,228 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Gerçek veriler bağlanınca burası açılacak.'**
   String get demoModuleLockedBody;
+
+  /// No description provided for @accountRoleSuperAdminShortTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem yöneticisiyim'**
+  String get accountRoleSuperAdminShortTitle;
+
+  /// No description provided for @accountRoleSuperAdminShortBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm apartmanları gör, yönetici ve daire kodları üret.'**
+  String get accountRoleSuperAdminShortBody;
+
+  /// No description provided for @demoPersonaSuperAdminTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem yöneticisi'**
+  String get demoPersonaSuperAdminTitle;
+
+  /// No description provided for @demoPersonaSuperAdminBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo: platform genelinde kod ve bina yönetimi.'**
+  String get demoPersonaSuperAdminBody;
+
+  /// No description provided for @superadminAccessTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem erişimi'**
+  String get superadminAccessTitle;
+
+  /// No description provided for @superadminAccessHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Özel erişim kodun'**
+  String get superadminAccessHeadline;
+
+  /// No description provided for @superadminAccessBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sunucuda tanımlı süper yönetici kodunu girin. Bu kod uygulamada saklanmaz; yalnızca Edge doğrulaması yapılır.'**
+  String get superadminAccessBody;
+
+  /// No description provided for @superadminAccessFieldLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'ERİŞİM KODU'**
+  String get superadminAccessFieldLabel;
+
+  /// No description provided for @superadminAccessContinue.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş yap'**
+  String get superadminAccessContinue;
+
+  /// No description provided for @superadminAccessCodeTooShort.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod en az 4 karakter olmalı.'**
+  String get superadminAccessCodeTooShort;
+
+  /// No description provided for @superadminAccessWrongRole.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod sistem yöneticisi oturumu vermedi.'**
+  String get superadminAccessWrongRole;
+
+  /// No description provided for @superadminAccessUnexpectedError.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş yapılamadı. Kodu ve bağlantını kontrol edin.'**
+  String get superadminAccessUnexpectedError;
+
+  /// No description provided for @superadminDashboardTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem paneli'**
+  String get superadminDashboardTitle;
+
+  /// No description provided for @superadminRefresh.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yenile'**
+  String get superadminRefresh;
+
+  /// No description provided for @superadminDemoBanner.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo modda yerel örnek veriler gösterilir.'**
+  String get superadminDemoBanner;
+
+  /// No description provided for @superadminDemoSwitch.
+  ///
+  /// In tr, this message translates to:
+  /// **'Demo: rol değiştir'**
+  String get superadminDemoSwitch;
+
+  /// No description provided for @superadminSectionManagerCodes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici davet kodları'**
+  String get superadminSectionManagerCodes;
+
+  /// No description provided for @superadminCreateManagerCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni yönetici kodu oluştur'**
+  String get superadminCreateManagerCode;
+
+  /// No description provided for @superadminManagerCodeCreated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici kodu panoya kopyalandı.'**
+  String get superadminManagerCodeCreated;
+
+  /// No description provided for @superadminNoAdminCodesYet.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz liste için kod yok; yeni kod oluşturabilirsiniz.'**
+  String get superadminNoAdminCodesYet;
+
+  /// No description provided for @superadminSectionBuildings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanlar'**
+  String get superadminSectionBuildings;
+
+  /// No description provided for @superadminNoBuildings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kayıtlı apartman yok.'**
+  String get superadminNoBuildings;
+
+  /// No description provided for @superadminCopied.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kopyalandı'**
+  String get superadminCopied;
+
+  /// No description provided for @superadminBuildingInviteTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin daveti'**
+  String get superadminBuildingInviteTitle;
+
+  /// No description provided for @superadminDeleteBuildingTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanı sil'**
+  String get superadminDeleteBuildingTitle;
+
+  /// No description provided for @superadminDeleteBuildingBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu apartman ve bağlı tüm kayıtlar (daireler, üyelikler, aidatlar, duyurular vb.) kalıcı olarak silinir. Bu işlem geri alınamaz.'**
+  String get superadminDeleteBuildingBody;
+
+  /// No description provided for @superadminDeleteBuildingConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sil'**
+  String get superadminDeleteBuildingConfirm;
+
+  /// No description provided for @superadminBuildingDeleted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman silindi.'**
+  String get superadminBuildingDeleted;
+
+  /// No description provided for @superadminDeleteBuildingFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman silinemedi.'**
+  String get superadminDeleteBuildingFailed;
+
+  /// No description provided for @superadminAdminCodePolicySingle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek kurulum (kod bir kez)'**
+  String get superadminAdminCodePolicySingle;
+
+  /// No description provided for @superadminAdminCodePolicyReusable.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çoklu kurulum (aynı kod tekrar)'**
+  String get superadminAdminCodePolicyReusable;
+
+  /// No description provided for @superadminAdminCodePolicyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek kurulum: kod ilk yönetici kaydında kullanılır ve kapanır. Çoklu kurulum: aynı kodla (süre dolmadan) başka cihazdan veya uygulama yeniden kurulunca tekrar yönetici girişi yapılabilir.'**
+  String get superadminAdminCodePolicyHint;
+
+  /// No description provided for @superadminRevokeAdminCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu iptal et'**
+  String get superadminRevokeAdminCode;
+
+  /// No description provided for @superadminRevokeAdminCodeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici kodunu iptal et'**
+  String get superadminRevokeAdminCodeTitle;
+
+  /// No description provided for @superadminRevokeAdminCodeBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod artık kullanılamaz. Emin misiniz?'**
+  String get superadminRevokeAdminCodeBody;
+
+  /// No description provided for @superadminRevokeAdminCodeConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal et'**
+  String get superadminRevokeAdminCodeConfirm;
+
+  /// No description provided for @superadminCodeRevoked.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod iptal edildi.'**
+  String get superadminCodeRevoked;
 }
 
 class _AppLocalizationsDelegate

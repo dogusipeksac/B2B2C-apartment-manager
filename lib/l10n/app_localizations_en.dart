@@ -1727,4 +1727,126 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get demoModuleLockedBody => 'Live data will unlock this section.';
+
+  @override
+  String get accountRoleSuperAdminShortTitle => 'I\'m a super admin';
+
+  @override
+  String get accountRoleSuperAdminShortBody =>
+      'See all buildings; issue manager and unit invite codes.';
+
+  @override
+  String get demoPersonaSuperAdminTitle => 'Super admin';
+
+  @override
+  String get demoPersonaSuperAdminBody =>
+      'Demo: cross-building codes and directory.';
+
+  @override
+  String get superadminAccessTitle => 'Super-admin access';
+
+  @override
+  String get superadminAccessHeadline => 'Your access code';
+
+  @override
+  String get superadminAccessBody =>
+      'Enter the super-admin code configured on the server. It is never stored in the app—only validated by Edge.';
+
+  @override
+  String get superadminAccessFieldLabel => 'ACCESS CODE';
+
+  @override
+  String get superadminAccessContinue => 'Continue';
+
+  @override
+  String get superadminAccessCodeTooShort =>
+      'Code must be at least 4 characters.';
+
+  @override
+  String get superadminAccessWrongRole =>
+      'That code did not grant a super-admin session.';
+
+  @override
+  String get superadminAccessUnexpectedError =>
+      'Could not sign in. Check the code and connection.';
+
+  @override
+  String get superadminDashboardTitle => 'Super-admin dashboard';
+
+  @override
+  String get superadminRefresh => 'Refresh';
+
+  @override
+  String get superadminDemoBanner => 'Demo mode shows sample data only.';
+
+  @override
+  String get superadminDemoSwitch => 'Demo: switch role';
+
+  @override
+  String get superadminSectionManagerCodes => 'Manager invite codes';
+
+  @override
+  String get superadminCreateManagerCode => 'Create manager code';
+
+  @override
+  String get superadminManagerCodeCreated =>
+      'Manager code copied to clipboard.';
+
+  @override
+  String get superadminNoAdminCodesYet =>
+      'No codes listed yet—you can create one.';
+
+  @override
+  String get superadminSectionBuildings => 'Buildings';
+
+  @override
+  String get superadminNoBuildings => 'No buildings yet.';
+
+  @override
+  String get superadminCopied => 'Copied';
+
+  @override
+  String get superadminBuildingInviteTitle => 'Resident invites';
+
+  @override
+  String get superadminDeleteBuildingTitle => 'Delete building';
+
+  @override
+  String get superadminDeleteBuildingBody =>
+      'This permanently deletes the building and related records (units, memberships, dues, announcements, etc.). This cannot be undone.';
+
+  @override
+  String get superadminDeleteBuildingConfirm => 'Delete';
+
+  @override
+  String get superadminBuildingDeleted => 'Building deleted.';
+
+  @override
+  String get superadminDeleteBuildingFailed => 'Could not delete building.';
+
+  @override
+  String get superadminAdminCodePolicySingle => 'Single setup (code once)';
+
+  @override
+  String get superadminAdminCodePolicyReusable => 'Multi setup (reuse code)';
+
+  @override
+  String get superadminAdminCodePolicyHint =>
+      'Single setup: the code is consumed when the first manager registers. Multi setup: the same code can be redeemed again on another device or after reinstall until it expires.';
+
+  @override
+  String get superadminRevokeAdminCode => 'Revoke code';
+
+  @override
+  String get superadminRevokeAdminCodeTitle => 'Revoke manager code';
+
+  @override
+  String get superadminRevokeAdminCodeBody =>
+      'This code will no longer work. Continue?';
+
+  @override
+  String get superadminRevokeAdminCodeConfirm => 'Revoke';
+
+  @override
+  String get superadminCodeRevoked => 'Code revoked.';
 }
