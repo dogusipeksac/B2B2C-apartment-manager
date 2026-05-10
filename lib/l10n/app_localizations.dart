@@ -2216,6 +2216,12 @@ abstract class AppLocalizations {
   /// **'Yönetici'**
   String get profileBadgeManager;
 
+  /// No description provided for @profileBadgeSuperAdmin.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem yöneticisi'**
+  String get profileBadgeSuperAdmin;
+
   /// No description provided for @profileCardSubtitleManager.
   ///
   /// In tr, this message translates to:

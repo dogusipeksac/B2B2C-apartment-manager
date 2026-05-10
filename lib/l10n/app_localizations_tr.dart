@@ -1153,6 +1153,9 @@ class AppLocalizationsTr extends AppLocalizations {
   String get profileBadgeManager => 'Yönetici';
 
   @override
+  String get profileBadgeSuperAdmin => 'Sistem yöneticisi';
+
+  @override
   String get profileCardSubtitleManager =>
       'Bu cihaz apartman yönetimi için bağlı.';
 

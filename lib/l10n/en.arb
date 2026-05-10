@@ -521,6 +521,7 @@
   "announcementCatUrgent": "Urgent",
   "profileBadgeResident": "Resident",
   "profileBadgeManager": "Manager",
+  "profileBadgeSuperAdmin": "Super admin",
   "profileCardSubtitleManager": "This device is linked for building administration.",
   "profileCardSubtitleResident": "This device is linked to a unit via invite code.",
   "profileCardNoBuildingTitle": "No building info yet",

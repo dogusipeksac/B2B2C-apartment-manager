@@ -521,6 +521,7 @@
   "announcementCatUrgent": "Acil",
   "profileBadgeResident": "Sakin",
   "profileBadgeManager": "Yönetici",
+  "profileBadgeSuperAdmin": "Sistem yöneticisi",
   "profileCardSubtitleManager": "Bu cihaz apartman yönetimi için bağlı.",
   "profileCardSubtitleResident": "Bu cihaz davet kodu ile bir daireye bağlı.",
   "profileCardNoBuildingTitle": "Apartman bilgisi yok",

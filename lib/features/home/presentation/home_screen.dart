@@ -7,6 +7,7 @@ import 'package:apartment_manager/features/auth/presentation/providers/auth_prov
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/features/home/presentation/manager_home_view.dart';
 import 'package:apartment_manager/features/home/presentation/resident_home_shell.dart';
+import 'package:apartment_manager/features/home/presentation/staff_home_shell.dart';
 import 'package:apartment_manager/features/superadmin/presentation/superadmin_home_view.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -39,7 +40,10 @@ class HomeScreen extends ConsumerWidget {
         },
         data: (session) {
           if (session != null && session.role == UserRole.superAdmin) {
-            return const SuperAdminHomeView();
+            return StaffHomeShell(
+              displayName: session.fullName ?? '',
+              homeTab: const SuperAdminHomeView(),
+            );
           }
 
           final isManager = session != null &&
@@ -48,7 +52,10 @@ class HomeScreen extends ConsumerWidget {
               session.buildingId!.isNotEmpty;
 
           if (isManager) {
-            return const ManagerHomeView();
+            return StaffHomeShell(
+              displayName: session.fullName ?? '',
+              homeTab: const ManagerHomeView(),
+            );
           }
 
           final profileAsync = ref.watch(currentProfileProvider);
@@ -117,21 +124,27 @@ class HomeScreen extends ConsumerWidget {
               );
             }
             if (persona == DemoPersona.superAdmin) {
-              return SuperAdminHomeView(
-                onSwitchPersona: () async {
-                  await ref.read(demoPersonaProvider.notifier).choose(
-                        DemoPersona.manager,
-                      );
-                },
+              return StaffHomeShell(
+                displayName: name,
+                homeTab: SuperAdminHomeView(
+                  onSwitchPersona: () async {
+                    await ref.read(demoPersonaProvider.notifier).choose(
+                          DemoPersona.manager,
+                        );
+                  },
+                ),
               );
             }
             if (persona == DemoPersona.manager) {
-              return ManagerHomeView(
-                onSwitchToResident: () async {
-                  await ref.read(demoPersonaProvider.notifier).choose(
-                        DemoPersona.resident,
-                      );
-                },
+              return StaffHomeShell(
+                displayName: name,
+                homeTab: ManagerHomeView(
+                  onSwitchToResident: () async {
+                    await ref.read(demoPersonaProvider.notifier).choose(
+                          DemoPersona.resident,
+                        );
+                  },
+                ),
               );
             }
             return ResidentHomeShell(

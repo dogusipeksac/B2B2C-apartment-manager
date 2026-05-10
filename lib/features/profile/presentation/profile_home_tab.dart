@@ -59,6 +59,13 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
           orElse: () => null,
         );
 
+    final demoPersona = demo
+        ? personaAsync.maybeWhen(
+            data: (p) => p,
+            orElse: () => null,
+          )
+        : null;
+
     final fn = session?.fullName?.trim();
     final resolvedName = (!demo && fn != null && fn.isNotEmpty)
         ? fn
@@ -67,15 +74,22 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
     final bn = session?.buildingName?.trim();
     final hasBuildingName = bn != null && bn.isNotEmpty;
 
+    final isSuperAdmin = demo
+        ? demoPersona == DemoPersona.superAdmin
+        : session?.role == UserRole.superAdmin;
+
     final isManager = demo
-        ? personaAsync.value == DemoPersona.manager
-        : (session?.role == UserRole.buildingAdmin);
+        ? demoPersona == DemoPersona.manager
+        : session?.role == UserRole.buildingAdmin;
 
     final buildingIdTrimmed = session?.buildingId?.trim();
     final hasBuildingId =
         buildingIdTrimmed != null && buildingIdTrimmed.isNotEmpty;
 
     String cardTitle() {
+      if (isSuperAdmin) {
+        return hasBuildingName ? bn : l10n.demoPersonaSuperAdminTitle;
+      }
       if (hasBuildingName) {
         return bn;
       }
@@ -89,6 +103,9 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
     }
 
     String cardBody() {
+      if (isSuperAdmin) {
+        return l10n.accountRoleSuperAdminShortBody;
+      }
       if (hasBuildingName) {
         return isManager
             ? l10n.profileCardSubtitleManager
@@ -221,9 +238,11 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
                                   spacing: 6,
                                   children: [
                                     _HeaderChip(
-                                      label: isManager
-                                          ? l10n.profileBadgeManager
-                                          : l10n.profileBadgeResident,
+                                      label: isSuperAdmin
+                                          ? l10n.profileBadgeSuperAdmin
+                                          : isManager
+                                              ? l10n.profileBadgeManager
+                                              : l10n.profileBadgeResident,
                                     ),
                                   ],
                                 ),
@@ -312,13 +331,12 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
                                   : l10n.profileSwitchToManager,
                             ),
                             onTap: () async {
+                              final next = persona == DemoPersona.manager
+                                  ? DemoPersona.resident
+                                  : DemoPersona.manager;
                               await ref
                                   .read(demoPersonaProvider.notifier)
-                                  .choose(
-                                    persona == DemoPersona.manager
-                                        ? DemoPersona.resident
-                                        : DemoPersona.manager,
-                                  );
+                                  .choose(next);
                             },
                           ),
                         ),

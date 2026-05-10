@@ -1155,6 +1155,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileBadgeManager => 'Manager';
 
   @override
+  String get profileBadgeSuperAdmin => 'Super admin';
+
+  @override
   String get profileCardSubtitleManager =>
       'This device is linked for building administration.';
 
