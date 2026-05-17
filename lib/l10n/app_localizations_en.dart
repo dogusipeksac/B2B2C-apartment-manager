@@ -1325,6 +1325,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get setupAddressLabel => 'Street address';
 
   @override
+  String get setupProvinceLabel => 'Province';
+
+  @override
+  String get setupDistrictLabel => 'District';
+
+  @override
+  String get setupFieldRequired => 'This field is required.';
+
+  @override
+  String get setupProvincesLoadError =>
+      'Could not load provinces. Check your connection and try again.';
+
+  @override
+  String get setupProvincesRetry => 'Retry';
+
+  @override
+  String get setupAddressRequired => 'Street address is required.';
+
+  @override
+  String get setupProvinceRequired => 'Province is required.';
+
+  @override
+  String get setupDistrictRequired => 'District is required.';
+
+  @override
   String get accountRoleHeadline => 'How are you joining your building?';
 
   @override
@@ -1385,9 +1410,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get setupWizardChangeLaterShort =>
       'You can change this later in settings.';
-
-  @override
-  String get setupDistrictLabel => 'CITY / DISTRICT';
 
   @override
   String get setupYearBuiltOptional => 'YEAR BUILT (OPTIONAL)';

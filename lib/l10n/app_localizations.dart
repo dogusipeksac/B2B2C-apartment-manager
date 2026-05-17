@@ -2540,6 +2540,54 @@ abstract class AppLocalizations {
   /// **'Açık adres'**
   String get setupAddressLabel;
 
+  /// No description provided for @setupProvinceLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İl'**
+  String get setupProvinceLabel;
+
+  /// No description provided for @setupDistrictLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlçe'**
+  String get setupDistrictLabel;
+
+  /// No description provided for @setupFieldRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu alan zorunludur.'**
+  String get setupFieldRequired;
+
+  /// No description provided for @setupProvincesLoadError.
+  ///
+  /// In tr, this message translates to:
+  /// **'İl listesi yüklenemedi. Bağlantını kontrol edip tekrar dene.'**
+  String get setupProvincesLoadError;
+
+  /// No description provided for @setupProvincesRetry.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeniden dene'**
+  String get setupProvincesRetry;
+
+  /// No description provided for @setupAddressRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık adres zorunludur.'**
+  String get setupAddressRequired;
+
+  /// No description provided for @setupProvinceRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'İl seçimi zorunludur.'**
+  String get setupProvinceRequired;
+
+  /// No description provided for @setupDistrictRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlçe seçimi zorunludur.'**
+  String get setupDistrictRequired;
+
   /// No description provided for @accountRoleHeadline.
   ///
   /// In tr, this message translates to:
@@ -2647,12 +2695,6 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Sonradan ayarlardan değiştirebilirsin.'**
   String get setupWizardChangeLaterShort;
-
-  /// No description provided for @setupDistrictLabel.
-  ///
-  /// In tr, this message translates to:
-  /// **'İL / İLÇE'**
-  String get setupDistrictLabel;
 
   /// No description provided for @setupYearBuiltOptional.
   ///

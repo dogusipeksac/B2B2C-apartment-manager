@@ -8,6 +8,7 @@ import 'package:apartment_manager/core/widgets/app_button.dart';
 import 'package:apartment_manager/features/auth/domain/user_role.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/setup/data/building_setup_repository.dart';
+import 'package:apartment_manager/features/setup/data/turkey_locations_repository.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -27,6 +28,7 @@ class BuildingSetupWizardScreen extends ConsumerStatefulWidget {
 class _BuildingSetupWizardScreenState
     extends ConsumerState<BuildingSetupWizardScreen> {
   final _page = PageController();
+  final _buildingFormKey = GlobalKey<FormState>();
   int _step = 0;
 
   final _name = TextEditingController(
@@ -39,14 +41,9 @@ class _BuildingSetupWizardScreenState
     text: Env.demoMode ? '2008' : '',
   );
 
-  /// İl / ilçe seçimi — MVP sabit liste.
-  final _districtIndex = ValueNotifier<int>(0);
-
-  static const _districts = <(String, String)>[
-    ('İstanbul', 'Kadıköy'),
-    ('İstanbul', 'Beşiktaş'),
-    ('Ankara', 'Çankaya'),
-  ];
+  int? _selectedProvinceId;
+  int? _selectedDistrictId;
+  bool _demoDefaultsApplied = false;
 
   final _singleBlock = ValueNotifier<bool>(true);
   final _floors = ValueNotifier<int>(Env.demoMode ? 6 : 1);
@@ -74,7 +71,6 @@ class _BuildingSetupWizardScreenState
     _name.dispose();
     _address.dispose();
     _yearBuilt.dispose();
-    _districtIndex.dispose();
     _singleBlock.dispose();
     _floors.dispose();
     _perFloor.dispose();
@@ -112,9 +108,10 @@ class _BuildingSetupWizardScreenState
       return;
     }
 
-    if (_name.text.trim().isEmpty) {
+    final location = _resolveSelectedLocation();
+    if (location == null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.setupFinalizeBuildingNameRequired)),
+        SnackBar(content: Text(l10n.setupProvinceRequired)),
       );
       return;
     }
@@ -145,10 +142,8 @@ class _BuildingSetupWizardScreenState
       return;
     }
 
-    final idx = _districtIndex.value.clamp(0, _districts.length - 1);
-    final dist = _districts[idx];
-    final city = dist.$1;
-    final district = dist.$2;
+    final city = location.$1;
+    final district = location.$2;
 
     setState(() => _finalizeBusy = true);
     try {
@@ -217,9 +212,67 @@ class _BuildingSetupWizardScreenState
     );
   }
 
+  (String, String)? _resolveSelectedLocation() {
+    final provinces = ref.read(turkeyProvincesProvider).value;
+    if (provinces == null ||
+        _selectedProvinceId == null ||
+        _selectedDistrictId == null) {
+      return null;
+    }
+    for (final p in provinces) {
+      if (p.id != _selectedProvinceId) {
+        continue;
+      }
+      for (final d in p.districts) {
+        if (d.id == _selectedDistrictId) {
+          return (p.name, d.name);
+        }
+      }
+    }
+    return null;
+  }
+
+  void _applyDemoLocationDefaults(List<TurkeyProvince> provinces) {
+    if (!Env.demoMode || _demoDefaultsApplied) {
+      return;
+    }
+    TurkeyProvince? istanbul;
+    for (final p in provinces) {
+      if (p.name == 'İstanbul') {
+        istanbul = p;
+        break;
+      }
+    }
+    istanbul ??= provinces.isNotEmpty ? provinces.first : null;
+    if (istanbul == null) {
+      return;
+    }
+    TurkeyDistrict? kadikoy;
+    for (final d in istanbul.districts) {
+      if (d.name == 'Kadıköy') {
+        kadikoy = d;
+        break;
+      }
+    }
+    kadikoy ??=
+        istanbul.districts.isNotEmpty ? istanbul.districts.first : null;
+    if (kadikoy == null) {
+      return;
+    }
+    _selectedProvinceId = istanbul.id;
+    _selectedDistrictId = kadikoy.id;
+    _demoDefaultsApplied = true;
+  }
+
   void _next(BuildContext context) {
     if (_finalizeBusy) {
       return;
+    }
+    if (_step == 0) {
+      final valid = _buildingFormKey.currentState?.validate() ?? false;
+      if (!valid) {
+        return;
+      }
     }
     if (_step >= 3) {
       unawaited(_completeSetup(context));
@@ -238,6 +291,18 @@ class _BuildingSetupWizardScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final apart = context.apart;
+
+    ref.listen<AsyncValue<List<TurkeyProvince>>>(turkeyProvincesProvider, (
+      _,
+      next,
+    ) {
+      next.whenData((provinces) {
+        if (!mounted || _demoDefaultsApplied || !Env.demoMode) {
+          return;
+        }
+        setState(() => _applyDemoLocationDefaults(provinces));
+      });
+    });
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
@@ -396,88 +461,182 @@ class _BuildingSetupWizardScreenState
   Widget _stepBuilding(BuildContext context, AppLocalizations l10n) {
     final theme = Theme.of(context);
     final apart = context.apart;
+    final provincesAsync = ref.watch(turkeyProvincesProvider);
 
-    return ListView(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      children: [
-        _wizardTopBar(
-          context,
-          l10n,
-          stepIndex: 0,
-          stepShortTitle: l10n.setupWizardStep1AppBar,
-          onSkip: () => _goHome(context),
-        ),
-        Text(
-          l10n.setupWizardLetsMeetBuilding,
-          style: theme.textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.w700,
+    return Form(
+      key: _buildingFormKey,
+      child: ListView(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
+        children: [
+          _wizardTopBar(
+            context,
+            l10n,
+            stepIndex: 0,
+            stepShortTitle: l10n.setupWizardStep1AppBar,
+            onSkip: () => _goHome(context),
           ),
-        ),
-        const SizedBox(height: 6),
-        Text(
-          l10n.setupWizardChangeLaterShort,
-          style: theme.textTheme.bodyMedium?.copyWith(
-            color: apart.onSurfaceVariant,
+          Text(
+            l10n.setupWizardLetsMeetBuilding,
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
           ),
-        ),
-        const SizedBox(height: 20),
-        TextField(
-          controller: _name,
-          textCapitalization: TextCapitalization.words,
-          decoration: InputDecoration(
-            labelText: l10n.setupBuildingNameLabel,
+          const SizedBox(height: 6),
+          Text(
+            l10n.setupWizardChangeLaterShort,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: apart.onSurfaceVariant,
+            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        ValueListenableBuilder<int>(
-          valueListenable: _districtIndex,
-          builder: (context, idx, _) {
-            final safe = idx.clamp(0, _districts.length - 1);
-            return DropdownButtonFormField<int>(
-              key: ValueKey<int>(safe),
-              initialValue: safe,
-              isExpanded: true,
-              decoration: InputDecoration(
-                labelText: l10n.setupDistrictLabel,
-              ),
-              items: List.generate(
-                _districts.length,
-                (i) {
-                  final (city, dist) = _districts[i];
-                  return DropdownMenuItem<int>(
-                    value: i,
-                    child: Text('$city · $dist'),
-                  );
-                },
-              ),
-              onChanged: (v) {
-                if (v != null) {
-                  _districtIndex.value = v;
-                }
-              },
-            );
-          },
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _address,
-          maxLines: 3,
-          decoration: InputDecoration(
-            labelText: l10n.setupAddressLabel,
-            hintText: l10n.setupAddressHint,
+          const SizedBox(height: 20),
+          TextFormField(
+            controller: _name,
+            textCapitalization: TextCapitalization.words,
+            decoration: InputDecoration(
+              labelText: l10n.setupBuildingNameLabel,
+            ),
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) {
+                return l10n.setupFinalizeBuildingNameRequired;
+              }
+              return null;
+            },
           ),
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: _yearBuilt,
-          keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: l10n.setupYearBuiltOptional,
-            hintText: l10n.setupYearBuiltHint,
+          const SizedBox(height: 12),
+          provincesAsync.when(
+            loading: () => const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (_, _) => Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  l10n.setupProvincesLoadError,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: () {
+                    ref.invalidate(turkeyProvincesProvider);
+                  },
+                  child: Text(l10n.setupProvincesRetry),
+                ),
+              ],
+            ),
+            data: (provinces) {
+              final selectedProvince = _findProvince(provinces, _selectedProvinceId);
+              final districts = selectedProvince?.districts ?? const <TurkeyDistrict>[];
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  DropdownButtonFormField<int>(
+                    key: ValueKey<int?>(_selectedProvinceId),
+                    initialValue: _selectedProvinceId,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.setupProvinceLabel,
+                    ),
+                    items: provinces
+                        .map(
+                          (p) => DropdownMenuItem<int>(
+                            value: p.id,
+                            child: Text(p.name),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: (v) {
+                      setState(() {
+                        _selectedProvinceId = v;
+                        _selectedDistrictId = null;
+                      });
+                    },
+                    validator: (v) {
+                      if (v == null) {
+                        return l10n.setupProvinceRequired;
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 12),
+                  DropdownButtonFormField<int>(
+                    key: ValueKey('d-$_selectedProvinceId-$_selectedDistrictId'),
+                    initialValue: districts.any((d) => d.id == _selectedDistrictId)
+                        ? _selectedDistrictId
+                        : null,
+                    isExpanded: true,
+                    decoration: InputDecoration(
+                      labelText: l10n.setupDistrictLabel,
+                    ),
+                    items: districts
+                        .map(
+                          (d) => DropdownMenuItem<int>(
+                            value: d.id,
+                            child: Text(d.name),
+                          ),
+                        )
+                        .toList(),
+                    onChanged: _selectedProvinceId == null
+                        ? null
+                        : (v) {
+                            setState(() => _selectedDistrictId = v);
+                          },
+                    validator: (v) {
+                      if (_selectedProvinceId == null || v == null) {
+                        return l10n.setupDistrictRequired;
+                      }
+                      return null;
+                    },
+                  ),
+                ],
+              );
+            },
           ),
-        ),
-      ],
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _address,
+            maxLines: 3,
+            decoration: InputDecoration(
+              labelText: l10n.setupAddressLabel,
+              hintText: l10n.setupAddressHint,
+            ),
+            validator: (v) {
+              if (v == null || v.trim().isEmpty) {
+                return l10n.setupAddressRequired;
+              }
+              return null;
+            },
+          ),
+          const SizedBox(height: 12),
+          TextField(
+            controller: _yearBuilt,
+            keyboardType: TextInputType.number,
+            decoration: InputDecoration(
+              labelText: l10n.setupYearBuiltOptional,
+              hintText: l10n.setupYearBuiltHint,
+            ),
+          ),
+        ],
+      ),
     );
+  }
+
+  TurkeyProvince? _findProvince(
+    List<TurkeyProvince> provinces,
+    int? provinceId,
+  ) {
+    if (provinceId == null) {
+      return null;
+    }
+    for (final p in provinces) {
+      if (p.id == provinceId) {
+        return p;
+      }
+    }
+    return null;
   }
 
   Widget _stepStructure(BuildContext context, AppLocalizations l10n) {

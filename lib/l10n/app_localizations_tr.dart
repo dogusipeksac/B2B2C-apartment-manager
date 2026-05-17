@@ -1324,6 +1324,31 @@ class AppLocalizationsTr extends AppLocalizations {
   String get setupAddressLabel => 'Açık adres';
 
   @override
+  String get setupProvinceLabel => 'İl';
+
+  @override
+  String get setupDistrictLabel => 'İlçe';
+
+  @override
+  String get setupFieldRequired => 'Bu alan zorunludur.';
+
+  @override
+  String get setupProvincesLoadError =>
+      'İl listesi yüklenemedi. Bağlantını kontrol edip tekrar dene.';
+
+  @override
+  String get setupProvincesRetry => 'Yeniden dene';
+
+  @override
+  String get setupAddressRequired => 'Açık adres zorunludur.';
+
+  @override
+  String get setupProvinceRequired => 'İl seçimi zorunludur.';
+
+  @override
+  String get setupDistrictRequired => 'İlçe seçimi zorunludur.';
+
+  @override
   String get accountRoleHeadline => 'Apartmanına nasıl katılıyorsun?';
 
   @override
@@ -1384,9 +1409,6 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get setupWizardChangeLaterShort =>
       'Sonradan ayarlardan değiştirebilirsin.';
-
-  @override
-  String get setupDistrictLabel => 'İL / İLÇE';
 
   @override
   String get setupYearBuiltOptional => 'YAPIM YILI (OPS.)';
