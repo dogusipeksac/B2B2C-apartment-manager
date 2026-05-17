@@ -10,6 +10,7 @@ import 'package:apartment_manager/features/demo/presentation/providers/demo_pers
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 /// Mockup **4.7** — Profil: koyu yeşil header, apartman kartı, ayar listesi.
 class ProfileHomeTab extends ConsumerStatefulWidget {
@@ -167,10 +168,7 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
                               Icons.settings_outlined,
                               color: Colors.white,
                             ),
-                            onPressed: () =>
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(l10n.homeFeatureSoon)),
-                                ),
+                            onPressed: () => context.push('/settings'),
                           ),
                         ],
                       ),

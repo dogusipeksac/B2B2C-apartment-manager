@@ -1683,6 +1683,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get residentInviteScreenTitle => 'Your invite code';
 
   @override
+  String get residentInviteHeadline => 'Join your building';
+
+  @override
+  String get residentInviteJoinHint =>
+      'Enter the 5-character unit code from your building manager.';
+
+  @override
+  String get residentInviteCodeSection => 'INVITE CODE';
+
+  @override
+  String get residentInviteAccountSection => 'YOUR ACCOUNT';
+
+  @override
+  String get residentInviteVerifiedBadge => 'CODE VERIFIED';
+
+  @override
   String get residentInviteCodeLabel => 'Invite code';
 
   @override
@@ -2012,4 +2028,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get managerUnitJoinedViaCode => 'Joined via code';
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get settingsSectionAppearance => 'Appearance';
+
+  @override
+  String get settingsThemeLabel => 'Theme';
+
+  @override
+  String get settingsThemeLight => 'Light';
+
+  @override
+  String get settingsThemeDark => 'Dark';
+
+  @override
+  String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsSectionLanguage => 'Language';
+
+  @override
+  String get settingsLanguageTurkish => 'Turkish';
+
+  @override
+  String get settingsLanguageEnglish => 'English';
+
+  @override
+  String get settingsApplyHint =>
+      'Your language and theme choices are saved automatically.';
+
+  @override
+  String get settingsLoadFailed => 'Could not load settings.';
 }

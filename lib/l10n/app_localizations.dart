@@ -3174,6 +3174,36 @@ abstract class AppLocalizations {
   /// **'Davet kodun'**
   String get residentInviteScreenTitle;
 
+  /// No description provided for @residentInviteHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmana katıl'**
+  String get residentInviteHeadline;
+
+  /// No description provided for @residentInviteJoinHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticinin verdiği 5 haneli daire kodunu girin.'**
+  String get residentInviteJoinHint;
+
+  /// No description provided for @residentInviteCodeSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'DAVET KODU'**
+  String get residentInviteCodeSection;
+
+  /// No description provided for @residentInviteAccountSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'HESABINIZ'**
+  String get residentInviteAccountSection;
+
+  /// No description provided for @residentInviteVerifiedBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'KOD DOĞRULANDI'**
+  String get residentInviteVerifiedBadge;
+
   /// No description provided for @residentInviteCodeLabel.
   ///
   /// In tr, this message translates to:
@@ -3767,6 +3797,72 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kod ile katıldı'**
   String get managerUnitJoinedViaCode;
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlar'**
+  String get settingsTitle;
+
+  /// No description provided for @settingsSectionAppearance.
+  ///
+  /// In tr, this message translates to:
+  /// **'Görünüm'**
+  String get settingsSectionAppearance;
+
+  /// No description provided for @settingsThemeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tema'**
+  String get settingsThemeLabel;
+
+  /// No description provided for @settingsThemeLight.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık'**
+  String get settingsThemeLight;
+
+  /// No description provided for @settingsThemeDark.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koyu'**
+  String get settingsThemeDark;
+
+  /// No description provided for @settingsThemeSystem.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sistem'**
+  String get settingsThemeSystem;
+
+  /// No description provided for @settingsSectionLanguage.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dil'**
+  String get settingsSectionLanguage;
+
+  /// No description provided for @settingsLanguageTurkish.
+  ///
+  /// In tr, this message translates to:
+  /// **'Türkçe'**
+  String get settingsLanguageTurkish;
+
+  /// No description provided for @settingsLanguageEnglish.
+  ///
+  /// In tr, this message translates to:
+  /// **'İngilizce'**
+  String get settingsLanguageEnglish;
+
+  /// No description provided for @settingsApplyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dil ve tema tercihleriniz kaydedilir.'**
+  String get settingsApplyHint;
+
+  /// No description provided for @settingsLoadFailed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ayarlar yüklenemedi.'**
+  String get settingsLoadFailed;
 }
 
 class _AppLocalizationsDelegate

@@ -23,6 +23,7 @@ import 'package:apartment_manager/features/setup/presentation/account_role_scree
 import 'package:apartment_manager/features/setup/presentation/admin_invite_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/resident_invite_screen.dart';
+import 'package:apartment_manager/features/settings/presentation/app_settings_screen.dart';
 import 'package:apartment_manager/features/splash/presentation/splash_screen.dart';
 import 'package:apartment_manager/features/superadmin/presentation/superadmin_access_screen.dart';
 import 'package:apartment_manager/features/superadmin/presentation/superadmin_building_invite_screen.dart';
@@ -55,6 +56,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/home',
         builder: (context, state) => const HomeScreen(),
+      ),
+      GoRoute(
+        path: '/settings',
+        builder: (context, state) => const AppSettingsScreen(),
       ),
       GoRoute(
         path: '/invoice/:id',

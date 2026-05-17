@@ -1682,6 +1682,22 @@ class AppLocalizationsTr extends AppLocalizations {
   String get residentInviteScreenTitle => 'Davet kodun';
 
   @override
+  String get residentInviteHeadline => 'Apartmana katıl';
+
+  @override
+  String get residentInviteJoinHint =>
+      'Yöneticinin verdiği 5 haneli daire kodunu girin.';
+
+  @override
+  String get residentInviteCodeSection => 'DAVET KODU';
+
+  @override
+  String get residentInviteAccountSection => 'HESABINIZ';
+
+  @override
+  String get residentInviteVerifiedBadge => 'KOD DOĞRULANDI';
+
+  @override
   String get residentInviteCodeLabel => 'Davet kodu';
 
   @override
@@ -2011,4 +2027,37 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get managerUnitJoinedViaCode => 'Kod ile katıldı';
+
+  @override
+  String get settingsTitle => 'Ayarlar';
+
+  @override
+  String get settingsSectionAppearance => 'Görünüm';
+
+  @override
+  String get settingsThemeLabel => 'Tema';
+
+  @override
+  String get settingsThemeLight => 'Açık';
+
+  @override
+  String get settingsThemeDark => 'Koyu';
+
+  @override
+  String get settingsThemeSystem => 'Sistem';
+
+  @override
+  String get settingsSectionLanguage => 'Dil';
+
+  @override
+  String get settingsLanguageTurkish => 'Türkçe';
+
+  @override
+  String get settingsLanguageEnglish => 'İngilizce';
+
+  @override
+  String get settingsApplyHint => 'Dil ve tema tercihleriniz kaydedilir.';
+
+  @override
+  String get settingsLoadFailed => 'Ayarlar yüklenemedi.';
 }
