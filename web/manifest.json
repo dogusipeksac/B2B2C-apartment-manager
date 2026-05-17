@@ -1,11 +1,11 @@
 {
-    "name": "apartment_manager",
-    "short_name": "apartment_manager",
+    "name": "AptKeeper",
+    "short_name": "AptKeeper",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Apartment & building management",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

@@ -40,9 +40,8 @@ class HomeScreen extends ConsumerWidget {
         },
         data: (session) {
           if (session != null && session.role == UserRole.superAdmin) {
-            return StaffHomeShell(
+            return SuperadminShell(
               displayName: session.fullName ?? '',
-              homeTab: const SuperAdminHomeView(),
             );
           }
 
@@ -124,15 +123,13 @@ class HomeScreen extends ConsumerWidget {
               );
             }
             if (persona == DemoPersona.superAdmin) {
-              return StaffHomeShell(
+              return SuperadminShell(
                 displayName: name,
-                homeTab: SuperAdminHomeView(
-                  onSwitchPersona: () async {
-                    await ref.read(demoPersonaProvider.notifier).choose(
-                          DemoPersona.manager,
-                        );
-                  },
-                ),
+                onSwitchPersona: () async {
+                  await ref.read(demoPersonaProvider.notifier).choose(
+                        DemoPersona.manager,
+                      );
+                },
               );
             }
             if (persona == DemoPersona.manager) {

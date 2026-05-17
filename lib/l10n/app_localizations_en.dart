@@ -9,10 +9,10 @@ class AppLocalizationsEn extends AppLocalizations {
   AppLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get appTitle => 'Apartment Manager';
+  String get appTitle => 'AptKeeper';
 
   @override
-  String get splashTagline => 'Everything for your building in one place';
+  String get splashTagline => 'Apartment & building management';
 
   @override
   String get emailEntryTitle => 'Sign in';
@@ -296,7 +296,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get demoTileBuildingSettings => '9.2 Building settings';
 
   @override
-  String get demoSplashTagline => 'Everything for your building in one place';
+  String get demoSplashTagline => 'Apartment & building management';
 
   @override
   String get demoWelcomeSlide1Title =>
@@ -1794,6 +1794,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get superadminDashboardTitle => 'Super-admin dashboard';
 
   @override
+  String get superadminNavHome => 'Home';
+
+  @override
+  String get superadminNavManagerCodes => 'Codes';
+
+  @override
+  String get superadminNavBuildings => 'Buildings';
+
+  @override
+  String get superadminHomeComingSoon => 'This section is under development.';
+
+  @override
   String get superadminRefresh => 'Refresh';
 
   @override
@@ -1845,14 +1857,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get superadminDeleteBuildingFailed => 'Could not delete building.';
 
   @override
-  String get superadminAdminCodePolicySingle => 'Single setup (code once)';
-
-  @override
-  String get superadminAdminCodePolicyReusable => 'Multi setup (reuse code)';
+  String get superadminAdminCodeMultiBadge => 'Multi setup';
 
   @override
   String get superadminAdminCodePolicyHint =>
-      'Single setup: the code is consumed when the first manager registers. Multi setup: the same code can be redeemed again on another device or after reinstall until it expires.';
+      'The same code can be used again on another device or after reinstall until it expires.';
+
+  @override
+  String get superadminAdminCodeStatusActive => 'Active';
+
+  @override
+  String get superadminAdminCodeStatusRevoked => 'Revoked';
+
+  @override
+  String get superadminAdminCodeExpires => 'Expires';
+
+  @override
+  String get superadminAdminCodeCreated => 'Created';
 
   @override
   String get superadminRevokeAdminCode => 'Revoke code';

@@ -9,10 +9,10 @@ class AppLocalizationsTr extends AppLocalizations {
   AppLocalizationsTr([String locale = 'tr']) : super(locale);
 
   @override
-  String get appTitle => 'Apartman Yöneticisi';
+  String get appTitle => 'AptKeeper';
 
   @override
-  String get splashTagline => 'Apartmanın için hepsi tek yerde';
+  String get splashTagline => 'Apartman ve site yönetimi';
 
   @override
   String get emailEntryTitle => 'Giriş yap';
@@ -296,7 +296,7 @@ class AppLocalizationsTr extends AppLocalizations {
   String get demoTileBuildingSettings => '9.2 Bina ayarları';
 
   @override
-  String get demoSplashTagline => 'Apartmanın için hepsi tek yerde';
+  String get demoSplashTagline => 'Apartman ve site yönetimi';
 
   @override
   String get demoWelcomeSlide1Title => 'Apartmanını yönet, sakinler haberdar';
@@ -1793,6 +1793,18 @@ class AppLocalizationsTr extends AppLocalizations {
   String get superadminDashboardTitle => 'Sistem paneli';
 
   @override
+  String get superadminNavHome => 'Ana sayfa';
+
+  @override
+  String get superadminNavManagerCodes => 'Kodlar';
+
+  @override
+  String get superadminNavBuildings => 'Apartmanlar';
+
+  @override
+  String get superadminHomeComingSoon => 'Bu bölüm geliştiriliyor.';
+
+  @override
   String get superadminRefresh => 'Yenile';
 
   @override
@@ -1844,15 +1856,23 @@ class AppLocalizationsTr extends AppLocalizations {
   String get superadminDeleteBuildingFailed => 'Apartman silinemedi.';
 
   @override
-  String get superadminAdminCodePolicySingle => 'Tek kurulum (kod bir kez)';
-
-  @override
-  String get superadminAdminCodePolicyReusable =>
-      'Çoklu kurulum (aynı kod tekrar)';
+  String get superadminAdminCodeMultiBadge => 'Çoklu kurulum';
 
   @override
   String get superadminAdminCodePolicyHint =>
-      'Tek kurulum: kod ilk yönetici kaydında kullanılır ve kapanır. Çoklu kurulum: aynı kodla (süre dolmadan) başka cihazdan veya uygulama yeniden kurulunca tekrar yönetici girişi yapılabilir.';
+      'Aynı kod süresi dolana kadar farklı cihazlarda veya uygulama yeniden kurulunca tekrar yönetici girişi için kullanılabilir.';
+
+  @override
+  String get superadminAdminCodeStatusActive => 'Aktif';
+
+  @override
+  String get superadminAdminCodeStatusRevoked => 'İptal edildi';
+
+  @override
+  String get superadminAdminCodeExpires => 'Son kullanma';
+
+  @override
+  String get superadminAdminCodeCreated => 'Oluşturulma';
 
   @override
   String get superadminRevokeAdminCode => 'Kodu iptal et';

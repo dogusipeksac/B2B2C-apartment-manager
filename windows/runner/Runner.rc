@@ -89,13 +89,13 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "com.productivity.aparment_manager" "\0"
-            VALUE "FileDescription", "apartment_manager" "\0"
+            VALUE "CompanyName", "dogusipeksac" "\0"
+            VALUE "FileDescription", "AptKeeper" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "apartment_manager" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2026 com.productivity.aparment_manager. All rights reserved." "\0"
-            VALUE "OriginalFilename", "apartment_manager.exe" "\0"
-            VALUE "ProductName", "apartment_manager" "\0"
+            VALUE "InternalName", "aptkeeper" "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2026 dogusipeksac. All rights reserved." "\0"
+            VALUE "OriginalFilename", "aptkeeper.exe" "\0"
+            VALUE "ProductName", "AptKeeper" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

@@ -101,13 +101,13 @@ abstract class AppLocalizations {
   /// No description provided for @appTitle.
   ///
   /// In tr, this message translates to:
-  /// **'Apartman Yöneticisi'**
+  /// **'AptKeeper'**
   String get appTitle;
 
   /// No description provided for @splashTagline.
   ///
   /// In tr, this message translates to:
-  /// **'Apartmanın için hepsi tek yerde'**
+  /// **'Apartman ve site yönetimi'**
   String get splashTagline;
 
   /// No description provided for @emailEntryTitle.
@@ -641,7 +641,7 @@ abstract class AppLocalizations {
   /// No description provided for @demoSplashTagline.
   ///
   /// In tr, this message translates to:
-  /// **'Apartmanın için hepsi tek yerde'**
+  /// **'Apartman ve site yönetimi'**
   String get demoSplashTagline;
 
   /// No description provided for @demoWelcomeSlide1Title.
@@ -3368,6 +3368,30 @@ abstract class AppLocalizations {
   /// **'Sistem paneli'**
   String get superadminDashboardTitle;
 
+  /// No description provided for @superadminNavHome.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ana sayfa'**
+  String get superadminNavHome;
+
+  /// No description provided for @superadminNavManagerCodes.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodlar'**
+  String get superadminNavManagerCodes;
+
+  /// No description provided for @superadminNavBuildings.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartmanlar'**
+  String get superadminNavBuildings;
+
+  /// No description provided for @superadminHomeComingSoon.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu bölüm geliştiriliyor.'**
+  String get superadminHomeComingSoon;
+
   /// No description provided for @superadminRefresh.
   ///
   /// In tr, this message translates to:
@@ -3464,23 +3488,41 @@ abstract class AppLocalizations {
   /// **'Apartman silinemedi.'**
   String get superadminDeleteBuildingFailed;
 
-  /// No description provided for @superadminAdminCodePolicySingle.
+  /// No description provided for @superadminAdminCodeMultiBadge.
   ///
   /// In tr, this message translates to:
-  /// **'Tek kurulum (kod bir kez)'**
-  String get superadminAdminCodePolicySingle;
-
-  /// No description provided for @superadminAdminCodePolicyReusable.
-  ///
-  /// In tr, this message translates to:
-  /// **'Çoklu kurulum (aynı kod tekrar)'**
-  String get superadminAdminCodePolicyReusable;
+  /// **'Çoklu kurulum'**
+  String get superadminAdminCodeMultiBadge;
 
   /// No description provided for @superadminAdminCodePolicyHint.
   ///
   /// In tr, this message translates to:
-  /// **'Tek kurulum: kod ilk yönetici kaydında kullanılır ve kapanır. Çoklu kurulum: aynı kodla (süre dolmadan) başka cihazdan veya uygulama yeniden kurulunca tekrar yönetici girişi yapılabilir.'**
+  /// **'Aynı kod süresi dolana kadar farklı cihazlarda veya uygulama yeniden kurulunca tekrar yönetici girişi için kullanılabilir.'**
   String get superadminAdminCodePolicyHint;
+
+  /// No description provided for @superadminAdminCodeStatusActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aktif'**
+  String get superadminAdminCodeStatusActive;
+
+  /// No description provided for @superadminAdminCodeStatusRevoked.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal edildi'**
+  String get superadminAdminCodeStatusRevoked;
+
+  /// No description provided for @superadminAdminCodeExpires.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son kullanma'**
+  String get superadminAdminCodeExpires;
+
+  /// No description provided for @superadminAdminCodeCreated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluşturulma'**
+  String get superadminAdminCodeCreated;
 
   /// No description provided for @superadminRevokeAdminCode.
   ///

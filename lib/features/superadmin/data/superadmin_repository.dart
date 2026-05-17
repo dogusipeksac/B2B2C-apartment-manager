@@ -76,7 +76,7 @@ class SuperadminRepository {
           status: 'active',
           expiresAt: DateTime.now().add(const Duration(days: 60)),
           createdAt: DateTime.now().subtract(const Duration(days: 2)),
-          policy: AdminRedeemPolicy.singleUse,
+          policy: AdminRedeemPolicy.reusable,
         ),
       ];
     }
@@ -115,7 +115,7 @@ class SuperadminRepository {
 
   Future<SuperadminCreatedAdminInvite> createAdminInvite(
     LocalSession session, {
-    AdminRedeemPolicy policy = AdminRedeemPolicy.singleUse,
+    AdminRedeemPolicy policy = AdminRedeemPolicy.reusable,
   }) async {
     if (_disabled) {
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
