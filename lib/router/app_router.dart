@@ -1,3 +1,4 @@
+import 'package:apartment_manager/core/config/app_features.dart';
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona_storage.dart';
 import 'package:apartment_manager/features/announcements/presentation/announcement_detail_screen.dart';
@@ -219,6 +220,15 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return '/home';
       }
 
+      if (!AppFeatures.superAdminEnabled) {
+        if (isSuperadminAccess || location.startsWith('/superadmin/')) {
+          return '/setup/account-type';
+        }
+        if (local != null && local.role == UserRole.superAdmin) {
+          return '/setup/account-type';
+        }
+      }
+
       if (Env.demoMode && isAdminInvite) {
         return '/setup/wizard';
       }
@@ -238,8 +248,13 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       }
 
       final isSuperadminRoute = location.startsWith('/superadmin/');
-      if (isSuperadminRoute && local.role != UserRole.superAdmin) {
-        return '/home';
+      if (isSuperadminRoute) {
+        if (!AppFeatures.superAdminEnabled) {
+          return '/setup/account-type';
+        }
+        if (local.role != UserRole.superAdmin) {
+          return '/home';
+        }
       }
 
       if (isAdminInvite) {

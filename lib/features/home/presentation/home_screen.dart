@@ -1,3 +1,4 @@
+import 'package:apartment_manager/core/config/app_features.dart';
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/widgets/error_view.dart';
@@ -39,7 +40,9 @@ class HomeScreen extends ConsumerWidget {
           );
         },
         data: (session) {
-          if (session != null && session.role == UserRole.superAdmin) {
+          if (session != null &&
+              session.role == UserRole.superAdmin &&
+              AppFeatures.superAdminEnabled) {
             return SuperadminShell(
               displayName: session.fullName ?? '',
             );
@@ -122,7 +125,8 @@ class HomeScreen extends ConsumerWidget {
                 body: Center(child: CircularProgressIndicator()),
               );
             }
-            if (persona == DemoPersona.superAdmin) {
+            if (persona == DemoPersona.superAdmin &&
+                AppFeatures.superAdminEnabled) {
               return SuperadminShell(
                 displayName: name,
                 onSwitchPersona: () async {

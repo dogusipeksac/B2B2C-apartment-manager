@@ -1,3 +1,4 @@
+import 'package:apartment_manager/core/config/app_features.dart';
 import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
@@ -77,17 +78,19 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
                     onTap: () =>
                         setState(() => _selected = DemoPersona.manager),
                   ),
-                  const SizedBox(height: 12),
-                  _RoleCard(
-                    iconBoxBg: scheme.errorContainer,
-                    iconBoxFg: scheme.error,
-                    icon: Icons.admin_panel_settings_outlined,
-                    title: l10n.demoPersonaSuperAdminTitle,
-                    subtitle: l10n.demoPersonaSuperAdminBody,
-                    selected: _selected == DemoPersona.superAdmin,
-                    onTap: () =>
-                        setState(() => _selected = DemoPersona.superAdmin),
-                  ),
+                  if (AppFeatures.superAdminEnabled) ...[
+                    const SizedBox(height: 12),
+                    _RoleCard(
+                      iconBoxBg: scheme.errorContainer,
+                      iconBoxFg: scheme.error,
+                      icon: Icons.admin_panel_settings_outlined,
+                      title: l10n.demoPersonaSuperAdminTitle,
+                      subtitle: l10n.demoPersonaSuperAdminBody,
+                      selected: _selected == DemoPersona.superAdmin,
+                      onTap: () =>
+                          setState(() => _selected = DemoPersona.superAdmin),
+                    ),
+                  ],
                   const SizedBox(height: 16),
                   Container(
                     padding: const EdgeInsets.all(12),
@@ -133,9 +136,12 @@ class _DemoRoleScreenState extends ConsumerState<DemoRoleScreen> {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 24),
             child: FilledButton(
               onPressed: () async {
-                await ref
-                    .read(demoPersonaProvider.notifier)
-                    .choose(_selected);
+                final persona = AppFeatures.superAdminEnabled
+                    ? _selected
+                    : (_selected == DemoPersona.superAdmin
+                        ? DemoPersona.resident
+                        : _selected);
+                await ref.read(demoPersonaProvider.notifier).choose(persona);
                 if (context.mounted) {
                   context.go('/home');
                 }

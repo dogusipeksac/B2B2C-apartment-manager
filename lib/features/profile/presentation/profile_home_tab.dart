@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apartment_manager/core/config/app_features.dart';
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/session/demo_persona.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
@@ -75,9 +76,10 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
     final bn = session?.buildingName?.trim();
     final hasBuildingName = bn != null && bn.isNotEmpty;
 
-    final isSuperAdmin = demo
-        ? demoPersona == DemoPersona.superAdmin
-        : session?.role == UserRole.superAdmin;
+    final isSuperAdmin = AppFeatures.superAdminEnabled &&
+        (demo
+            ? demoPersona == DemoPersona.superAdmin
+            : session?.role == UserRole.superAdmin);
 
     final isManager = demo
         ? demoPersona == DemoPersona.manager

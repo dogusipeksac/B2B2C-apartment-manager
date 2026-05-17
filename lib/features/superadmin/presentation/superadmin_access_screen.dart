@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:apartment_manager/core/config/app_features.dart';
 import 'package:apartment_manager/core/device/device_id_provider.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
@@ -32,6 +33,13 @@ class _SuperadminAccessScreenState extends ConsumerState<SuperadminAccessScreen>
   @override
   void initState() {
     super.initState();
+    if (!AppFeatures.superAdminEnabled) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          context.go('/setup/account-type');
+        }
+      });
+    }
     unawaited(_loadRememberDefault());
   }
 
