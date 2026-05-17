@@ -1418,11 +1418,11 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get accountRoleResidentShortBody =>
-      'Yöneticiden aldığın davet kodu ile dairene bağlan.';
+      'Davet kodunla giriş yap veya dairene ilk kez katıl.';
 
   @override
   String get accountRoleManagerShortBody =>
-      'Apartmanını sıfırdan kur, sakinleri davet et.';
+      'Davet kodunla giriş yap veya yeni apartman kurulumunu başlat.';
 
   @override
   String get residentInvitePlaceholderTitle => 'Davet kodu';

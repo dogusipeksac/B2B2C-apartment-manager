@@ -2723,13 +2723,13 @@ abstract class AppLocalizations {
   /// No description provided for @accountRoleResidentShortBody.
   ///
   /// In tr, this message translates to:
-  /// **'Yöneticiden aldığın davet kodu ile dairene bağlan.'**
+  /// **'Davet kodunla giriş yap veya dairene ilk kez katıl.'**
   String get accountRoleResidentShortBody;
 
   /// No description provided for @accountRoleManagerShortBody.
   ///
   /// In tr, this message translates to:
-  /// **'Apartmanını sıfırdan kur, sakinleri davet et.'**
+  /// **'Davet kodunla giriş yap veya yeni apartman kurulumunu başlat.'**
   String get accountRoleManagerShortBody;
 
   /// No description provided for @residentInvitePlaceholderTitle.

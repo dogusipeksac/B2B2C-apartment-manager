@@ -1420,11 +1420,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get accountRoleResidentShortBody =>
-      'Connect to your unit with the invite code from your manager.';
+      'Sign in with your invite code or join your unit for the first time.';
 
   @override
   String get accountRoleManagerShortBody =>
-      'Set up your building from scratch and invite residents.';
+      'Sign in with your invite code or start a new building setup.';
 
   @override
   String get residentInvitePlaceholderTitle => 'Invite code';

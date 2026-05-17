@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math' as math;
 
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
@@ -18,12 +19,65 @@ class SplashScreen extends ConsumerStatefulWidget {
   ConsumerState<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends ConsumerState<SplashScreen> {
+class _SplashScreenState extends ConsumerState<SplashScreen>
+    with TickerProviderStateMixin {
   Timer? _timer;
+  late final AnimationController _introController;
+  late final AnimationController _dotController;
+  late final Animation<double> _logoScale;
+  late final Animation<double> _logoOpacity;
+  late final Animation<double> _titleOpacity;
+  late final Animation<Offset> _titleSlide;
+  late final Animation<double> _taglineOpacity;
 
   @override
   void initState() {
     super.initState();
+    _introController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 1100),
+    );
+    _dotController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+
+    _logoScale = Tween<double>(begin: 0.82, end: 1).animate(
+      CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0, 0.7, curve: Curves.easeOutBack),
+      ),
+    );
+    _logoOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0, 0.45, curve: Curves.easeOut),
+      ),
+    );
+    _titleOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOut),
+      ),
+    );
+    _titleSlide = Tween<Offset>(
+      begin: const Offset(0, 0.12),
+      end: Offset.zero,
+    ).animate(
+      CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0.25, 0.85, curve: Curves.easeOutCubic),
+      ),
+    );
+    _taglineOpacity = Tween<double>(begin: 0, end: 1).animate(
+      CurvedAnimation(
+        parent: _introController,
+        curve: const Interval(0.4, 1, curve: Curves.easeOut),
+      ),
+    );
+
+    unawaited(_introController.forward());
+
     _timer = Timer(const Duration(seconds: 2), () async {
       if (!mounted) {
         return;
@@ -116,6 +170,8 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   void dispose() {
     _timer?.cancel();
+    _introController.dispose();
+    _dotController.dispose();
     super.dispose();
   }
 
@@ -144,60 +200,91 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           child: Column(
             children: [
               const Spacer(),
-              Container(
-                width: 88,
-                height: 88,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  color: Colors.white.withValues(alpha: 0.1),
-                  border: Border.all(
-                    color: Colors.white.withValues(alpha: 0.18),
+              FadeTransition(
+                opacity: _logoOpacity,
+                child: ScaleTransition(
+                  scale: _logoScale,
+                  child: Container(
+                    width: 88,
+                    height: 88,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(24),
+                      color: Colors.white.withValues(alpha: 0.1),
+                      border: Border.all(
+                        color: Colors.white.withValues(alpha: 0.18),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.18),
+                          blurRadius: 24,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
+                    ),
+                    child: const Icon(
+                      Icons.apartment_rounded,
+                      size: 48,
+                      color: Colors.white,
+                    ),
                   ),
-                ),
-                child: const Icon(
-                  Icons.apartment_rounded,
-                  size: 48,
-                  color: Colors.white,
                 ),
               ),
               const SizedBox(height: 22),
-              Text(
-                l10n.appTitle,
-                style: textTheme.headlineSmall?.copyWith(
-                  color: Colors.white,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: -0.3,
+              FadeTransition(
+                opacity: _titleOpacity,
+                child: SlideTransition(
+                  position: _titleSlide,
+                  child: Text(
+                    l10n.appTitle,
+                    style: textTheme.headlineSmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w700,
+                      letterSpacing: -0.3,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
-                textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32),
-                child: Text(
-                  l10n.splashTagline,
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: const Color(0xFFC9DCCD),
+              FadeTransition(
+                opacity: _taglineOpacity,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Text(
+                    l10n.splashTagline,
+                    textAlign: TextAlign.center,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: const Color(0xFFC9DCCD),
+                    ),
                   ),
                 ),
               ),
               const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: List.generate(
-                  3,
-                  (i) => Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 3),
-                    child: Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Colors.white54,
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ),
+              AnimatedBuilder(
+                animation: _dotController,
+                builder: (context, _) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: List.generate(3, (i) {
+                      final phase =
+                          (_dotController.value + i * 0.22) % 1.0;
+                      final wave = (math.sin(phase * math.pi * 2) + 1) / 2;
+                      final size = 5 + wave * 3;
+                      final opacity = 0.35 + wave * 0.65;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4),
+                        child: Container(
+                          width: size,
+                          height: size,
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: opacity),
+                            shape: BoxShape.circle,
+                          ),
+                        ),
+                      );
+                    }),
+                  );
+                },
               ),
               const SizedBox(height: 24),
             ],
