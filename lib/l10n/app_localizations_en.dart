@@ -1280,6 +1280,57 @@ class AppLocalizationsEn extends AppLocalizations {
   String get issueSubmittedDemo => 'Demo: report saved.';
 
   @override
+  String get issueSubmittedSuccess => 'Your issue report has been submitted.';
+
+  @override
+  String get issueStatusUpdated => 'Status updated.';
+
+  @override
+  String get issueManagerUpdateStatus => 'Update status';
+
+  @override
+  String get issueStatusSheetTitle => 'Update status';
+
+  @override
+  String get issueStatusSheetSubtitle => 'Residents can see process notes.';
+
+  @override
+  String get issueStatusPickLabel => 'NEW STATUS';
+
+  @override
+  String get issueStatusNoteLabel => 'NOTE (OPTIONAL)';
+
+  @override
+  String get issueStatusNoteHint =>
+      'e.g. Called a technician, coming tomorrow…';
+
+  @override
+  String get issueStatusSave => 'Save';
+
+  @override
+  String get issueStatusQuickNoteTechnician => 'Called a technician';
+
+  @override
+  String get issueStatusQuickNoteMaterial => 'Waiting for parts';
+
+  @override
+  String get issueStatusQuickNoteResident => 'Spoke with resident';
+
+  @override
+  String get issueStatusQuickNoteDone => 'Work completed';
+
+  @override
+  String get issueTimelineManagerNote => 'Manager note';
+
+  @override
+  String get issueTimelineEmpty => 'No process notes yet.';
+
+  @override
+  String issueListLatestComment(Object text) {
+    return 'Latest: $text';
+  }
+
+  @override
   String get issueTimelineSection => 'TIMELINE';
 
   @override

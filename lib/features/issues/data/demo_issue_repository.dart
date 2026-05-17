@@ -1,4 +1,7 @@
+import 'package:apartment_manager/features/auth/data/local_session.dart';
 import 'package:apartment_manager/features/issues/data/issue_repository.dart';
+import 'package:apartment_manager/features/issues/domain/create_issue_input.dart';
+import 'package:apartment_manager/features/issues/domain/issue_comment_ui.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
 
 class DemoIssueRepository implements IssueRepository {
@@ -128,15 +131,64 @@ class DemoIssueRepository implements IssueRepository {
     ),
   ];
 
+  static final List<IssueCommentUi> _demoComments = [
+    IssueCommentUi(
+      id: 'c1',
+      body: 'Tesisatçı çağrıldı, yarın 10:00\'da gelecek.',
+      authorName: 'Ayşe Demir',
+      createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      statusUpdate: IssueUiStatus.inProgress,
+    ),
+  ];
+
   @override
-  Future<IssueUi?> byId(String id) async {
+  Future<IssueUi?> byId(LocalSession session, String id) async {
     try {
-      return _rows.firstWhere((e) => e.id == id);
+      final row = _rows.firstWhere((e) => e.id == id);
+      if (id == 'demo-issue-1') {
+        return IssueUi(
+          id: row.id,
+          publicCode: row.publicCode,
+          title: row.title,
+          subtitle: row.subtitle,
+          status: row.status,
+          priority: row.priority,
+          category: row.category,
+          relativeTime: row.relativeTime,
+          commentCount: _demoComments.length,
+          assigneeLabel: row.assigneeLabel,
+          description: row.description,
+          photoCount: row.photoCount,
+          isOwnReport: row.isOwnReport,
+          avatarInitials: row.avatarInitials,
+          footerAssigneeName: row.footerAssigneeName,
+          comments: _demoComments,
+          createdAt: DateTime.now().subtract(const Duration(days: 1)),
+          latestCommentPreview: _demoComments.first.body,
+          latestCommentAuthor: _demoComments.first.authorName,
+        );
+      }
+      return row;
     } on Object catch (_) {
       return null;
     }
   }
 
   @override
-  Future<List<IssueUi>> listIssues() async => _rows;
+  Future<List<IssueUi>> listIssues(LocalSession session) async => _rows;
+
+  @override
+  Future<String> createIssue(
+    LocalSession session,
+    CreateIssueInput input,
+  ) async =>
+      'demo-issue-new';
+
+  @override
+  Future<void> updateStatus(
+    LocalSession session, {
+    required String issueId,
+    required IssueUiStatus status,
+    String? note,
+  }) async {}
 }

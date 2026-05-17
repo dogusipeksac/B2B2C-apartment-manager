@@ -561,6 +561,27 @@
   "issuePhotoAdd": "Photo",
   "issuePhotoComingSoon": "Photo upload coming soon",
   "issueSubmittedDemo": "Demo: report saved.",
+  "issueSubmittedSuccess": "Your issue report has been submitted.",
+  "issueStatusUpdated": "Status updated.",
+  "issueManagerUpdateStatus": "Update status",
+  "issueStatusSheetTitle": "Update status",
+  "issueStatusSheetSubtitle": "Residents can see process notes.",
+  "issueStatusPickLabel": "NEW STATUS",
+  "issueStatusNoteLabel": "NOTE (OPTIONAL)",
+  "issueStatusNoteHint": "e.g. Called a technician, coming tomorrow…",
+  "issueStatusSave": "Save",
+  "issueStatusQuickNoteTechnician": "Called a technician",
+  "issueStatusQuickNoteMaterial": "Waiting for parts",
+  "issueStatusQuickNoteResident": "Spoke with resident",
+  "issueStatusQuickNoteDone": "Work completed",
+  "issueTimelineManagerNote": "Manager note",
+  "issueTimelineEmpty": "No process notes yet.",
+  "issueListLatestComment": "Latest: {text}",
+  "@issueListLatestComment": {
+    "placeholders": {
+      "text": {}
+    }
+  },
   "issueTimelineSection": "TIMELINE",
   "issueTimelineReported": "Reported",
   "issueTimelineSeen": "Seen",

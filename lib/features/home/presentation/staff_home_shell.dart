@@ -5,6 +5,7 @@ import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
+import 'package:apartment_manager/features/issues/presentation/issues_list_screen.dart';
 import 'package:apartment_manager/features/profile/presentation/profile_home_tab.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -73,6 +74,7 @@ class _StaffHomeShellState extends ConsumerState<StaffHomeShell> {
         index: _tabIndex,
         children: [
           widget.homeTab,
+          const IssuesListScreen(allowCreate: false),
           ProfileHomeTab(
             displayName: resolvedDisplay,
             onSignOut: () => _signOut(context),
@@ -88,6 +90,11 @@ class _StaffHomeShellState extends ConsumerState<StaffHomeShell> {
             icon: const Icon(Icons.home_outlined),
             selectedIcon: const Icon(Icons.home),
             label: l10n.demoNavHome,
+          ),
+          NavigationDestination(
+            icon: const Icon(Icons.build_outlined),
+            selectedIcon: const Icon(Icons.build),
+            label: l10n.demoNavIssues,
           ),
           NavigationDestination(
             icon: const Icon(Icons.person_outline),

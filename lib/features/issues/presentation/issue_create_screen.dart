@@ -1,19 +1,25 @@
+import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/widgets/app_button.dart';
+import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/issues/domain/create_issue_input.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
+import 'package:apartment_manager/features/issues/presentation/providers/issue_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 /// Mockup **5.2** — Yeni arıza bildirimi.
-class IssueCreateScreen extends StatefulWidget {
+class IssueCreateScreen extends ConsumerStatefulWidget {
   const IssueCreateScreen({super.key});
 
   @override
-  State<IssueCreateScreen> createState() => _IssueCreateScreenState();
+  ConsumerState<IssueCreateScreen> createState() => _IssueCreateScreenState();
 }
 
-class _IssueCreateScreenState extends State<IssueCreateScreen> {
+class _IssueCreateScreenState extends ConsumerState<IssueCreateScreen> {
   final _title = TextEditingController();
   final _body = TextEditingController();
 
@@ -21,6 +27,7 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
   _IssueLocation _location = _IssueLocation.parking;
   IssueUiPriority _priority = IssueUiPriority.medium;
   bool _hasDemoPhoto = false;
+  bool _submitting = false;
 
   @override
   void dispose() {
@@ -193,13 +200,14 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
               child: AppButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(l10n.issueSubmittedDemo)),
-                  );
-                  context.pop();
-                },
-                child: Text(l10n.issueSubmit),
+                onPressed: _submitting ? null : () => _submit(context, l10n),
+                child: _submitting
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : Text(l10n.issueSubmit),
               ),
             ),
           ),
@@ -216,6 +224,95 @@ class _IssueCreateScreenState extends State<IssueCreateScreen> {
       _IssueLocation.garden => l10n.issueLocationGarden,
       _IssueLocation.elevator => l10n.issueLocationElevator,
     };
+  }
+
+  String _locationWire(_IssueLocation loc) {
+    return switch (loc) {
+      _IssueLocation.apartment => 'apartment',
+      _IssueLocation.parking => 'parking',
+      _IssueLocation.roof => 'roof',
+      _IssueLocation.garden => 'garden',
+      _IssueLocation.elevator => 'elevator',
+    };
+  }
+
+  Future<void> _submit(BuildContext context, AppLocalizations l10n) async {
+    final title = _title.text.trim();
+    if (title.length < 3) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.issueFieldTitle)),
+      );
+      return;
+    }
+
+    final session = await ref.read(localSessionProvider.future);
+    if (session == null) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorGeneric)),
+      );
+      return;
+    }
+    if (session.sessionToken == null || session.sessionToken!.isEmpty) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            const AppException.auth(code: 'no_session_token').userMessage,
+          ),
+        ),
+      );
+      return;
+    }
+
+    setState(() => _submitting = true);
+    try {
+      final repo = ref.read(issueRepositoryProvider);
+      await repo.createIssue(
+        session,
+        CreateIssueInput(
+          title: title,
+          description: _body.text.trim(),
+          category: _category,
+          locationCode: _locationWire(_location),
+          priority: _priority,
+        ),
+      );
+      ref.invalidate(issuesListProvider);
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            Env.demoMode ? l10n.issueSubmittedDemo : l10n.issueSubmittedSuccess,
+          ),
+        ),
+      );
+      context.pop();
+    } on AppException catch (e) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.userMessage)),
+      );
+    } on Object {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.errorGeneric)),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _submitting = false);
+      }
+    }
   }
 }
 

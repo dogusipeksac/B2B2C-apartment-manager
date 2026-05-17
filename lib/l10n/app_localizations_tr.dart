@@ -1279,6 +1279,56 @@ class AppLocalizationsTr extends AppLocalizations {
   String get issueSubmittedDemo => 'Demo: bildirim kaydedildi.';
 
   @override
+  String get issueSubmittedSuccess => 'Arıza bildiriminiz alındı.';
+
+  @override
+  String get issueStatusUpdated => 'Durum güncellendi.';
+
+  @override
+  String get issueManagerUpdateStatus => 'Durumu güncelle';
+
+  @override
+  String get issueStatusSheetTitle => 'Durumu güncelle';
+
+  @override
+  String get issueStatusSheetSubtitle => 'Sakinler süreç notlarını görebilir.';
+
+  @override
+  String get issueStatusPickLabel => 'YENİ DURUM';
+
+  @override
+  String get issueStatusNoteLabel => 'NOT (İSTEĞE BAĞLI)';
+
+  @override
+  String get issueStatusNoteHint => 'Örn. Usta çağırdım, yarın gelecek…';
+
+  @override
+  String get issueStatusSave => 'Kaydet';
+
+  @override
+  String get issueStatusQuickNoteTechnician => 'Usta çağırdım';
+
+  @override
+  String get issueStatusQuickNoteMaterial => 'Malzeme bekleniyor';
+
+  @override
+  String get issueStatusQuickNoteResident => 'Sakinle görüşüldü';
+
+  @override
+  String get issueStatusQuickNoteDone => 'İşlem tamamlandı';
+
+  @override
+  String get issueTimelineManagerNote => 'Yönetim notu';
+
+  @override
+  String get issueTimelineEmpty => 'Henüz süreç notu yok.';
+
+  @override
+  String issueListLatestComment(Object text) {
+    return 'Son not: $text';
+  }
+
+  @override
   String get issueTimelineSection => 'SÜREÇ';
 
   @override

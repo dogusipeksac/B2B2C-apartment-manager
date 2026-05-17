@@ -1,26 +1,39 @@
-import 'package:apartment_manager/core/supabase/supabase_client.dart';
+import 'package:apartment_manager/features/auth/data/local_session.dart';
+import 'package:apartment_manager/features/issues/data/issue_ops_repository.dart';
 import 'package:apartment_manager/features/issues/data/issue_repository.dart';
+import 'package:apartment_manager/features/issues/domain/create_issue_input.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
-
 class SupabaseIssueRepository implements IssueRepository {
-  @override
-  Future<IssueUi?> byId(String id) async {
-    final list = await listIssues();
-    try {
-      return list.firstWhere((e) => e.id == id);
-    } on Object catch (_) {
-      return null;
-    }
-  }
+  SupabaseIssueRepository(this._ops);
+
+  final IssueOpsRepository _ops;
 
   @override
-  Future<List<IssueUi>> listIssues() async {
-    final user = supabase.auth.currentUser;
-    if (user == null) {
-      return [];
-    }
-    // TODO: issues where building_id matches membership.
-    await supabase.from('profiles').select('id').eq('id', user.id).maybeSingle();
-    return [];
-  }
+  Future<IssueUi?> byId(LocalSession session, String id) =>
+      _ops.getIssue(session, id);
+
+  @override
+  Future<List<IssueUi>> listIssues(LocalSession session) =>
+      _ops.listIssues(session);
+
+  @override
+  Future<String> createIssue(
+    LocalSession session,
+    CreateIssueInput input,
+  ) =>
+      _ops.createIssue(session, input);
+
+  @override
+  Future<void> updateStatus(
+    LocalSession session, {
+    required String issueId,
+    required IssueUiStatus status,
+    String? note,
+  }) =>
+      _ops.updateStatus(
+        session,
+        issueId: issueId,
+        status: status,
+        note: note,
+      );
 }

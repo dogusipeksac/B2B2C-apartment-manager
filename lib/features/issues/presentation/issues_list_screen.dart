@@ -1,7 +1,10 @@
-import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/widgets/demo_module_lock_overlay.dart';
+import 'package:apartment_manager/core/widgets/error_view.dart';
+import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
+import 'package:apartment_manager/features/issues/presentation/issue_subtitle.dart';
 import 'package:apartment_manager/features/issues/presentation/providers/issue_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +13,17 @@ import 'package:go_router/go_router.dart';
 
 /// Mockup **5.1** — Arıza listesi (filtre chip’leri, kart gölgeleri, FAB).
 class IssuesListScreen extends ConsumerStatefulWidget {
-  const IssuesListScreen({super.key});
+  const IssuesListScreen({
+    this.allowCreate = true,
+    this.moduleLocked = false,
+    super.key,
+  });
+
+  /// Sakin: yeni arıza FAB. Yönetici: yalnızca liste.
+  final bool allowCreate;
+
+  /// Prod’da kilitli demo modülleri için; arızalar prod’da açık.
+  final bool moduleLocked;
 
   @override
   ConsumerState<IssuesListScreen> createState() => _IssuesListScreenState();
@@ -103,49 +116,53 @@ class _IssuesListScreenState extends ConsumerState<IssuesListScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final async = ref.watch(issuesListProvider);
-
     final apart = context.apart;
     final scheme = Theme.of(context).colorScheme;
+    final sessionAsync = ref.watch(localSessionProvider);
+    final async = ref.watch(issuesListProvider);
+
+    if (sessionAsync.isLoading) {
+      return Scaffold(
+        backgroundColor: apart.scaffoldBg,
+        appBar: AppBar(title: Text(l10n.issuesTitle)),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
         title: Text(l10n.issuesTitle),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: Material(
-              color: apart.surface,
-              elevation: 1,
-              shadowColor: Colors.black26,
-              shape: const CircleBorder(),
-              child: IconButton(
-                icon: const Icon(Icons.search_rounded),
-                onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(l10n.homeFeatureSoon)),
-                ),
+      ),
+      floatingActionButton: widget.allowCreate
+          ? FloatingActionButton(
+              backgroundColor: AppTheme.secondary,
+              foregroundColor: scheme.onSecondary,
+              elevation: 2,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: AppTheme.secondary,
-        foregroundColor: scheme.onSecondary,
-        elevation: 2,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
-        onPressed: () => context.push('/issues/create'),
-        child: const Icon(Icons.add, size: 28),
-      ),
+              onPressed: () => context.push('/issues/create'),
+              child: const Icon(Icons.add, size: 28),
+            )
+          : null,
       body: DemoModuleLockOverlay(
-        locked: !Env.demoMode,
+        locked: widget.moduleLocked,
         message: l10n.demoModuleLockedBody,
         child: async.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (_, _) => Center(child: Text(l10n.catalogLoadError)),
+          error: (error, stackTrace) {
+            final msg = error is AppException
+                ? error.userMessage
+                : l10n.catalogLoadError;
+            return ErrorView(
+              message: msg,
+              action: TextButton(
+                onPressed: () => ref.invalidate(issuesListProvider),
+                child: Text(l10n.managerInviteRetry),
+              ),
+            );
+          },
           data: (rows) {
             final labels = _chipLabels(l10n, rows);
             final filtered = _applyFilter(rows, _filterIdx);
@@ -385,12 +402,28 @@ class _IssueCard extends StatelessWidget {
                           ),
                           const SizedBox(height: 4),
                           Text(
-                            row.subtitle,
+                            issueSubtitle(l10n, row),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: apart.onSurfaceVariant,
                               height: 1.3,
                             ),
                           ),
+                          if (row.latestCommentPreview != null &&
+                              row.latestCommentPreview!.isNotEmpty) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              l10n.issueListLatestComment(
+                                row.latestCommentPreview!,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: scheme.primary,
+                                fontWeight: FontWeight.w500,
+                                height: 1.3,
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),

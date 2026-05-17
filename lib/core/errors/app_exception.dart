@@ -25,8 +25,11 @@ sealed class AppException with _$AppException implements Exception {
     network: () => 'İnternet bağlantınızı kontrol edip tekrar deneyin.',
     auth: (code, messageKey) {
       if (code == 'invalid_session') {
-        return 'Cihaz oturumu sunucu ile eşleşmiyor. Davet kodu ekranına '
-            'dönüp kodu yeniden girin.';
+        return 'Cihaz oturumu sunucu ile eşleşmiyor. Çıkış yapıp davet '
+            'kodunuzu tekrar girin.';
+      }
+      if (code == 'residents_only_create') {
+        return 'Yalnızca sakinler arıza bildirebilir.';
       }
       if (code == 'no_session_token') {
         return 'Oturum bilgisi bulunamadı. Davet kodunu tekrar girin.';
@@ -71,6 +74,19 @@ sealed class AppException with _$AppException implements Exception {
           return 'Sunucuda davet fonksiyonu bulunamadı. '
               'Terminalde `supabase functions deploy manager_invite` '
               'çalıştırın.';
+        case 'issue_ops_not_deployed':
+          return 'Arıza servisi bulunamadı. Terminalde '
+              '`supabase functions deploy issue_ops` çalıştırın.';
+        case 'issue_title_required':
+          return 'Başlık en az 3 karakter olmalıdır.';
+        case 'issue_not_found':
+          return 'Arıza kaydı bulunamadı.';
+        case 'issue_status_invalid':
+          return 'Geçersiz durum seçildi.';
+        case 'residents_only_create':
+          return 'Yalnızca sakinler arıza bildirebilir.';
+        case 'not_building_member':
+          return 'Bu apartman için yetkiniz yok.';
         case 'no_units_for_building':
           return 'Bu bina için kayıtlı daire bulunamadı.';
         case 'invalid_unit':

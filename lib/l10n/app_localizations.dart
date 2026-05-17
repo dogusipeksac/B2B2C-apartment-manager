@@ -2456,6 +2456,102 @@ abstract class AppLocalizations {
   /// **'Demo: bildirim kaydedildi.'**
   String get issueSubmittedDemo;
 
+  /// No description provided for @issueSubmittedSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arıza bildiriminiz alındı.'**
+  String get issueSubmittedSuccess;
+
+  /// No description provided for @issueStatusUpdated.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durum güncellendi.'**
+  String get issueStatusUpdated;
+
+  /// No description provided for @issueManagerUpdateStatus.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durumu güncelle'**
+  String get issueManagerUpdateStatus;
+
+  /// No description provided for @issueStatusSheetTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Durumu güncelle'**
+  String get issueStatusSheetTitle;
+
+  /// No description provided for @issueStatusSheetSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakinler süreç notlarını görebilir.'**
+  String get issueStatusSheetSubtitle;
+
+  /// No description provided for @issueStatusPickLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'YENİ DURUM'**
+  String get issueStatusPickLabel;
+
+  /// No description provided for @issueStatusNoteLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'NOT (İSTEĞE BAĞLI)'**
+  String get issueStatusNoteLabel;
+
+  /// No description provided for @issueStatusNoteHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Örn. Usta çağırdım, yarın gelecek…'**
+  String get issueStatusNoteHint;
+
+  /// No description provided for @issueStatusSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get issueStatusSave;
+
+  /// No description provided for @issueStatusQuickNoteTechnician.
+  ///
+  /// In tr, this message translates to:
+  /// **'Usta çağırdım'**
+  String get issueStatusQuickNoteTechnician;
+
+  /// No description provided for @issueStatusQuickNoteMaterial.
+  ///
+  /// In tr, this message translates to:
+  /// **'Malzeme bekleniyor'**
+  String get issueStatusQuickNoteMaterial;
+
+  /// No description provided for @issueStatusQuickNoteResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakinle görüşüldü'**
+  String get issueStatusQuickNoteResident;
+
+  /// No description provided for @issueStatusQuickNoteDone.
+  ///
+  /// In tr, this message translates to:
+  /// **'İşlem tamamlandı'**
+  String get issueStatusQuickNoteDone;
+
+  /// No description provided for @issueTimelineManagerNote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetim notu'**
+  String get issueTimelineManagerNote;
+
+  /// No description provided for @issueTimelineEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz süreç notu yok.'**
+  String get issueTimelineEmpty;
+
+  /// No description provided for @issueListLatestComment.
+  ///
+  /// In tr, this message translates to:
+  /// **'Son not: {text}'**
+  String issueListLatestComment(Object text);
+
   /// No description provided for @issueTimelineSection.
   ///
   /// In tr, this message translates to:

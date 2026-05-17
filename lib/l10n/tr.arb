@@ -561,6 +561,27 @@
   "issuePhotoAdd": "Foto",
   "issuePhotoComingSoon": "Foto ekleme yakında",
   "issueSubmittedDemo": "Demo: bildirim kaydedildi.",
+  "issueSubmittedSuccess": "Arıza bildiriminiz alındı.",
+  "issueStatusUpdated": "Durum güncellendi.",
+  "issueManagerUpdateStatus": "Durumu güncelle",
+  "issueStatusSheetTitle": "Durumu güncelle",
+  "issueStatusSheetSubtitle": "Sakinler süreç notlarını görebilir.",
+  "issueStatusPickLabel": "YENİ DURUM",
+  "issueStatusNoteLabel": "NOT (İSTEĞE BAĞLI)",
+  "issueStatusNoteHint": "Örn. Usta çağırdım, yarın gelecek…",
+  "issueStatusSave": "Kaydet",
+  "issueStatusQuickNoteTechnician": "Usta çağırdım",
+  "issueStatusQuickNoteMaterial": "Malzeme bekleniyor",
+  "issueStatusQuickNoteResident": "Sakinle görüşüldü",
+  "issueStatusQuickNoteDone": "İşlem tamamlandı",
+  "issueTimelineManagerNote": "Yönetim notu",
+  "issueTimelineEmpty": "Henüz süreç notu yok.",
+  "issueListLatestComment": "Son not: {text}",
+  "@issueListLatestComment": {
+    "placeholders": {
+      "text": {}
+    }
+  },
   "issueTimelineSection": "SÜREÇ",
   "issueTimelineReported": "Bildirildi",
   "issueTimelineSeen": "Görüldü",
