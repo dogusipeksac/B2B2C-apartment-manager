@@ -7,6 +7,7 @@ import 'package:apartment_manager/features/issues/domain/issue_comment_ui.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
 import 'package:apartment_manager/features/issues/presentation/issue_status_update_sheet.dart';
 import 'package:apartment_manager/features/issues/presentation/issue_subtitle.dart';
+import 'package:apartment_manager/features/home/presentation/providers/manager_issue_stats_provider.dart';
 import 'package:apartment_manager/features/issues/presentation/providers/issue_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -104,6 +105,7 @@ class IssueDetailScreen extends ConsumerWidget {
             onRefresh: () async {
               ref.invalidate(issueDetailProvider(issueId));
               ref.invalidate(issuesListProvider);
+              ref.invalidate(managerIssueStatsProvider);
               await ref.read(issueDetailProvider(issueId).future);
             },
             child: ListView(
@@ -272,6 +274,7 @@ class IssueDetailScreen extends ConsumerWidget {
         note: input.note,
       );
       ref.invalidate(issuesListProvider);
+      ref.invalidate(managerIssueStatsProvider);
       ref.invalidate(issueDetailProvider(row.id));
       await ref.read(issueDetailProvider(row.id).future);
       if (!context.mounted) {

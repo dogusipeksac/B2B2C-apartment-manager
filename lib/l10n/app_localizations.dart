@@ -1550,6 +1550,42 @@ abstract class AppLocalizations {
   /// **'↑ {percent} önceki ay'**
   String homeManagerIncomeDelta(Object percent);
 
+  /// No description provided for @homeIssueStatsTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Arıza özeti'**
+  String get homeIssueStatsTitle;
+
+  /// No description provided for @homeIssueStatsOpened.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açılan'**
+  String get homeIssueStatsOpened;
+
+  /// No description provided for @homeIssueStatsResolved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Çözülen'**
+  String get homeIssueStatsResolved;
+
+  /// No description provided for @homeIssueStatsPending.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bekleyen'**
+  String get homeIssueStatsPending;
+
+  /// No description provided for @homeIssueStatsPrevMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Önceki ay'**
+  String get homeIssueStatsPrevMonth;
+
+  /// No description provided for @homeIssueStatsNextMonth.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sonraki ay'**
+  String get homeIssueStatsNextMonth;
+
   /// No description provided for @homeChartSixMonths.
   ///
   /// In tr, this message translates to:

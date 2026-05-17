@@ -329,6 +329,12 @@
       "percent": {}
     }
   },
+  "homeIssueStatsTitle": "Issue summary",
+  "homeIssueStatsOpened": "Opened",
+  "homeIssueStatsResolved": "Resolved",
+  "homeIssueStatsPending": "Pending",
+  "homeIssueStatsPrevMonth": "Previous month",
+  "homeIssueStatsNextMonth": "Next month",
   "homeChartSixMonths": "Last 6 months · Income / Expense",
   "homeChartLegendIncome": "Income",
   "homeChartLegendExpense": "Expense",

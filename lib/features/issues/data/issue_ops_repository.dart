@@ -4,6 +4,7 @@ import 'package:apartment_manager/features/auth/data/invite_code_repository.dart
 import 'package:apartment_manager/features/auth/data/local_session.dart';
 import 'package:apartment_manager/features/issues/data/issue_mapper.dart';
 import 'package:apartment_manager/features/issues/domain/create_issue_input.dart';
+import 'package:apartment_manager/features/issues/domain/issue_monthly_stats.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -15,6 +16,19 @@ class IssueOpsRepository {
   final Dio _dio;
 
   static const _urlPath = '/functions/v1/issue_ops';
+
+  Future<IssueMonthlyStats> fetchMonthlyStats(
+    LocalSession session, {
+    required int year,
+    required int month,
+  }) async {
+    final body = await _post(session, <String, dynamic>{
+      'action': 'stats',
+      'year': year,
+      'month': month,
+    });
+    return IssueMonthlyStats.fromWire(body);
+  }
 
   Future<List<IssueUi>> listIssues(LocalSession session) async {
     final body = await _post(session, <String, dynamic>{'action': 'list'});

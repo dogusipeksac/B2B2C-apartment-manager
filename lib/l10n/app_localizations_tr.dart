@@ -782,6 +782,24 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get homeIssueStatsTitle => 'Arıza özeti';
+
+  @override
+  String get homeIssueStatsOpened => 'Açılan';
+
+  @override
+  String get homeIssueStatsResolved => 'Çözülen';
+
+  @override
+  String get homeIssueStatsPending => 'Bekleyen';
+
+  @override
+  String get homeIssueStatsPrevMonth => 'Önceki ay';
+
+  @override
+  String get homeIssueStatsNextMonth => 'Sonraki ay';
+
+  @override
   String get homeChartSixMonths => 'Son 6 ay · Gelir / Gider';
 
   @override

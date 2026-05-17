@@ -2,7 +2,7 @@
  * Building-scoped issues: list, create (resident/owner), update status (admin).
  *
  * POST JSON:
- * { "action": "list" | "get" | "create" | "update_status",
+ * { "action": "list" | "get" | "create" | "update_status" | "stats",
  *   "device_id", "session_token",
  *   "issue_id"?: uuid,
  *   "title"?, "description"?, "category"?, "priority"?, "location_code"?, "status"? }
@@ -474,6 +474,117 @@ async function fetchIssueById(
   return { row: result.data as IssueRow | null, error: null };
 }
 
+function parseYearMonth(payload: Record<string, unknown>): {
+  year: number;
+  month: number;
+} {
+  const now = new Date();
+  let year = Number(payload.year);
+  let month = Number(payload.month);
+  if (!Number.isFinite(year) || year < 2000 || year > 2100) {
+    year = now.getUTCFullYear();
+  }
+  if (!Number.isFinite(month) || month < 1 || month > 12) {
+    month = now.getUTCMonth() + 1;
+  }
+  return { year, month };
+}
+
+function monthRangeIso(year: number, month: number): {
+  startIso: string;
+  endIso: string;
+} {
+  const start = new Date(Date.UTC(year, month - 1, 1, 0, 0, 0, 0));
+  const end = new Date(Date.UTC(year, month, 1, 0, 0, 0, 0));
+  return { startIso: start.toISOString(), endIso: end.toISOString() };
+}
+
+async function fetchMonthlyStats(
+  supabase: ReturnType<typeof createClient>,
+  buildingId: string,
+  year: number,
+  month: number,
+): Promise<{
+  opened: number;
+  resolved: number;
+  pending: number;
+  high_priority_pending: number;
+}> {
+  const { startIso, endIso } = monthRangeIso(year, month);
+  const now = new Date();
+  const isCurrentMonth = year === now.getUTCFullYear() &&
+    month === now.getUTCMonth() + 1;
+
+  const openedRes = await supabase
+    .from("issues")
+    .select("id", { count: "exact", head: true })
+    .eq("building_id", buildingId)
+    .gte("created_at", startIso)
+    .lt("created_at", endIso);
+  if (openedRes.error) {
+    throw openedRes.error;
+  }
+
+  const resolvedRes = await supabase
+    .from("issues")
+    .select("id", { count: "exact", head: true })
+    .eq("building_id", buildingId)
+    .gte("resolved_at", startIso)
+    .lt("resolved_at", endIso);
+  if (resolvedRes.error) {
+    throw resolvedRes.error;
+  }
+
+  let pendingRes;
+  if (isCurrentMonth) {
+    pendingRes = await supabase
+      .from("issues")
+      .select("id", { count: "exact", head: true })
+      .eq("building_id", buildingId)
+      .in("status", ["open", "in_progress"]);
+  } else {
+    pendingRes = await supabase
+      .from("issues")
+      .select("id", { count: "exact", head: true })
+      .eq("building_id", buildingId)
+      .in("status", ["open", "in_progress"])
+      .lt("created_at", endIso)
+      .or(`resolved_at.is.null,resolved_at.gte.${endIso}`);
+  }
+  if (pendingRes.error) {
+    throw pendingRes.error;
+  }
+
+  let highRes;
+  if (isCurrentMonth) {
+    highRes = await supabase
+      .from("issues")
+      .select("id", { count: "exact", head: true })
+      .eq("building_id", buildingId)
+      .eq("priority", "high")
+      .in("status", ["open", "in_progress"]);
+  } else {
+    highRes = await supabase
+      .from("issues")
+      .select("id", { count: "exact", head: true })
+      .eq("building_id", buildingId)
+      .eq("priority", "high")
+      .in("status", ["open", "in_progress"])
+      .lt("created_at", endIso)
+      .or(`resolved_at.is.null,resolved_at.gte.${endIso}`);
+  }
+  if (highRes.error) {
+    throw highRes.error;
+  }
+
+  return {
+    opened: openedRes.count ?? 0,
+    resolved: resolvedRes.count ?? 0,
+    pending: pendingRes.count ?? 0,
+    high_priority_pending: highRes.count ?? 0,
+  };
+}
+
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -561,6 +672,33 @@ serve(async (req: Request): Promise<Response> => {
     });
 
     return jsonResponse(200, { success: true, issues });
+  }
+
+  if (action === "stats") {
+    if (!ADMIN_ROLES.has(device.role)) {
+      return jsonResponse(403, {
+        success: false,
+        error: "not_building_admin",
+      });
+    }
+
+    const { year, month } = parseYearMonth(payload);
+    try {
+      const stats = await fetchMonthlyStats(
+        supabase,
+        buildingId,
+        year,
+        month,
+      );
+      return jsonResponse(200, {
+        success: true,
+        year,
+        month,
+        ...stats,
+      });
+    } catch {
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
   }
 
   if (action === "get") {

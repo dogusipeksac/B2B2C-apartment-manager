@@ -5,6 +5,7 @@ import 'package:apartment_manager/core/widgets/app_button.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/issues/domain/create_issue_input.dart';
 import 'package:apartment_manager/features/issues/domain/issue_ui.dart';
+import 'package:apartment_manager/features/home/presentation/providers/manager_issue_stats_provider.dart';
 import 'package:apartment_manager/features/issues/presentation/providers/issue_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -283,6 +284,7 @@ class _IssueCreateScreenState extends ConsumerState<IssueCreateScreen> {
         ),
       );
       ref.invalidate(issuesListProvider);
+      ref.invalidate(managerIssueStatsProvider);
       if (!context.mounted) {
         return;
       }

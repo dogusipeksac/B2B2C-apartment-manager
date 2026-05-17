@@ -7,6 +7,8 @@ import 'package:apartment_manager/core/utils/formatters.dart';
 import 'package:apartment_manager/core/widgets/demo_module_lock_overlay.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/home/data/demo_home_feed.dart';
+import 'package:apartment_manager/features/home/presentation/manager_issue_stats_section.dart';
+import 'package:apartment_manager/features/home/presentation/providers/manager_issue_stats_provider.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
@@ -79,6 +81,23 @@ class ManagerHomeView extends ConsumerWidget {
 
     final showDemoSwitcher = onSwitchToResident != null;
     final useDemoData = Env.demoMode;
+
+    final now = DateTime.now();
+    final ManagerIssueStatsKey currentStatsKey = (
+      year: now.year,
+      month: now.month,
+    );
+    final currentStatsAsync = ref.watch(
+      managerIssueStatsProvider(currentStatsKey),
+    );
+    final liveOpenIssues = currentStatsAsync.maybeWhen(
+      data: (s) => s.pending,
+      orElse: () => useDemoData ? data.openIssuesCount : null,
+    );
+    final liveHighPriority = currentStatsAsync.maybeWhen(
+      data: (s) => s.highPriorityPending,
+      orElse: () => useDemoData ? data.highPriorityCount : null,
+    );
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
@@ -273,7 +292,7 @@ class ManagerHomeView extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '${data.openIssuesCount}',
+                        liveOpenIssues != null ? '$liveOpenIssues' : '—',
                         style: theme.textTheme.headlineSmall?.copyWith(
                           fontWeight: FontWeight.w800,
                           color: AppTheme.warning,
@@ -282,7 +301,9 @@ class ManagerHomeView extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Text(
                         l10n.homeManagerHighPrioritySuffix(
-                          '${data.highPriorityCount}',
+                          liveHighPriority != null
+                              ? '$liveHighPriority'
+                              : '—',
                         ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppTheme.secondary,
@@ -295,6 +316,8 @@ class ManagerHomeView extends ConsumerWidget {
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          const ManagerIssueStatsSection(),
           const SizedBox(height: 16),
           DemoModuleLockOverlay(
             locked: !useDemoData,

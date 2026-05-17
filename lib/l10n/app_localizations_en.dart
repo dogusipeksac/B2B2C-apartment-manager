@@ -784,6 +784,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get homeIssueStatsTitle => 'Issue summary';
+
+  @override
+  String get homeIssueStatsOpened => 'Opened';
+
+  @override
+  String get homeIssueStatsResolved => 'Resolved';
+
+  @override
+  String get homeIssueStatsPending => 'Pending';
+
+  @override
+  String get homeIssueStatsPrevMonth => 'Previous month';
+
+  @override
+  String get homeIssueStatsNextMonth => 'Next month';
+
+  @override
   String get homeChartSixMonths => 'Last 6 months · Income / Expense';
 
   @override

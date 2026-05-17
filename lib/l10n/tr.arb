@@ -329,6 +329,12 @@
       "percent": {}
     }
   },
+  "homeIssueStatsTitle": "Arıza özeti",
+  "homeIssueStatsOpened": "Açılan",
+  "homeIssueStatsResolved": "Çözülen",
+  "homeIssueStatsPending": "Bekleyen",
+  "homeIssueStatsPrevMonth": "Önceki ay",
+  "homeIssueStatsNextMonth": "Sonraki ay",
   "homeChartSixMonths": "Son 6 ay · Gelir / Gider",
   "homeChartLegendIncome": "Gelir",
   "homeChartLegendExpense": "Gider",
