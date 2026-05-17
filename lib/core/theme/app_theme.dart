@@ -169,6 +169,28 @@ class AppTheme {
           ),
         ),
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return primaryDark;
+            }
+            return onSurfaceVariant;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return primaryContainer;
+            }
+            return surface;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return const BorderSide(color: primary, width: 1.5);
+            }
+            return const BorderSide(color: outlineMuted);
+          }),
+        ),
+      ),
       textTheme: _textTheme(base.textTheme),
       extensions: const [ApartmanTokens.light],
     );
@@ -318,6 +340,28 @@ class AppTheme {
             fontSize: 15,
             fontWeight: FontWeight.w600,
           ),
+        ),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return scheme.onPrimaryContainer;
+            }
+            return scheme.onSurfaceVariant;
+          }),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return scheme.primaryContainer;
+            }
+            return scheme.surfaceContainerHighest;
+          }),
+          side: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return BorderSide(color: scheme.primary, width: 1.5);
+            }
+            return BorderSide(color: scheme.outlineVariant);
+          }),
         ),
       ),
       textTheme: _textTheme(base.textTheme),

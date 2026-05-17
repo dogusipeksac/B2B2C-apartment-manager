@@ -2041,10 +2041,19 @@ class AppLocalizationsTr extends AppLocalizations {
   String get settingsThemeLight => 'Açık';
 
   @override
+  String get settingsThemeLightHint => 'Açık renkli arayüz';
+
+  @override
   String get settingsThemeDark => 'Koyu';
 
   @override
+  String get settingsThemeDarkHint => 'Koyu renkli arayüz';
+
+  @override
   String get settingsThemeSystem => 'Sistem';
+
+  @override
+  String get settingsThemeSystemHint => 'Cihaz ayarını kullan';
 
   @override
   String get settingsSectionLanguage => 'Dil';

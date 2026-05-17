@@ -3822,17 +3822,35 @@ abstract class AppLocalizations {
   /// **'Açık'**
   String get settingsThemeLight;
 
+  /// No description provided for @settingsThemeLightHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açık renkli arayüz'**
+  String get settingsThemeLightHint;
+
   /// No description provided for @settingsThemeDark.
   ///
   /// In tr, this message translates to:
   /// **'Koyu'**
   String get settingsThemeDark;
 
+  /// No description provided for @settingsThemeDarkHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Koyu renkli arayüz'**
+  String get settingsThemeDarkHint;
+
   /// No description provided for @settingsThemeSystem.
   ///
   /// In tr, this message translates to:
   /// **'Sistem'**
   String get settingsThemeSystem;
+
+  /// No description provided for @settingsThemeSystemHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Cihaz ayarını kullan'**
+  String get settingsThemeSystemHint;
 
   /// No description provided for @settingsSectionLanguage.
   ///

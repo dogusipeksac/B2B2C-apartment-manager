@@ -2042,10 +2042,19 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsThemeLight => 'Light';
 
   @override
+  String get settingsThemeLightHint => 'Light interface';
+
+  @override
   String get settingsThemeDark => 'Dark';
 
   @override
+  String get settingsThemeDarkHint => 'Dark interface';
+
+  @override
   String get settingsThemeSystem => 'System';
+
+  @override
+  String get settingsThemeSystemHint => 'Follow device setting';
 
   @override
   String get settingsSectionLanguage => 'Language';

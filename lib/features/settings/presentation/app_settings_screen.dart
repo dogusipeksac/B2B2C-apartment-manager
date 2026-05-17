@@ -16,19 +16,32 @@ class AppSettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final apart = context.apart;
+    final scheme = theme.colorScheme;
     final prefsAsync = ref.watch(appPreferencesProvider);
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
       appBar: AppBar(
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        shadowColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+        backgroundColor: apart.scaffoldBg,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
           onPressed: () => context.pop(),
         ),
-        title: Text(l10n.settingsTitle),
+        title: Text(
+          l10n.settingsTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
       ),
       body: prefsAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => Center(
+          child: CircularProgressIndicator(color: scheme.primary),
+        ),
         error: (_, _) => Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -51,53 +64,32 @@ class AppSettingsScreen extends ConsumerWidget {
               Card(
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(14, 14, 14, 8),
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.palette_outlined,
-                            size: 20,
-                            color: theme.colorScheme.primary,
-                          ),
-                          const SizedBox(width: 12),
-                          Expanded(
-                            child: Text(
-                              l10n.settingsThemeLabel,
-                              style: theme.textTheme.titleSmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    _SettingsChoiceTile(
+                      label: l10n.settingsThemeLight,
+                      subtitle: l10n.settingsThemeLightHint,
+                      icon: Icons.light_mode_outlined,
+                      selected: prefs.themeMode == ThemeMode.light,
+                      onTap: () =>
+                          unawaited(notifier.setThemeMode(ThemeMode.light)),
+                      showDivider: true,
                     ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                      child: SegmentedButton<ThemeMode>(
-                        segments: [
-                          ButtonSegment(
-                            value: ThemeMode.light,
-                            label: Text(l10n.settingsThemeLight),
-                            icon: const Icon(Icons.light_mode_outlined, size: 18),
-                          ),
-                          ButtonSegment(
-                            value: ThemeMode.dark,
-                            label: Text(l10n.settingsThemeDark),
-                            icon: const Icon(Icons.dark_mode_outlined, size: 18),
-                          ),
-                          ButtonSegment(
-                            value: ThemeMode.system,
-                            label: Text(l10n.settingsThemeSystem),
-                            icon: const Icon(Icons.phone_android_outlined, size: 18),
-                          ),
-                        ],
-                        selected: {prefs.themeMode},
-                        onSelectionChanged: (selected) {
-                          final mode = selected.first;
-                          unawaited(notifier.setThemeMode(mode));
-                        },
-                      ),
+                    _SettingsChoiceTile(
+                      label: l10n.settingsThemeDark,
+                      subtitle: l10n.settingsThemeDarkHint,
+                      icon: Icons.dark_mode_outlined,
+                      selected: prefs.themeMode == ThemeMode.dark,
+                      onTap: () =>
+                          unawaited(notifier.setThemeMode(ThemeMode.dark)),
+                      showDivider: true,
+                    ),
+                    _SettingsChoiceTile(
+                      label: l10n.settingsThemeSystem,
+                      subtitle: l10n.settingsThemeSystemHint,
+                      icon: Icons.brightness_auto_outlined,
+                      selected: prefs.themeMode == ThemeMode.system,
+                      onTap: () =>
+                          unawaited(notifier.setThemeMode(ThemeMode.system)),
+                      showDivider: false,
                     ),
                   ],
                 ),
@@ -108,18 +100,20 @@ class AppSettingsScreen extends ConsumerWidget {
               Card(
                 child: Column(
                   children: [
-                    _LocaleTile(
+                    _SettingsChoiceTile(
                       label: l10n.settingsLanguageTurkish,
                       subtitle: 'Türkçe',
+                      icon: Icons.language_rounded,
                       selected: prefs.locale.languageCode == 'tr',
                       onTap: () => unawaited(
                         notifier.setLocale(const Locale('tr')),
                       ),
                       showDivider: true,
                     ),
-                    _LocaleTile(
+                    _SettingsChoiceTile(
                       label: l10n.settingsLanguageEnglish,
                       subtitle: 'English',
+                      icon: Icons.language_rounded,
                       selected: prefs.locale.languageCode == 'en',
                       onTap: () => unawaited(
                         notifier.setLocale(const Locale('en')),
@@ -164,10 +158,11 @@ class _SectionLabel extends StatelessWidget {
   }
 }
 
-class _LocaleTile extends StatelessWidget {
-  const _LocaleTile({
+class _SettingsChoiceTile extends StatelessWidget {
+  const _SettingsChoiceTile({
     required this.label,
     required this.subtitle,
+    required this.icon,
     required this.selected,
     required this.onTap,
     required this.showDivider,
@@ -175,6 +170,7 @@ class _LocaleTile extends StatelessWidget {
 
   final String label;
   final String subtitle;
+  final IconData icon;
   final bool selected;
   final VoidCallback onTap;
   final bool showDivider;
@@ -183,53 +179,71 @@ class _LocaleTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final scheme = theme.colorScheme;
+    final apart = context.apart;
 
     return Column(
       children: [
-        InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-            child: Row(
-              children: [
-                Icon(
-                  Icons.language_rounded,
-                  size: 20,
-                  color: selected ? scheme.primary : scheme.onSurface,
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        label,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight:
-                              selected ? FontWeight.w600 : FontWeight.normal,
-                          color: selected ? scheme.primary : null,
-                        ),
-                      ),
-                      Text(
-                        subtitle,
-                        style: theme.textTheme.labelSmall?.copyWith(
-                          color: context.apart.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                if (selected)
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    color: AppTheme.success,
+        Material(
+          color: selected
+              ? scheme.primaryContainer.withValues(
+                  alpha: theme.brightness == Brightness.dark ? 0.45 : 0.85,
+                )
+              : Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+              child: Row(
+                children: [
+                  Icon(
+                    icon,
                     size: 22,
+                    color: selected ? scheme.primary : apart.onSurfaceVariant,
                   ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          label,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: selected
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            color: selected ? scheme.onPrimaryContainer : null,
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          subtitle,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: selected
+                                ? scheme.onPrimaryContainer.withValues(
+                                    alpha: 0.85,
+                                  )
+                                : apart.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (selected)
+                    Icon(
+                      Icons.check_circle_rounded,
+                      color: scheme.primary,
+                      size: 22,
+                    ),
+                ],
+              ),
             ),
           ),
         ),
-        if (showDivider) const Divider(height: 1),
+        if (showDivider)
+          Divider(
+            height: 1,
+            color: apart.outlineMuted.withValues(alpha: 0.65),
+          ),
       ],
     );
   }
