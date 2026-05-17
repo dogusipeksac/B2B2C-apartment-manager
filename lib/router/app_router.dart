@@ -6,6 +6,8 @@ import 'package:apartment_manager/features/auth/domain/user_role.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/auth/presentation/screens/login_placeholder_screen.dart';
 import 'package:apartment_manager/features/demo/presentation/demo_role_screen.dart';
+import 'package:apartment_manager/features/elections/presentation/election_create_screen.dart';
+import 'package:apartment_manager/features/elections/presentation/election_detail_screen.dart';
 import 'package:apartment_manager/features/dues/presentation/dues_detail_screen.dart';
 import 'package:apartment_manager/features/dues/presentation/payment_checkout_screen.dart';
 import 'package:apartment_manager/features/dues/presentation/payment_success_screen.dart';
@@ -16,10 +18,12 @@ import 'package:apartment_manager/features/issues/presentation/issues_kanban_scr
 import 'package:apartment_manager/features/manager/data/manager_invite_repository.dart';
 import 'package:apartment_manager/features/manager/presentation/expense_new_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/invite_resident_screen.dart';
+import 'package:apartment_manager/features/manager/presentation/manager_claim_unit_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/periods_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/unit_invite_detail_screen.dart';
 import 'package:apartment_manager/features/manager/presentation/units_screen.dart';
 import 'package:apartment_manager/features/onboarding/presentation/onboarding_screen.dart';
+import 'package:apartment_manager/features/profile/presentation/profile_edit_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/account_role_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/admin_invite_screen.dart';
 import 'package:apartment_manager/features/setup/presentation/building_setup_wizard_screen.dart';
@@ -63,6 +67,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         builder: (context, state) => const AppSettingsScreen(),
       ),
       GoRoute(
+        path: '/profile/edit',
+        builder: (context, state) => const ProfileEditScreen(),
+      ),
+      GoRoute(
         path: '/invoice/:id',
         builder: (context, state) => DuesDetailScreen(
           invoiceId: state.pathParameters['id'] ?? '',
@@ -83,6 +91,16 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         path: '/announcements/:id',
         builder: (context, state) => AnnouncementDetailScreen(
           announcementId: state.pathParameters['id'] ?? '',
+        ),
+      ),
+      GoRoute(
+        path: '/elections/create',
+        builder: (context, state) => const ElectionCreateScreen(),
+      ),
+      GoRoute(
+        path: '/elections/:id',
+        builder: (context, state) => ElectionDetailScreen(
+          electionId: state.pathParameters['id'] ?? '',
         ),
       ),
       GoRoute(
@@ -140,6 +158,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       GoRoute(
         path: '/manager/invite',
         builder: (context, state) => const InviteResidentScreen(),
+      ),
+      GoRoute(
+        path: '/manager/claim-unit',
+        builder: (context, state) => const ManagerClaimUnitScreen(),
       ),
       GoRoute(
         path: '/manager/invite/unit/:unitId',

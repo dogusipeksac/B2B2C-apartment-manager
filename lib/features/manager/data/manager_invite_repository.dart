@@ -34,6 +34,8 @@ class ManagerInviteRepository {
       return ManagerInviteListResult(
         units: _demoUnits(),
         buildingName: 'Demo Apartman',
+        myUnitId: 'demo-u1',
+        myUnitLabel: '6. kat · A',
       );
     }
 
@@ -89,6 +91,15 @@ class ManagerInviteRepository {
       final list = body['units'] as List<dynamic>;
       final bnRaw = body['building_name'];
       final bn = bnRaw is String ? bnRaw.trim() : '';
+      final myUnitIdRaw = body['my_unit_id'];
+      final myUnitId = myUnitIdRaw is String && myUnitIdRaw.trim().isNotEmpty
+          ? myUnitIdRaw.trim()
+          : null;
+      final myUnitLabelRaw = body['my_unit_label'];
+      final myUnitLabel =
+          myUnitLabelRaw is String && myUnitLabelRaw.trim().isNotEmpty
+          ? myUnitLabelRaw.trim()
+          : null;
       final units = list.map((raw) {
         final m = Map<String, dynamic>.from(raw as Map<dynamic, dynamic>);
         final floor = m['floor'] as int?;
@@ -115,6 +126,8 @@ class ManagerInviteRepository {
             : null;
         final joinedRaw = m['resident_joined'];
         final residentJoined = joinedRaw == true;
+        final isManagerRaw = m['is_manager_unit'];
+        final isManagerUnit = isManagerRaw == true;
         return ManagerUnitOption(
           id: id,
           floor: floor,
@@ -125,11 +138,14 @@ class ManagerInviteRepository {
           inviteExpiresAt: inviteExpires,
           inviteNotes: inviteNotes,
           residentJoined: residentJoined,
+          isManagerUnit: isManagerUnit,
         );
       }).toList();
       return ManagerInviteListResult(
         units: units,
         buildingName: bn.isEmpty ? null : bn,
+        myUnitId: myUnitId,
+        myUnitLabel: myUnitLabel,
       );
     }
 
@@ -269,6 +285,70 @@ class ManagerInviteRepository {
     throw const AppException.unknown();
   }
 
+  Future<AssignManagerUnitResult> assignMyUnit(
+    LocalSession session, {
+    required String unitId,
+  }) async {
+    if (_disabled) {
+      return const AssignManagerUnitResult(
+        unitId: 'demo-u1',
+        unitLabel: '6. kat · A',
+        profileId: 'demo-profile',
+      );
+    }
+
+    final token = session.sessionToken;
+    if (token == null || token.isEmpty) {
+      throw const AppException.auth(code: 'no_session_token');
+    }
+
+    final url = '${Env.supabaseUrl}/functions/v1/manager_invite';
+    final response = await _dio.post<dynamic>(
+      url,
+      data: <String, dynamic>{
+        'action': 'assign_my_unit',
+        'device_id': session.deviceId,
+        'session_token': token,
+        'unit_id': unitId,
+        if (session.profileId != null && session.profileId!.isNotEmpty)
+          'profile_id': session.profileId,
+      },
+      options: Options(
+        headers: <String, String>{
+          'Authorization': 'Bearer ${Env.supabaseAnonKey}',
+          'apikey': Env.supabaseAnonKey,
+          'Content-Type': 'application/json',
+        },
+        validateStatus: (_) => true,
+      ),
+    );
+
+    final status = response.statusCode ?? 0;
+    final body = _bodyMap(response.data);
+    _throwIfHttpError(status, body);
+
+    if (status == 200 && body['success'] == false) {
+      throw AppException.validation(code: _errorCode(body));
+    }
+
+    if (status == 200 &&
+        body['success'] == true &&
+        body['unit_id'] is String) {
+      final labelRaw = body['unit_label'];
+      final label = labelRaw is String && labelRaw.trim().isNotEmpty
+          ? labelRaw.trim()
+          : unitId;
+      final profileRaw = body['profile_id'];
+      return AssignManagerUnitResult(
+        unitId: body['unit_id']! as String,
+        unitLabel: label,
+        profileId: profileRaw is String ? profileRaw.trim() : null,
+      );
+    }
+
+    throw const AppException.unknown();
+  }
+
   Map<String, dynamic> _bodyMap(dynamic raw) {
     if (raw is Map<String, dynamic>) {
       return raw;
@@ -320,7 +400,7 @@ class ManagerInviteRepository {
     }
 
     return [
-      u('demo-u1', 6, 'A', '', 'K7P29'),
+      u('demo-u1', 6, 'A', '', 'K7P29').copyWith(isManagerUnit: true),
       u('demo-u2', 6, 'B', '', null),
       u('demo-u3', 6, 'C', '', null),
       u('demo-u4', 5, 'A', '', 'X3N82'),
@@ -346,10 +426,14 @@ class ManagerInviteListResult {
   const ManagerInviteListResult({
     required this.units,
     this.buildingName,
+    this.myUnitId,
+    this.myUnitLabel,
   });
 
   final List<ManagerUnitOption> units;
   final String? buildingName;
+  final String? myUnitId;
+  final String? myUnitLabel;
 }
 
 class ManagerUnitOption {
@@ -363,6 +447,7 @@ class ManagerUnitOption {
     this.inviteExpiresAt,
     this.inviteNotes,
     this.residentJoined = false,
+    this.isManagerUnit = false,
   });
 
   final String id;
@@ -380,6 +465,38 @@ class ManagerUnitOption {
 
   /// Active resident membership exists for this unit (joined via invite).
   final bool residentJoined;
+
+  /// This unit is linked to the building manager on this device.
+  final bool isManagerUnit;
+
+  ManagerUnitOption copyWith({
+    bool? isManagerUnit,
+  }) {
+    return ManagerUnitOption(
+      id: id,
+      floor: floor,
+      doorNumber: doorNumber,
+      block: block,
+      label: label,
+      inviteCode: inviteCode,
+      inviteExpiresAt: inviteExpiresAt,
+      inviteNotes: inviteNotes,
+      residentJoined: residentJoined,
+      isManagerUnit: isManagerUnit ?? this.isManagerUnit,
+    );
+  }
+}
+
+class AssignManagerUnitResult {
+  const AssignManagerUnitResult({
+    required this.unitId,
+    required this.unitLabel,
+    this.profileId,
+  });
+
+  final String unitId;
+  final String unitLabel;
+  final String? profileId;
 }
 
 class CreatedUnitInvite {

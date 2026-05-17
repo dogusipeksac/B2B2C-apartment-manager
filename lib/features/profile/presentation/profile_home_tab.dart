@@ -7,6 +7,7 @@ import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/auth/domain/user_role.dart';
 import 'package:apartment_manager/features/auth/presentation/building_name_hydrate.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/manager/data/manager_invite_repository.dart';
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
@@ -29,12 +30,15 @@ class ProfileHomeTab extends ConsumerStatefulWidget {
 }
 
 class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
+  String? _managerUnitLabel;
+
   @override
   void initState() {
     super.initState();
     if (!Env.demoMode) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         unawaited(_hydrateBuilding());
+        unawaited(_syncManagerUnit());
       });
     }
   }
@@ -43,6 +47,48 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
     await hydrateBuildingNameFromEdge(ref);
     if (mounted) {
       setState(() {});
+    }
+  }
+
+  Future<void> _syncManagerUnit() async {
+    final session = await ref.read(localSessionRepositoryProvider).load();
+    if (session == null ||
+        session.role != UserRole.buildingAdmin ||
+        session.buildingId == null ||
+        session.buildingId!.isEmpty) {
+      return;
+    }
+    try {
+      final result =
+          await ref.read(managerInviteRepositoryProvider).listUnits(session);
+      if (!mounted) {
+        return;
+      }
+      var label = result.myUnitLabel;
+      final myId = result.myUnitId;
+      if (label == null && myId != null) {
+        for (final u in result.units) {
+          if (u.id == myId) {
+            label = u.label;
+            break;
+          }
+        }
+      }
+      if (myId != null &&
+          myId.isNotEmpty &&
+          session.unitId != myId) {
+        final updated = session.copyWith(
+          unitId: myId,
+          savedAt: DateTime.now(),
+        );
+        await ref.persistLocalSession(
+          updated,
+          rememberMe: session.rememberMe,
+        );
+      }
+      setState(() => _managerUnitLabel = label);
+    } on Object {
+      // Non-blocking; profile still usable.
     }
   }
 
@@ -89,6 +135,13 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
     final hasBuildingId =
         buildingIdTrimmed != null && buildingIdTrimmed.isNotEmpty;
 
+    final managerUnitId = session?.unitId?.trim();
+    final hasManagerUnit =
+        managerUnitId != null && managerUnitId.isNotEmpty;
+    final managerUnitLabel = _managerUnitLabel?.trim();
+    final showClaimUnit =
+        isManager && !demo && hasBuildingId && !hasManagerUnit;
+
     String cardTitle() {
       if (isSuperAdmin) {
         return hasBuildingName ? bn : l10n.demoPersonaSuperAdminTitle;
@@ -110,9 +163,13 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
         return l10n.accountRoleSuperAdminShortBody;
       }
       if (hasBuildingName) {
-        return isManager
-            ? l10n.profileCardSubtitleManager
-            : l10n.profileCardSubtitleResident;
+        if (isManager) {
+          if (managerUnitLabel != null && managerUnitLabel.isNotEmpty) {
+            return l10n.profileCardSubtitleManagerWithUnit(managerUnitLabel);
+          }
+          return l10n.profileCardSubtitleManager;
+        }
+        return l10n.profileCardSubtitleResident;
       }
       if (demo) {
         return l10n.profileDemoCardSubtitle;
@@ -314,6 +371,44 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
                   ),
                 ),
 
+                if (showClaimUnit)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Card(
+                      color: scheme.primaryContainer.withValues(alpha: 0.35),
+                      child: ListTile(
+                        leading: Icon(
+                          Icons.home_work_outlined,
+                          color: scheme.primary,
+                        ),
+                        title: Text(
+                          l10n.profileMenuClaimUnit,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        subtitle: Text(
+                          l10n.profileClaimUnitSubtitle,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            height: 1.35,
+                          ),
+                        ),
+                        trailing: Icon(
+                          Icons.chevron_right_rounded,
+                          color: apart.onSurfaceTertiary,
+                        ),
+                        onTap: () async {
+                          final saved = await context.push<bool>(
+                            '/manager/claim-unit',
+                          );
+                          if (saved == true && mounted) {
+                            await _syncManagerUnit();
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+
                 if (demo)
                   personaAsync.when(
                     loading: () => const SizedBox.shrink(),
@@ -353,9 +448,34 @@ class _ProfileHomeTabState extends ConsumerState<ProfileHomeTab> {
                       _MenuRow(
                         icon: Icons.person_outline_rounded,
                         label: l10n.profileMenuProfileInfo,
-                        onTap: () {},
+                        onTap: () async {
+                          final saved = await context.push<bool>(
+                            '/profile/edit',
+                          );
+                          if (saved == true && mounted) {
+                            setState(() {});
+                          }
+                        },
                         showDivider: true,
                       ),
+                      if (isManager && hasBuildingId && !demo)
+                        _MenuRow(
+                          icon: Icons.door_front_door_outlined,
+                          label: hasManagerUnit
+                              ? l10n.profileCardSubtitleManagerWithUnit(
+                                  managerUnitLabel ?? managerUnitId,
+                                )
+                              : l10n.profileMenuClaimUnit,
+                          onTap: () async {
+                            final saved = await context.push<bool>(
+                              '/manager/claim-unit',
+                            );
+                            if (saved == true && mounted) {
+                              await _syncManagerUnit();
+                            }
+                          },
+                          showDivider: true,
+                        ),
                       _MenuRow(
                         icon: Icons.notifications_outlined,
                         label: l10n.profileMenuNotifications,

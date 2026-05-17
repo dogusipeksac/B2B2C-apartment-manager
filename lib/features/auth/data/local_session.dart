@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:apartment_manager/features/auth/domain/user_role.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -49,8 +50,16 @@ class LocalSessionRepository {
     }
     try {
       final map = jsonDecode(raw) as Map<String, dynamic>;
-      return LocalSession.fromJson(map);
-    } on Object {
+      final session = LocalSession.fromJson(map);
+      if (!session.rememberMe) {
+        return null;
+      }
+      return session;
+    } on Object catch (e, st) {
+      if (kDebugMode) {
+        debugPrint('LocalSessionRepository.load failed: $e');
+        debugPrintStack(stackTrace: st);
+      }
       return null;
     }
   }

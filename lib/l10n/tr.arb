@@ -531,6 +531,18 @@
   "profileBadgeManager": "Yönetici",
   "profileBadgeSuperAdmin": "Sistem yöneticisi",
   "profileCardSubtitleManager": "Bu cihaz apartman yönetimi için bağlı.",
+  "profileCardSubtitleManagerWithUnit": "Yönetici · Daire {unit}",
+  "@profileCardSubtitleManagerWithUnit": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "profileMenuClaimUnit": "Dairemi kur",
+  "profileClaimUnitTitle": "Dairemi kur",
+  "profileClaimUnitSubtitle": "Yönetici olarak bağlı olduğunuz daireyi listeden seçin. Davet kodu gerekmez.",
+  "profileClaimUnitConfirm": "Bu daireyi kaydet",
+  "profileClaimUnitSuccess": "Daire kaydedildi.",
+  "managerUnitBadgeManager": "YÖNETİCİ",
   "profileCardSubtitleResident": "Bu cihaz davet kodu ile bir daireye bağlı.",
   "profileCardNoBuildingTitle": "Apartman bilgisi yok",
   "profileCardNoBuildingBody": "Kurulum veya davet tamamlanınca burada görünür.",
@@ -541,6 +553,16 @@
   "profileSectionAccount": "HESAP",
   "profileSectionSupport": "DESTEK",
   "profileMenuProfileInfo": "Profil bilgileri",
+  "profileEditTitle": "Profil bilgileri",
+  "profileEditEditableSection": "DÜZENLENEBİLİR",
+  "profileEditLinkedSection": "BAĞLANTI BİLGİLERİ",
+  "profileEditReadOnlyHint": "Apartman, daire ve davet kodu değiştirilemez.",
+  "profileEditBuildingLabel": "Apartman",
+  "profileEditUnitLabel": "Daire",
+  "profileEditInviteCodeLabel": "Davet kodu",
+  "profileEditSave": "Kaydet",
+  "profileEditSaved": "Profil güncellendi.",
+  "profileEditNameRequired": "Ad soyad en az 2 karakter olmalı.",
   "profileMenuNotifications": "Bildirim ayarları",
   "profileMenuSavedCards": "Kayıtlı kartlar",
   "profileMenuHelpCenter": "Yardım merkezi",
@@ -682,7 +704,15 @@
       "perFloor": {}
     }
   },
-  "setupWizardUnitsInstruction": "Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.",
+  "setupManagerUnitHint": "Yönetici olarak bağlanacağınız daireyi seçin.",
+  "setupManagerUnitSelected": "Yönetici dairesi: {label}",
+  "@setupManagerUnitSelected": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "setupManagerUnitRequired": "Yöneticinin dairesi seçilmeli.",
+  "setupWizardUnitsInstruction": "Otomatik oluşturulan listeyi gözden geçir; yönetici dairenizi işaretleyin.",
   "setupWizardUnitsEdit": "Düzenle",
   "setupShowMoreFloorsDetail": "+ Daha fazla göster (kat {floors})",
   "@setupShowMoreFloorsDetail": {
@@ -864,6 +894,12 @@
   "superadminRevokeAdminCodeConfirm": "İptal et",
   "superadminCodeRevoked": "Kod iptal edildi.",
   "inviteCodeNotesCreate": "Oluştur",
+  "inviteCodeNotesSheetAdminSubtitle": "Kullanım tipini seçin; not isteğe bağlıdır. Kod oluşturulunca panoya kopyalanır.",
+  "inviteCodeNotesSheetUnitSubtitle": "Sakine ileteceğiniz kod için isteğe bağlı not ekleyebilirsiniz.",
+  "inviteCodeNotesPolicySection": "KULLANIM TİPİ",
+  "inviteCodeNotesPolicyReusableHint": "Aynı kodla birden fazla cihazda yönetici kurulumu yapılabilir.",
+  "inviteCodeNotesPolicySingleHint": "İlk kurulumdan sonra kod devre dışı kalır.",
+  "superadminAdminCodeSingleBadge": "Tek kullanımlı",
   "inviteCodeNotesAdminTitle": "Yönetici kodu notu",
   "inviteCodeNotesAdminHint": "İsteğe bağlı: hangi yönetici veya apartman için (ör. Ahmet Bey – Site A)",
   "inviteCodeNotesUnitTitle": "Sakin / daire notu",
@@ -889,5 +925,94 @@
   "settingsLanguageTurkish": "Türkçe",
   "settingsLanguageEnglish": "İngilizce",
   "settingsApplyHint": "Dil ve tema tercihleriniz kaydedilir.",
-  "settingsLoadFailed": "Ayarlar yüklenemedi."
+  "settingsLoadFailed": "Ayarlar yüklenemedi.",
+  "demoNavElections": "Seçim",
+  "electionListTitle": "Yönetici seçimi",
+  "electionCreateFab": "Yeni seçim",
+  "electionListEmpty": "Henüz seçim yok. Yönetici yeni bir seçim başlatabilir.",
+  "electionListNominateCta": "Seçime aday ol →",
+  "electionCreateTitle": "Seçim oluştur",
+  "electionFieldTitle": "Başlık",
+  "electionFieldDescription": "Açıklama",
+  "electionFieldNominationsCloseAt": "Adaylık bitiş tarihi",
+  "electionFieldClosesAt": "Oylama bitiş tarihi",
+  "electionClosesAtOptional": "İsteğe bağlı",
+  "electionNominationsCloseAtLabel": "Adaylık sonu: {date}",
+  "@electionNominationsCloseAtLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "electionTitleValidation": "Başlık en az 3 karakter olmalıdır.",
+  "electionSecretHint": "Oylar gizlidir; kim kime oy verdiği görülmez. Sonuçlar seçim kapanınca açıklanır.",
+  "electionCreateSubmit": "Oluştur",
+  "electionDetailTitle": "Seçim detayı",
+  "electionNotFound": "Seçim bulunamadı.",
+  "electionStatusDraft": "Taslak",
+  "electionStatusNominating": "Adaylık",
+  "electionStatusActive": "Oylama",
+  "electionStatusClosed": "Kapandı",
+  "electionCandidateCount": "{count} aday",
+  "@electionCandidateCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionClosesAtLabel": "Bitiş: {date}",
+  "@electionClosesAtLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "electionParticipationCount": "{count} daire oy kullandı",
+  "@electionParticipationCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionSecretBallotHint": "Gizli oy: Aday oyları seçim bitene kadar gösterilmez. Bir daire yalnızca bir oy kullanabilir.",
+  "electionResultsPublicHint": "Seçim kapandı. Aşağıda toplam oy sayıları görünür; kim kime oy verdi bilinmez.",
+  "electionCandidatesSection": "Adaylar",
+  "electionNoCandidates": "Henüz aday yok. Aday olmak için aşağıdaki düğmeyi kullanın.",
+  "electionNominateSelf": "Aday ol",
+  "electionNominateSelfManager": "Siz de aday olabilirsiniz",
+  "electionNominateSelfResident": "Aday olabilirsiniz",
+  "electionNominateDraftHint": "Adaylık başlamadan önce kendinizi listeye ekleyebilirsiniz.",
+  "electionNominateNominatingHint": "Adaylık süresi içinde kendinizi aday listesine ekleyebilirsiniz.",
+  "electionNominateSuccess": "Adaylığınız kaydedildi.",
+  "electionYouVotedSecret": "Oyunuz kaydedildi. Tercihiniz gizli tutulur.",
+  "electionSubmitVote": "Oyumu gönder",
+  "electionSelectCandidate": "Lütfen bir aday seçin.",
+  "electionVoteSuccess": "Oyunuz gizli olarak kaydedildi.",
+  "electionStartAction": "Seçimi başlat",
+  "electionStartNominationsAction": "Adaylığı başlat",
+  "electionStartVotingAction": "Oylamayı başlat",
+  "electionCloseAction": "Seçimi kapat",
+  "electionCandidateYou": "Siz",
+  "electionVoteCount": "{count} oy",
+  "@electionVoteCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionNominatingBannerTitle": "Adaylık süreci devam ediyor",
+  "electionActiveBannerTitle": "Oylama başladı",
+  "electionActiveBannerNominate": "Aday ol",
+  "electionActiveBannerVote": "Oy kullan",
+  "electionActiveBannerVoted": "Oy kullandınız",
+  "electionCandidateManager": "Yönetici ({name})",
+  "@electionCandidateManager": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "electionCandidateResident": "Sakin ({unit})",
+  "@electionCandidateResident": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "electionCandidateResidentNoUnit": "Sakin",
+  "electionRoleBadgeManager": "YÖNETİCİ",
+  "electionRoleBadgeResident": "SAKİN"
 }

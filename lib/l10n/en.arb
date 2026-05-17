@@ -531,6 +531,18 @@
   "profileBadgeManager": "Manager",
   "profileBadgeSuperAdmin": "Super admin",
   "profileCardSubtitleManager": "This device is linked for building administration.",
+  "profileCardSubtitleManagerWithUnit": "Manager · Unit {unit}",
+  "@profileCardSubtitleManagerWithUnit": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "profileMenuClaimUnit": "Set up my unit",
+  "profileClaimUnitTitle": "Set up my unit",
+  "profileClaimUnitSubtitle": "Choose the unit you live in as manager. No invite code needed.",
+  "profileClaimUnitConfirm": "Save this unit",
+  "profileClaimUnitSuccess": "Unit saved.",
+  "managerUnitBadgeManager": "MANAGER",
   "profileCardSubtitleResident": "This device is linked to a unit via invite code.",
   "profileCardNoBuildingTitle": "No building info yet",
   "profileCardNoBuildingBody": "Shows here after setup or invite completes.",
@@ -541,6 +553,16 @@
   "profileSectionAccount": "ACCOUNT",
   "profileSectionSupport": "SUPPORT",
   "profileMenuProfileInfo": "Profile details",
+  "profileEditTitle": "Profile details",
+  "profileEditEditableSection": "EDITABLE",
+  "profileEditLinkedSection": "LINKED INFO",
+  "profileEditReadOnlyHint": "Building, unit, and invite code cannot be changed here.",
+  "profileEditBuildingLabel": "Building",
+  "profileEditUnitLabel": "Unit",
+  "profileEditInviteCodeLabel": "Invite code",
+  "profileEditSave": "Save",
+  "profileEditSaved": "Profile updated.",
+  "profileEditNameRequired": "Full name must be at least 2 characters.",
   "profileMenuNotifications": "Notification settings",
   "profileMenuSavedCards": "Saved cards",
   "profileMenuHelpCenter": "Help center",
@@ -682,7 +704,15 @@
       "perFloor": {}
     }
   },
-  "setupWizardUnitsInstruction": "Review the auto-generated list; add or remove units if needed.",
+  "setupManagerUnitHint": "Select the unit you will be linked to as manager.",
+  "setupManagerUnitSelected": "Manager unit: {label}",
+  "@setupManagerUnitSelected": {
+    "placeholders": {
+      "label": {}
+    }
+  },
+  "setupManagerUnitRequired": "Please select the manager's unit.",
+  "setupWizardUnitsInstruction": "Review the auto-generated list and mark your unit as manager.",
   "setupWizardUnitsEdit": "Edit",
   "setupShowMoreFloorsDetail": "+ Show more (floors {floors})",
   "@setupShowMoreFloorsDetail": {
@@ -864,6 +894,12 @@
   "superadminRevokeAdminCodeConfirm": "Revoke",
   "superadminCodeRevoked": "Code revoked.",
   "inviteCodeNotesCreate": "Create",
+  "inviteCodeNotesSheetAdminSubtitle": "Choose how the code can be used. Notes are optional. The code is copied when created.",
+  "inviteCodeNotesSheetUnitSubtitle": "Add an optional note for the resident invite code.",
+  "inviteCodeNotesPolicySection": "USAGE TYPE",
+  "inviteCodeNotesPolicyReusableHint": "The same code can set up managers on multiple devices.",
+  "inviteCodeNotesPolicySingleHint": "The code stops working after the first setup.",
+  "superadminAdminCodeSingleBadge": "Single use",
   "inviteCodeNotesAdminTitle": "Manager code note",
   "inviteCodeNotesAdminHint": "Optional: which manager or building (e.g. John – Block A)",
   "inviteCodeNotesUnitTitle": "Resident / unit note",
@@ -889,5 +925,94 @@
   "settingsLanguageTurkish": "Turkish",
   "settingsLanguageEnglish": "English",
   "settingsApplyHint": "Your language and theme choices are saved automatically.",
-  "settingsLoadFailed": "Could not load settings."
+  "settingsLoadFailed": "Could not load settings.",
+  "demoNavElections": "Election",
+  "electionListTitle": "Manager election",
+  "electionCreateFab": "New election",
+  "electionListEmpty": "No elections yet. A manager can start one.",
+  "electionListNominateCta": "Run in this election →",
+  "electionCreateTitle": "Create election",
+  "electionFieldTitle": "Title",
+  "electionFieldDescription": "Description",
+  "electionFieldNominationsCloseAt": "Nominations close",
+  "electionFieldClosesAt": "Voting closes",
+  "electionClosesAtOptional": "Optional",
+  "electionNominationsCloseAtLabel": "Nominations end: {date}",
+  "@electionNominationsCloseAtLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "electionTitleValidation": "Title must be at least 3 characters.",
+  "electionSecretHint": "Votes are secret; who voted for whom is never shown. Results appear when the election closes.",
+  "electionCreateSubmit": "Create",
+  "electionDetailTitle": "Election details",
+  "electionNotFound": "Election not found.",
+  "electionStatusDraft": "Draft",
+  "electionStatusNominating": "Nominations",
+  "electionStatusActive": "Voting",
+  "electionStatusClosed": "Closed",
+  "electionCandidateCount": "{count} candidates",
+  "@electionCandidateCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionClosesAtLabel": "Closes: {date}",
+  "@electionClosesAtLabel": {
+    "placeholders": {
+      "date": {}
+    }
+  },
+  "electionParticipationCount": "{count} units voted",
+  "@electionParticipationCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionSecretBallotHint": "Secret ballot: vote counts stay hidden until the election closes. One vote per unit.",
+  "electionResultsPublicHint": "Election closed. Totals are shown below; individual choices remain private.",
+  "electionCandidatesSection": "Candidates",
+  "electionNoCandidates": "No candidates yet. Use the button below to run.",
+  "electionNominateSelf": "Run as candidate",
+  "electionNominateSelfManager": "You can run as a candidate too",
+  "electionNominateSelfResident": "You can run as a candidate",
+  "electionNominateDraftHint": "Add yourself before nominations open to everyone.",
+  "electionNominateNominatingHint": "Add yourself to the candidate list during the nomination period.",
+  "electionNominateSuccess": "Your candidacy was registered.",
+  "electionYouVotedSecret": "Your vote is recorded and kept private.",
+  "electionSubmitVote": "Submit my vote",
+  "electionSelectCandidate": "Please select a candidate.",
+  "electionVoteSuccess": "Your vote was recorded privately.",
+  "electionStartAction": "Start election",
+  "electionStartNominationsAction": "Open nominations",
+  "electionStartVotingAction": "Start voting",
+  "electionCloseAction": "Close election",
+  "electionCandidateYou": "You",
+  "electionVoteCount": "{count} votes",
+  "@electionVoteCount": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "electionNominatingBannerTitle": "Nominations are open",
+  "electionActiveBannerTitle": "Voting is open",
+  "electionActiveBannerNominate": "Run as candidate",
+  "electionActiveBannerVote": "Cast your vote",
+  "electionActiveBannerVoted": "You voted",
+  "electionCandidateManager": "Manager ({name})",
+  "@electionCandidateManager": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "electionCandidateResident": "Resident ({unit})",
+  "@electionCandidateResident": {
+    "placeholders": {
+      "unit": {}
+    }
+  },
+  "electionCandidateResidentNoUnit": "Resident",
+  "electionRoleBadgeManager": "MANAGER",
+  "electionRoleBadgeResident": "RESIDENT"
 }

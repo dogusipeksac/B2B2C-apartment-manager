@@ -56,17 +56,25 @@ class _InviteResidentScreenState extends ConsumerState<InviteResidentScreen> {
       if (!mounted) {
         return;
       }
+      var merged = session;
       final bn = result.buildingName?.trim();
       if (bn != null &&
           bn.isNotEmpty &&
           (session.buildingName == null ||
               session.buildingName!.trim().isEmpty)) {
-        final merged = session.copyWith(
-          buildingName: bn,
-          savedAt: DateTime.now(),
+        merged = merged.copyWith(buildingName: bn);
+      }
+      final myUnitId = result.myUnitId?.trim();
+      if (myUnitId != null &&
+          myUnitId.isNotEmpty &&
+          session.unitId != myUnitId) {
+        merged = merged.copyWith(unitId: myUnitId);
+      }
+      if (merged != session) {
+        await ref.persistLocalSession(
+          merged.copyWith(savedAt: DateTime.now()),
+          rememberMe: session.rememberMe,
         );
-        await ref.read(localSessionRepositoryProvider).save(merged);
-        ref.notifyLocalSessionChanged();
       }
       setState(() {
         _units = result.units;
@@ -385,6 +393,9 @@ class _InviteResidentScreenState extends ConsumerState<InviteResidentScreen> {
                       ? _UnitInviteTile(
                           unit: slice[j],
                           shortLabel: _shortDoor(slice[j]),
+                          managerBadge:
+                              AppLocalizations.of(context)!
+                                  .managerUnitBadgeManager,
                           onTap: () => unawaited(_openDetail(slice[j])),
                         )
                       : const SizedBox.shrink(),
@@ -454,11 +465,13 @@ class _UnitInviteTile extends StatelessWidget {
   const _UnitInviteTile({
     required this.unit,
     required this.shortLabel,
+    required this.managerBadge,
     required this.onTap,
   });
 
   final ManagerUnitOption unit;
   final String shortLabel;
+  final String managerBadge;
   final VoidCallback onTap;
 
   @override
@@ -497,6 +510,17 @@ class _UnitInviteTile extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(8, 10, 8, 10),
                 child: Column(
                   children: [
+                    if (unit.isManagerUnit) ...[
+                      Text(
+                        managerBadge,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w800,
+                          color: AppTheme.primary,
+                          letterSpacing: 0.4,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                    ],
                     Text(
                       shortLabel,
                       style: theme.textTheme.titleSmall?.copyWith(

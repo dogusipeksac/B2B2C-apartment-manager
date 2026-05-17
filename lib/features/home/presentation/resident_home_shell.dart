@@ -9,6 +9,7 @@ import 'package:apartment_manager/features/announcements/presentation/announceme
 import 'package:apartment_manager/features/auth/presentation/building_name_hydrate.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/demo/presentation/providers/demo_persona_provider.dart';
+import 'package:apartment_manager/features/elections/presentation/active_election_banner.dart';
 import 'package:apartment_manager/features/dues/presentation/dues_list_screen.dart';
 import 'package:apartment_manager/features/home/data/demo_home_feed.dart';
 import 'package:apartment_manager/features/issues/presentation/issues_list_screen.dart';
@@ -306,6 +307,7 @@ class _ResidentDashboardTab extends StatelessWidget {
                   ),
                 ),
                 const Divider(height: 1, thickness: 1),
+                const ActiveElectionBanner(),
                 DemoModuleLockOverlay(
                   locked: lockDemoModules,
                   message: l10n.demoModuleLockedBody,

@@ -100,18 +100,13 @@ class _SplashScreenState extends ConsumerState<SplashScreen>
         if (localSession != null && !Env.demoMode) {
           final token = localSession.sessionToken;
           if (token != null && token.isNotEmpty) {
-            final valid = await ref
-                .read(sessionMetadataRepositoryProvider)
-                .isSessionValid(localSession);
-            if (!valid) {
-              await ref.read(localSessionRepositoryProvider).clear();
-              ref.notifyLocalSessionChanged();
-              if (!mounted) {
-                return;
-              }
-              context.go('/setup/account-type');
-              return;
-            }
+            // Best-effort: sync/heal server token; never wipe local session
+            // on cold start so "Beni hatırla" survives app restarts.
+            unawaited(
+              ref
+                  .read(sessionMetadataRepositoryProvider)
+                  .isSessionValid(localSession),
+            );
           }
         }
 

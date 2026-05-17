@@ -19,7 +19,8 @@
  *     "block_count"?: number,
  *     "floors": number,
  *     "per_floor": number,
- *     "naming_automatic": boolean
+ *     "naming_automatic": boolean,
+ *     "manager_unit"?: { "floor": number, "door_number": string, "block"?: string }
  *   }
  * }
  */
@@ -80,6 +81,32 @@ function generateUnits(
     }
   }
   return units;
+}
+
+function parseManagerUnit(
+  raw: unknown,
+): { floor: number; door_number: string; block: string } | null {
+  if (!raw || typeof raw !== "object") {
+    return null;
+  }
+  const row = raw as Record<string, unknown>;
+  const floor = Number(row.floor);
+  const doorRaw = row.door_number;
+  const door_number = typeof doorRaw === "string" ? doorRaw.trim() : "";
+  let block = typeof row.block === "string" ? row.block.trim() : "";
+  if (
+    !Number.isFinite(floor) ||
+    floor < 1 ||
+    !door_number ||
+    door_number.length > 40
+  ) {
+    return null;
+  }
+  return {
+    floor: Math.trunc(floor),
+    door_number,
+    block,
+  };
 }
 
 function parseCustomUnits(
@@ -264,6 +291,27 @@ serve(async (req: Request): Promise<Response> => {
     return jsonResponse(422, { success: false, error: msg });
   }
 
+  const managerUnitSpec = parseManagerUnit(b.manager_unit);
+  if (!managerUnitSpec) {
+    return jsonResponse(422, {
+      success: false,
+      error: "manager_unit_required",
+    });
+  }
+
+  const managerInList = unitsSpec.some(
+    (u) =>
+      u.floor === managerUnitSpec.floor &&
+      u.door_number === managerUnitSpec.door_number &&
+      u.block === managerUnitSpec.block,
+  );
+  if (!managerInList) {
+    return jsonResponse(422, {
+      success: false,
+      error: "manager_unit_invalid",
+    });
+  }
+
   const full = await supabase
     .from("devices")
     .select("id, profile_id, building_id, role, session_token")
@@ -445,10 +493,34 @@ serve(async (req: Request): Promise<Response> => {
     return jsonResponse(500, { success: false, error: "database_error" });
   }
 
+  const { data: managerUnitRow, error: muLookupErr } = await supabase
+    .from("units")
+    .select("id")
+    .eq("building_id", buildingId)
+    .eq("floor", managerUnitSpec.floor)
+    .eq("door_number", managerUnitSpec.door_number)
+    .eq(
+      "block",
+      managerUnitSpec.block.length > 0 ? managerUnitSpec.block : "",
+    )
+    .maybeSingle();
+
+  if (muLookupErr) {
+    console.error("manager unit lookup", muLookupErr);
+    await supabase.from("units").delete().eq("building_id", buildingId);
+    await supabase.from("buildings").delete().eq("id", buildingId);
+    await supabase.from("profiles").delete().eq("id", profileId);
+    return jsonResponse(500, { success: false, error: "database_error" });
+  }
+
+  const managerUnitId = managerUnitRow?.id
+    ? String(managerUnitRow.id)
+    : null;
+
   const { error: mErr } = await supabase.from("memberships").insert({
     user_id: profileId,
     building_id: buildingId,
-    unit_id: null,
+    unit_id: managerUnitId,
     role: "building_admin",
     status: "active",
   });
@@ -475,6 +547,7 @@ serve(async (req: Request): Promise<Response> => {
   const { error: upDevErr } = await supabase.from("devices").update({
     profile_id: profileId,
     building_id: buildingId,
+    unit_id: managerUnitId,
     last_seen_at: nowIso,
   }).eq("device_id", deviceId);
 
@@ -500,6 +573,7 @@ serve(async (req: Request): Promise<Response> => {
     success: true,
     building_id: buildingId,
     profile_id: profileId,
+    unit_id: managerUnitId,
     unit_count: unitsSpec.length,
     building_name: name,
   });

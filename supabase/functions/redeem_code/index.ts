@@ -227,6 +227,38 @@ async function findCanonicalAdminForInvite(
   };
 }
 
+const RESIDENT_MEMBERSHIP_ROLES = ["resident", "owner"];
+
+/** True when profile has an active resident/owner membership in this building. */
+async function profileHasResidentMembership(
+  supabase: ReturnType<typeof createClient>,
+  buildingId: string,
+  profileId: string,
+): Promise<boolean> {
+  const pid = profileId.trim();
+  const bid = buildingId.trim();
+  if (!pid || !bid) {
+    return false;
+  }
+
+  let query = supabase
+    .from("memberships")
+    .select("id", { count: "exact", head: true })
+    .eq("building_id", bid)
+    .eq("user_id", pid)
+    .in("role", RESIDENT_MEMBERSHIP_ROLES);
+
+  let res = await query.eq("status", "active");
+  if (res.error && isMissingColumn(res.error, "status")) {
+    res = await query;
+  }
+  if (res.error) {
+    console.error("memberships resident verify", res.error);
+    return false;
+  }
+  return (res.count ?? 0) > 0;
+}
+
 /** Active resident membership for a unit (service-role lookup). */
 async function findMembershipProfileForUnit(
   supabase: ReturnType<typeof createClient>,
@@ -334,7 +366,9 @@ async function findCanonicalResidentForInvite(
   rows = rows.filter((r) => {
     const bid = String(r.building_id ?? "");
     const pid = r.profile_id;
+    const role = String(r.role ?? "");
     return (
+      role === "resident" &&
       bid.length > 0 &&
       typeof pid === "string" &&
       (pid as string).trim().length > 0
@@ -350,8 +384,9 @@ async function findCanonicalResidentForInvite(
     const legacyDid = typeof inv.data?.used_by_device_id === "string"
       ? (inv.data.used_by_device_id as string).trim()
       : "";
+    // Only resume a prior *resident* device — never reuse manager/admin rows.
     if (legacyDid.length > 0) {
-      let leg = await supabase
+      const leg = await supabase
         .from("devices")
         .select(
           "id, device_id, building_id, profile_id, unit_id, role, created_at",
@@ -359,21 +394,15 @@ async function findCanonicalResidentForInvite(
         .eq("device_id", legacyDid)
         .eq("role", "resident")
         .maybeSingle();
-      if (!leg.data) {
-        leg = await supabase
-          .from("devices")
-          .select(
-            "id, device_id, building_id, profile_id, unit_id, role, created_at",
-          )
-          .eq("device_id", legacyDid)
-          .not("profile_id", "is", null)
-          .maybeSingle();
-      }
       if (leg.data) {
         const legRow = leg.data as Record<string, unknown>;
         const legPid = String(legRow.profile_id ?? "").trim();
         const legBid = String(legRow.building_id ?? "").trim();
-        if (legPid.length > 0 && legBid.length > 0) {
+        if (
+          legPid.length > 0 &&
+          legBid.length > 0 &&
+          await profileHasResidentMembership(supabase, legBid, legPid)
+        ) {
           rows = [legRow];
         }
       }
@@ -391,42 +420,48 @@ async function findCanonicalResidentForInvite(
       }
 
       const profileId = await findMembershipProfileForUnit(supabase, bid, uid);
-      if (!profileId) {
-        const { data: unitDev, error: udErr } = await supabase
-          .from("devices")
-          .select(
-            "id, device_id, building_id, profile_id, unit_id, role, created_at",
-          )
-          .eq("building_id", bid)
-          .eq("unit_id", uid)
-          .eq("role", "resident")
-          .not("profile_id", "is", null)
-          .order("created_at", { ascending: true })
-          .limit(1)
-          .maybeSingle();
-
-        if (!udErr && unitDev) {
-          const d = unitDev as Record<string, unknown>;
-          const pid = String(d.profile_id ?? "").trim();
-          if (pid.length > 0) {
-            return {
-              pk: String(d.id ?? ""),
-              device_id: String(d.device_id ?? ""),
-              building_id: String(d.building_id ?? bid),
-              profile_id: pid,
-              unit_id: d.unit_id ? String(d.unit_id) : uid,
-            };
-          }
-        }
-        return null;
+      if (
+        profileId &&
+        await profileHasResidentMembership(supabase, bid, profileId)
+      ) {
+        return await profileToCanonicalResident(
+          supabase,
+          profileId,
+          bid,
+          uid,
+        );
       }
 
-      return await profileToCanonicalResident(
-        supabase,
-        profileId,
-        bid,
-        uid,
-      );
+      const { data: unitDev, error: udErr } = await supabase
+        .from("devices")
+        .select(
+          "id, device_id, building_id, profile_id, unit_id, role, created_at",
+        )
+        .eq("building_id", bid)
+        .eq("unit_id", uid)
+        .eq("role", "resident")
+        .not("profile_id", "is", null)
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (!udErr && unitDev) {
+        const d = unitDev as Record<string, unknown>;
+        const pid = String(d.profile_id ?? "").trim();
+        if (
+          pid.length > 0 &&
+          await profileHasResidentMembership(supabase, bid, pid)
+        ) {
+          return {
+            pk: String(d.id ?? ""),
+            device_id: String(d.device_id ?? ""),
+            building_id: String(d.building_id ?? bid),
+            profile_id: pid,
+            unit_id: d.unit_id ? String(d.unit_id) : uid,
+          };
+        }
+      }
+      return null;
     }
   }
 
@@ -981,7 +1016,7 @@ serve(async (req: Request): Promise<Response> => {
         inviteUnitId,
       );
     }
-    const isReturning = residentCanonical != null || codeAlreadyUsed;
+    const isReturning = residentCanonical != null;
     if (!isReturning && (!fullName || fullName.length < 3)) {
       return jsonResponse(422, {
         success: false,
@@ -1180,24 +1215,45 @@ serve(async (req: Request): Promise<Response> => {
     }
 
     if (residentCanonical) {
-      return await grantResidentAccess(
-        supabase,
-        deviceId,
-        sessionToken,
-        nowIso,
-        inviteRowId,
-        residentCanonical,
-        fullName ?? "",
-      );
+      const pid = residentCanonical.profile_id;
+      const bid = residentCanonical.building_id;
+      if (
+        pid &&
+        await profileHasResidentMembership(supabase, bid, pid)
+      ) {
+        return await grantResidentAccess(
+          supabase,
+          deviceId,
+          sessionToken,
+          nowIso,
+          inviteRowId,
+          residentCanonical,
+          fullName ?? "",
+        );
+      }
+      residentCanonical = null;
     }
 
-    if (inviteCodeWasUsed(row) && inviteBuildingId && inviteUnitId) {
+    if (
+      inviteCodeWasUsed(row) &&
+      !residentCanonical &&
+      inviteBuildingId &&
+      inviteUnitId &&
+      (!fullName || fullName.length < 3)
+    ) {
       const profileId = await findMembershipProfileForUnit(
         supabase,
         inviteBuildingId,
         inviteUnitId,
       );
-      if (profileId) {
+      if (
+        profileId &&
+        await profileHasResidentMembership(
+          supabase,
+          inviteBuildingId,
+          profileId,
+        )
+      ) {
         residentCanonical = await profileToCanonicalResident(
           supabase,
           profileId,
@@ -1221,6 +1277,14 @@ serve(async (req: Request): Promise<Response> => {
         error: "resident_registration_not_found",
         message:
           "Bu kodla kayıt bulunamadı. Yöneticinize başvurun.",
+      });
+    }
+
+    if (!fullName || fullName.length < 3) {
+      return jsonResponse(422, {
+        success: false,
+        error: "full_name_required",
+        message: "Ad soyad en az 3 karakter olmalı.",
       });
     }
 

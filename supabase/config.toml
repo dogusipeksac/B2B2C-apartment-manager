@@ -17,3 +17,9 @@ verify_jwt = false
 
 [functions.issue_ops]
 verify_jwt = false
+
+[functions.election_ops]
+verify_jwt = false
+
+[functions.profile_ops]
+verify_jwt = false

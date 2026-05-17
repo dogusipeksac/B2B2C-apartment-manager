@@ -28,13 +28,13 @@ Future<void> hydrateBuildingNameFromEdge(WidgetRef ref) async {
     if (name == null || name.isEmpty) {
       return;
     }
-    await ref.read(localSessionRepositoryProvider).save(
-          session.copyWith(
-            buildingName: name.trim(),
-            savedAt: DateTime.now(),
-          ),
-        );
-    ref.notifyLocalSessionChanged();
+    await ref.persistLocalSession(
+      session.copyWith(
+        buildingName: name.trim(),
+        savedAt: DateTime.now(),
+      ),
+      rememberMe: session.rememberMe,
+    );
   } on Object {
     // Optional hydrate; ignore failures.
   }

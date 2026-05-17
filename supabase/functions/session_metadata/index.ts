@@ -24,6 +24,15 @@ function jsonResponse(
   });
 }
 
+const MEMBER_ROLES = new Set([
+  "building_admin",
+  "building_co_admin",
+  "accountant",
+  "resident",
+  "owner",
+  "super_admin",
+]);
+
 serve(async (req: Request): Promise<Response> => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -99,14 +108,17 @@ serve(async (req: Request): Promise<Response> => {
     ? ""
     : String(deviceRow.session_token ?? "").trim();
 
-  if (!legacyNoSessionColumn && dbTok !== clientTok) {
-    const roleOk = deviceRow.role === "building_admin";
-    const noBuilding =
-      deviceRow.building_id === null ||
-      String(deviceRow.building_id).length === 0;
+  if (!legacyNoSessionColumn && dbTok !== clientTok && clientTok.length > 0) {
+    const role = String(deviceRow.role ?? "");
+    const hasBuilding =
+      deviceRow.building_id !== null &&
+      String(deviceRow.building_id).length > 0;
+    const noBuilding = !hasBuilding;
     const dbEmpty = dbTok.length === 0;
+    const canHeal = MEMBER_ROLES.has(role) &&
+      (hasBuilding || (role === "building_admin" && noBuilding && dbEmpty));
 
-    if (roleOk && noBuilding && dbEmpty && clientTok.length > 0) {
+    if (canHeal) {
       const healIso = new Date().toISOString();
       const { error: healErr } = await supabase
         .from("devices")

@@ -102,14 +102,35 @@ class _SuperadminShellState extends ConsumerState<SuperadminShell> {
     if (_creatingAdmin) {
       return;
     }
-    final notes = await showInviteCodeNotesDialog(
+    final sheetResult = await showInviteCodeNotesDialog(
       context,
-      title: l10n.inviteCodeNotesAdminTitle,
+      title: l10n.superadminCreateManagerCode,
+      subtitle: l10n.inviteCodeNotesSheetAdminSubtitle,
       hint: l10n.inviteCodeNotesAdminHint,
+      initialPolicyId: AdminRedeemPolicy.reusable.wireValue,
+      policyOptions: [
+        InviteCodePolicyOption(
+          id: AdminRedeemPolicy.reusable.wireValue,
+          label: l10n.superadminAdminCodeMultiBadge,
+          subtitle: l10n.inviteCodeNotesPolicyReusableHint,
+          icon: Icons.repeat_rounded,
+        ),
+        InviteCodePolicyOption(
+          id: AdminRedeemPolicy.singleUse.wireValue,
+          label: l10n.superadminAdminCodeSingleBadge,
+          subtitle: l10n.inviteCodeNotesPolicySingleHint,
+          icon: Icons.looks_one_outlined,
+        ),
+      ],
     );
-    if (!mounted || notes == null) {
+    if (!mounted || sheetResult == null) {
       return;
     }
+    final policy = sheetResult.policyId ==
+            AdminRedeemPolicy.singleUse.wireValue
+        ? AdminRedeemPolicy.singleUse
+        : AdminRedeemPolicy.reusable;
+    final notes = sheetResult.notes;
     setState(() => _creatingAdmin = true);
     try {
       final session = await ref.read(localSessionRepositoryProvider).load();
@@ -119,7 +140,8 @@ class _SuperadminShellState extends ConsumerState<SuperadminShell> {
       final repo = ref.read(superadminRepositoryProvider);
       final created = await repo.createAdminInvite(
         session,
-        notes: notes,
+        policy: policy,
+        notes: notes.isEmpty ? null : notes,
       );
       if (!mounted) {
         return;

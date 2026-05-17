@@ -77,6 +77,49 @@ sealed class AppException with _$AppException implements Exception {
         case 'issue_ops_not_deployed':
           return 'Arıza servisi bulunamadı. Terminalde '
               '`supabase functions deploy issue_ops` çalıştırın.';
+        case 'election_ops_not_deployed':
+          return 'Seçim servisi bulunamadı. Terminalde '
+              '`supabase functions deploy election_ops` çalıştırın.';
+        case 'election_title_required':
+          return 'Seçim başlığı en az 3 karakter olmalıdır.';
+        case 'election_not_found':
+          return 'Seçim bulunamadı.';
+        case 'election_active_exists':
+          return 'Zaten devam eden bir seçim var. Önce onu kapatın.';
+        case 'election_not_draft':
+          return 'Bu seçim taslak durumunda değil.';
+        case 'election_not_active':
+          return 'Seçim şu an aktif değil.';
+        case 'election_not_nominating':
+          return 'Seçim adaylık aşamasında değil.';
+        case 'election_nomination_closed':
+          return 'Adaylık süresi sona erdi.';
+        case 'already_voted':
+          return 'Bu seçim için zaten oy kullandınız.';
+        case 'already_candidate':
+          return 'Zaten aday olarak kayıtlısınız.';
+        case 'unit_required':
+          return 'Oy kullanmak için daire kaydınız olmalı.';
+        case 'profile_required':
+          return 'Profil veya daire bilgisi eksik. Profilden «Dairemi kur» ile dairenizi seçin.';
+        case 'manager_unit_required':
+          return 'Kurulumda yönetici dairesi seçilmeli.';
+        case 'manager_unit_invalid':
+          return 'Seçilen yönetici dairesi listede bulunamadı.';
+        case 'unit_id_required':
+          return 'Lütfen bir daire seçin.';
+        case 'full_name_too_short':
+          return 'Ad soyad en az 2 karakter olmalı.';
+        case 'full_name_too_long':
+          return 'Ad soyad en fazla 80 karakter olabilir.';
+        case 'profile_ops_not_deployed':
+          return 'Profil servisi henüz yayında değil. Lütfen daha sonra deneyin.';
+        case 'vote_payload_invalid':
+          return 'Oy bilgisi geçersiz.';
+        case 'candidate_not_found':
+          return 'Aday bulunamadı.';
+        case 'election_closed':
+          return 'Seçim süresi dolmuş.';
         case 'issue_title_required':
           return 'Başlık en az 3 karakter olmalıdır.';
         case 'issue_not_found':

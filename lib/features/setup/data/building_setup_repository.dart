@@ -38,6 +38,7 @@ class BuildingSetupRepository {
     required int perFloor,
     required bool namingAutomatic,
     List<SetupUnitSpec>? customUnits,
+    SetupUnitSpec? managerUnit,
     String? managerFullName,
   }) async {
     if (_disabled) {
@@ -82,6 +83,12 @@ class BuildingSetupRepository {
                     },
                   )
                   .toList(),
+            if (managerUnit != null)
+              'manager_unit': <String, dynamic>{
+                'floor': managerUnit.floor,
+                'door_number': managerUnit.doorNumber,
+                'block': managerUnit.block,
+              },
           },
         },
         options: Options(
@@ -130,11 +137,16 @@ class BuildingSetupRepository {
         final label = serverName is String && serverName.trim().isNotEmpty
             ? serverName.trim()
             : buildingName.trim();
+        final unitIdRaw = body['unit_id'];
+        final unitId = unitIdRaw is String && unitIdRaw.trim().isNotEmpty
+            ? unitIdRaw.trim()
+            : null;
         return FinalizeBuildingResult(
           buildingId: body['building_id']! as String,
           profileId: body['profile_id']! as String,
           unitCount: unitCount,
           buildingLabel: label,
+          unitId: unitId,
         );
       }
 
@@ -163,12 +175,14 @@ class FinalizeBuildingResult {
     required this.profileId,
     required this.unitCount,
     required this.buildingLabel,
+    this.unitId,
   });
 
   final String buildingId;
   final String profileId;
   final int unitCount;
   final String buildingLabel;
+  final String? unitId;
 }
 
 final buildingSetupRepositoryProvider = Provider<BuildingSetupRepository>(

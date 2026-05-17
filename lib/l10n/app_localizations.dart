@@ -2276,6 +2276,48 @@ abstract class AppLocalizations {
   /// **'Bu cihaz apartman yönetimi için bağlı.'**
   String get profileCardSubtitleManager;
 
+  /// No description provided for @profileCardSubtitleManagerWithUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici · Daire {unit}'**
+  String profileCardSubtitleManagerWithUnit(Object unit);
+
+  /// No description provided for @profileMenuClaimUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dairemi kur'**
+  String get profileMenuClaimUnit;
+
+  /// No description provided for @profileClaimUnitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Dairemi kur'**
+  String get profileClaimUnitTitle;
+
+  /// No description provided for @profileClaimUnitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici olarak bağlı olduğunuz daireyi listeden seçin. Davet kodu gerekmez.'**
+  String get profileClaimUnitSubtitle;
+
+  /// No description provided for @profileClaimUnitConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu daireyi kaydet'**
+  String get profileClaimUnitConfirm;
+
+  /// No description provided for @profileClaimUnitSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire kaydedildi.'**
+  String get profileClaimUnitSuccess;
+
+  /// No description provided for @managerUnitBadgeManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ'**
+  String get managerUnitBadgeManager;
+
   /// No description provided for @profileCardSubtitleResident.
   ///
   /// In tr, this message translates to:
@@ -2335,6 +2377,66 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Profil bilgileri'**
   String get profileMenuProfileInfo;
+
+  /// No description provided for @profileEditTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil bilgileri'**
+  String get profileEditTitle;
+
+  /// No description provided for @profileEditEditableSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'DÜZENLENEBİLİR'**
+  String get profileEditEditableSection;
+
+  /// No description provided for @profileEditLinkedSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'BAĞLANTI BİLGİLERİ'**
+  String get profileEditLinkedSection;
+
+  /// No description provided for @profileEditReadOnlyHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman, daire ve davet kodu değiştirilemez.'**
+  String get profileEditReadOnlyHint;
+
+  /// No description provided for @profileEditBuildingLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Apartman'**
+  String get profileEditBuildingLabel;
+
+  /// No description provided for @profileEditUnitLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire'**
+  String get profileEditUnitLabel;
+
+  /// No description provided for @profileEditInviteCodeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu'**
+  String get profileEditInviteCodeLabel;
+
+  /// No description provided for @profileEditSave.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydet'**
+  String get profileEditSave;
+
+  /// No description provided for @profileEditSaved.
+  ///
+  /// In tr, this message translates to:
+  /// **'Profil güncellendi.'**
+  String get profileEditSaved;
+
+  /// No description provided for @profileEditNameRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Ad soyad en az 2 karakter olmalı.'**
+  String get profileEditNameRequired;
 
   /// No description provided for @profileMenuNotifications.
   ///
@@ -2916,10 +3018,28 @@ abstract class AppLocalizations {
   /// **'oluşturulacak ({floors} kat × {perFloor} daire). Sonraki adımda düzenleyebilirsin.'**
   String setupStructureSummaryTail(Object floors, Object perFloor);
 
+  /// No description provided for @setupManagerUnitHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici olarak bağlanacağınız daireyi seçin.'**
+  String get setupManagerUnitHint;
+
+  /// No description provided for @setupManagerUnitSelected.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici dairesi: {label}'**
+  String setupManagerUnitSelected(Object label);
+
+  /// No description provided for @setupManagerUnitRequired.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yöneticinin dairesi seçilmeli.'**
+  String get setupManagerUnitRequired;
+
   /// No description provided for @setupWizardUnitsInstruction.
   ///
   /// In tr, this message translates to:
-  /// **'Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.'**
+  /// **'Otomatik oluşturulan listeyi gözden geçir; yönetici dairenizi işaretleyin.'**
   String get setupWizardUnitsInstruction;
 
   /// No description provided for @setupWizardUnitsEdit.
@@ -3858,6 +3978,42 @@ abstract class AppLocalizations {
   /// **'Oluştur'**
   String get inviteCodeNotesCreate;
 
+  /// No description provided for @inviteCodeNotesSheetAdminSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kullanım tipini seçin; not isteğe bağlıdır. Kod oluşturulunca panoya kopyalanır.'**
+  String get inviteCodeNotesSheetAdminSubtitle;
+
+  /// No description provided for @inviteCodeNotesSheetUnitSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakine ileteceğiniz kod için isteğe bağlı not ekleyebilirsiniz.'**
+  String get inviteCodeNotesSheetUnitSubtitle;
+
+  /// No description provided for @inviteCodeNotesPolicySection.
+  ///
+  /// In tr, this message translates to:
+  /// **'KULLANIM TİPİ'**
+  String get inviteCodeNotesPolicySection;
+
+  /// No description provided for @inviteCodeNotesPolicyReusableHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aynı kodla birden fazla cihazda yönetici kurulumu yapılabilir.'**
+  String get inviteCodeNotesPolicyReusableHint;
+
+  /// No description provided for @inviteCodeNotesPolicySingleHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İlk kurulumdan sonra kod devre dışı kalır.'**
+  String get inviteCodeNotesPolicySingleHint;
+
+  /// No description provided for @superadminAdminCodeSingleBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tek kullanımlı'**
+  String get superadminAdminCodeSingleBadge;
+
   /// No description provided for @inviteCodeNotesAdminTitle.
   ///
   /// In tr, this message translates to:
@@ -4013,6 +4169,330 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Ayarlar yüklenemedi.'**
   String get settingsLoadFailed;
+
+  /// No description provided for @demoNavElections.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçim'**
+  String get demoNavElections;
+
+  /// No description provided for @electionListTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici seçimi'**
+  String get electionListTitle;
+
+  /// No description provided for @electionCreateFab.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yeni seçim'**
+  String get electionCreateFab;
+
+  /// No description provided for @electionListEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz seçim yok. Yönetici yeni bir seçim başlatabilir.'**
+  String get electionListEmpty;
+
+  /// No description provided for @electionListNominateCta.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçime aday ol →'**
+  String get electionListNominateCta;
+
+  /// No description provided for @electionCreateTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçim oluştur'**
+  String get electionCreateTitle;
+
+  /// No description provided for @electionFieldTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlık'**
+  String get electionFieldTitle;
+
+  /// No description provided for @electionFieldDescription.
+  ///
+  /// In tr, this message translates to:
+  /// **'Açıklama'**
+  String get electionFieldDescription;
+
+  /// No description provided for @electionFieldNominationsCloseAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık bitiş tarihi'**
+  String get electionFieldNominationsCloseAt;
+
+  /// No description provided for @electionFieldClosesAt.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylama bitiş tarihi'**
+  String get electionFieldClosesAt;
+
+  /// No description provided for @electionClosesAtOptional.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı'**
+  String get electionClosesAtOptional;
+
+  /// No description provided for @electionNominationsCloseAtLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık sonu: {date}'**
+  String electionNominationsCloseAtLabel(Object date);
+
+  /// No description provided for @electionTitleValidation.
+  ///
+  /// In tr, this message translates to:
+  /// **'Başlık en az 3 karakter olmalıdır.'**
+  String get electionTitleValidation;
+
+  /// No description provided for @electionSecretHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylar gizlidir; kim kime oy verdiği görülmez. Sonuçlar seçim kapanınca açıklanır.'**
+  String get electionSecretHint;
+
+  /// No description provided for @electionCreateSubmit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluştur'**
+  String get electionCreateSubmit;
+
+  /// No description provided for @electionDetailTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçim detayı'**
+  String get electionDetailTitle;
+
+  /// No description provided for @electionNotFound.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçim bulunamadı.'**
+  String get electionNotFound;
+
+  /// No description provided for @electionStatusDraft.
+  ///
+  /// In tr, this message translates to:
+  /// **'Taslak'**
+  String get electionStatusDraft;
+
+  /// No description provided for @electionStatusNominating.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık'**
+  String get electionStatusNominating;
+
+  /// No description provided for @electionStatusActive.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylama'**
+  String get electionStatusActive;
+
+  /// No description provided for @electionStatusClosed.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kapandı'**
+  String get electionStatusClosed;
+
+  /// No description provided for @electionCandidateCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} aday'**
+  String electionCandidateCount(Object count);
+
+  /// No description provided for @electionClosesAtLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bitiş: {date}'**
+  String electionClosesAtLabel(Object date);
+
+  /// No description provided for @electionParticipationCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} daire oy kullandı'**
+  String electionParticipationCount(Object count);
+
+  /// No description provided for @electionSecretBallotHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Gizli oy: Aday oyları seçim bitene kadar gösterilmez. Bir daire yalnızca bir oy kullanabilir.'**
+  String get electionSecretBallotHint;
+
+  /// No description provided for @electionResultsPublicHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçim kapandı. Aşağıda toplam oy sayıları görünür; kim kime oy verdi bilinmez.'**
+  String get electionResultsPublicHint;
+
+  /// No description provided for @electionCandidatesSection.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylar'**
+  String get electionCandidatesSection;
+
+  /// No description provided for @electionNoCandidates.
+  ///
+  /// In tr, this message translates to:
+  /// **'Henüz aday yok. Aday olmak için aşağıdaki düğmeyi kullanın.'**
+  String get electionNoCandidates;
+
+  /// No description provided for @electionNominateSelf.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aday ol'**
+  String get electionNominateSelf;
+
+  /// No description provided for @electionNominateSelfManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Siz de aday olabilirsiniz'**
+  String get electionNominateSelfManager;
+
+  /// No description provided for @electionNominateSelfResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aday olabilirsiniz'**
+  String get electionNominateSelfResident;
+
+  /// No description provided for @electionNominateDraftHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık başlamadan önce kendinizi listeye ekleyebilirsiniz.'**
+  String get electionNominateDraftHint;
+
+  /// No description provided for @electionNominateNominatingHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık süresi içinde kendinizi aday listesine ekleyebilirsiniz.'**
+  String get electionNominateNominatingHint;
+
+  /// No description provided for @electionNominateSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylığınız kaydedildi.'**
+  String get electionNominateSuccess;
+
+  /// No description provided for @electionYouVotedSecret.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyunuz kaydedildi. Tercihiniz gizli tutulur.'**
+  String get electionYouVotedSecret;
+
+  /// No description provided for @electionSubmitVote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyumu gönder'**
+  String get electionSubmitVote;
+
+  /// No description provided for @electionSelectCandidate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Lütfen bir aday seçin.'**
+  String get electionSelectCandidate;
+
+  /// No description provided for @electionVoteSuccess.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oyunuz gizli olarak kaydedildi.'**
+  String get electionVoteSuccess;
+
+  /// No description provided for @electionStartAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçimi başlat'**
+  String get electionStartAction;
+
+  /// No description provided for @electionStartNominationsAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylığı başlat'**
+  String get electionStartNominationsAction;
+
+  /// No description provided for @electionStartVotingAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylamayı başlat'**
+  String get electionStartVotingAction;
+
+  /// No description provided for @electionCloseAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Seçimi kapat'**
+  String get electionCloseAction;
+
+  /// No description provided for @electionCandidateYou.
+  ///
+  /// In tr, this message translates to:
+  /// **'Siz'**
+  String get electionCandidateYou;
+
+  /// No description provided for @electionVoteCount.
+  ///
+  /// In tr, this message translates to:
+  /// **'{count} oy'**
+  String electionVoteCount(Object count);
+
+  /// No description provided for @electionNominatingBannerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Adaylık süreci devam ediyor'**
+  String get electionNominatingBannerTitle;
+
+  /// No description provided for @electionActiveBannerTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oylama başladı'**
+  String get electionActiveBannerTitle;
+
+  /// No description provided for @electionActiveBannerNominate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aday ol'**
+  String get electionActiveBannerNominate;
+
+  /// No description provided for @electionActiveBannerVote.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oy kullan'**
+  String get electionActiveBannerVote;
+
+  /// No description provided for @electionActiveBannerVoted.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oy kullandınız'**
+  String get electionActiveBannerVoted;
+
+  /// No description provided for @electionCandidateManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici ({name})'**
+  String electionCandidateManager(Object name);
+
+  /// No description provided for @electionCandidateResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin ({unit})'**
+  String electionCandidateResident(Object unit);
+
+  /// No description provided for @electionCandidateResidentNoUnit.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin'**
+  String get electionCandidateResidentNoUnit;
+
+  /// No description provided for @electionRoleBadgeManager.
+  ///
+  /// In tr, this message translates to:
+  /// **'YÖNETİCİ'**
+  String get electionRoleBadgeManager;
+
+  /// No description provided for @electionRoleBadgeResident.
+  ///
+  /// In tr, this message translates to:
+  /// **'SAKİN'**
+  String get electionRoleBadgeResident;
 }
 
 class _AppLocalizationsDelegate

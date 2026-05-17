@@ -2,8 +2,9 @@
  * Manager-only: list units for building or create a resident (unit) invite code.
  *
  * POST JSON:
- * { "action": "list_units" | "create_invite" | "revoke_invite", "device_id",
- *   "session_token", "unit_id"?: uuid, "notes"?: string }
+ * { "action": "list_units" | "create_invite" | "revoke_invite" | "assign_my_unit",
+ *   "device_id", "session_token", "unit_id"?: uuid, "notes"?: string,
+ *   "profile_id"?: uuid }
  */
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
@@ -128,10 +129,116 @@ async function assertManagerSession(
   return {
     ok: true,
     device: {
-      ...deviceRow,
+      profile_id: deviceRow.profile_id as string | null,
       building_id: String(bid),
-    } as DeviceRow & { building_id: string },
+      role: String(deviceRow.role ?? ""),
+      session_token: deviceRow.session_token as string | null,
+    },
   };
+}
+
+function formatUnitLabel(
+  floor: number | null,
+  door: string,
+  block: string,
+): string {
+  const floorPart = floor == null ? "" : `${floor}. kat · `;
+  const b = block.trim();
+  if (b.length > 0) {
+    return `${floorPart}${b} · ${door.trim()}`;
+  }
+  return `${floorPart}${door.trim()}`;
+}
+
+async function resolveManagerProfileId(
+  supabase: ReturnType<typeof createClient>,
+  deviceId: string,
+  buildingId: string,
+  device: DeviceRow,
+  profileHint?: string | null,
+): Promise<string | null> {
+  const direct = device.profile_id;
+  if (direct != null && String(direct).trim().length > 0) {
+    return String(direct).trim();
+  }
+
+  const { data: devRow } = await supabase
+    .from("devices")
+    .select("profile_id")
+    .eq("device_id", deviceId)
+    .maybeSingle();
+
+  const fromDev = devRow?.profile_id;
+  if (fromDev != null && String(fromDev).trim().length > 0) {
+    return String(fromDev).trim();
+  }
+
+  const hint = profileHint ? String(profileHint).trim() : "";
+  if (hint.length > 0) {
+    const { count } = await supabase
+      .from("memberships")
+      .select("id", { count: "exact", head: true })
+      .eq("building_id", buildingId)
+      .eq("user_id", hint);
+    if ((count ?? 0) > 0) {
+      return hint;
+    }
+  }
+
+  const { data: building } = await supabase
+    .from("buildings")
+    .select("created_by")
+    .eq("id", buildingId)
+    .maybeSingle();
+
+  const createdBy = building?.created_by;
+  if (createdBy != null && String(createdBy).trim().length > 0) {
+    return String(createdBy).trim();
+  }
+
+  return null;
+}
+
+async function persistManagerProfileAndUnit(
+  supabase: ReturnType<typeof createClient>,
+  deviceId: string,
+  buildingId: string,
+  profileId: string,
+  unitId: string,
+): Promise<void> {
+  const nowIso = new Date().toISOString();
+  await supabase
+    .from("devices")
+    .update({
+      profile_id: profileId,
+      building_id: buildingId,
+      unit_id: unitId,
+      last_seen_at: nowIso,
+    })
+    .eq("device_id", deviceId);
+
+  const { data: existingMem } = await supabase
+    .from("memberships")
+    .select("id")
+    .eq("building_id", buildingId)
+    .eq("user_id", profileId)
+    .eq("role", "building_admin")
+    .maybeSingle();
+
+  if (existingMem?.id) {
+    await supabase
+      .from("memberships")
+      .update({ unit_id: unitId })
+      .eq("id", existingMem.id);
+  } else {
+    await supabase.from("memberships").insert({
+      user_id: profileId,
+      building_id: buildingId,
+      unit_id: unitId,
+      role: "building_admin",
+      status: "active",
+    });
+  }
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -160,6 +267,7 @@ serve(async (req: Request): Promise<Response> => {
     session_token?: string;
     unit_id?: string;
     notes?: string;
+    profile_id?: string;
   };
 
   try {
@@ -182,7 +290,8 @@ serve(async (req: Request): Promise<Response> => {
   if (
     action !== "list_units" &&
     action !== "create_invite" &&
-    action !== "revoke_invite"
+    action !== "revoke_invite" &&
+    action !== "assign_my_unit"
   ) {
     return jsonResponse(400, { success: false, error: "unknown_action" });
   }
@@ -193,6 +302,69 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   const buildingId = gate.device.building_id;
+  const profileHint = payload.profile_id?.trim() || null;
+
+  if (action === "assign_my_unit") {
+    const unitIdAssign = payload.unit_id?.trim();
+    if (!unitIdAssign) {
+      return jsonResponse(400, {
+        success: false,
+        error: "unit_id_required",
+      });
+    }
+
+    const profileId = await resolveManagerProfileId(
+      supabase,
+      deviceId,
+      buildingId,
+      gate.device,
+      profileHint,
+    );
+    if (!profileId) {
+      return jsonResponse(422, {
+        success: false,
+        error: "profile_required",
+      });
+    }
+
+    const { data: unitRow, error: uErr } = await supabase
+      .from("units")
+      .select("id, floor, door_number, block")
+      .eq("id", unitIdAssign)
+      .eq("building_id", buildingId)
+      .eq("is_active", true)
+      .maybeSingle();
+
+    if (uErr) {
+      console.error("units assign_my_unit", uErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    if (!unitRow) {
+      return jsonResponse(422, { success: false, error: "invalid_unit" });
+    }
+
+    await persistManagerProfileAndUnit(
+      supabase,
+      deviceId,
+      buildingId,
+      profileId,
+      String(unitRow.id),
+    );
+
+    const label = formatUnitLabel(
+      unitRow.floor as number | null,
+      String(unitRow.door_number ?? ""),
+      typeof unitRow.block === "string" ? unitRow.block : "",
+    );
+
+    return jsonResponse(200, {
+      success: true,
+      unit_id: String(unitRow.id),
+      unit_label: label,
+      profile_id: profileId,
+    });
+  }
 
   if (action === "list_units") {
     const { data: bMeta, error: bErr } = await supabase
@@ -302,20 +474,65 @@ serve(async (req: Request): Promise<Response> => {
       }
     }
 
+    let myUnitId: string | null = null;
+    const { data: devUnit } = await supabase
+      .from("devices")
+      .select("unit_id, profile_id")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+
+    if (devUnit?.unit_id) {
+      myUnitId = String(devUnit.unit_id);
+    }
+
+    if (!myUnitId) {
+      const profileId = await resolveManagerProfileId(
+        supabase,
+        deviceId,
+        buildingId,
+        gate.device,
+        profileHint,
+      );
+      if (profileId) {
+        const { data: mem } = await supabase
+          .from("memberships")
+          .select("unit_id")
+          .eq("building_id", buildingId)
+          .eq("user_id", profileId)
+          .eq("role", "building_admin")
+          .maybeSingle();
+        if (mem?.unit_id) {
+          myUnitId = String(mem.unit_id);
+        }
+      }
+    }
+
+    let myUnitLabel: string | null = null;
+    if (myUnitId) {
+      const mine = unitRows.find((u) => u.id === myUnitId);
+      if (mine) {
+        myUnitLabel = formatUnitLabel(mine.floor, mine.door_number, mine.block);
+      }
+    }
+
     const rows = unitRows.map((u) => {
       const inv = inviteByUnit.get(u.id);
+      const isManagerUnit = myUnitId != null && u.id === myUnitId;
       return {
         ...u,
         invite_code: inv?.code ?? null,
         invite_expires_at: inv?.expires_at ?? null,
         invite_notes: inv?.notes ?? null,
         resident_joined: joinedUnitIds.has(u.id),
+        is_manager_unit: isManagerUnit,
       };
     });
 
     return jsonResponse(200, {
       success: true,
       building_name: buildingName,
+      my_unit_id: myUnitId,
+      my_unit_label: myUnitLabel,
       units: rows,
     });
   }

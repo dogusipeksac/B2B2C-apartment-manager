@@ -5,6 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:apartment_manager/core/storage/secure_storage_config.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:uuid/uuid.dart';
 
@@ -27,8 +28,19 @@ class DeviceIdRepository {
   final DeviceInfoPlugin _deviceInfo;
 
   Future<String> getOrCreate() async {
+    final existing = await _storage.read(key: _storageKey);
+    if (existing != null && existing.isNotEmpty) {
+      return existing;
+    }
+
+    final id = await _createNewId();
+    await _storage.write(key: _storageKey, value: id);
+    return id;
+  }
+
+  Future<String> _createNewId() async {
     if (kIsWeb) {
-      return _legacyStoredUuid();
+      return const Uuid().v4();
     }
 
     try {
@@ -46,10 +58,10 @@ class DeviceIdRepository {
         }
       }
     } on Object {
-      // Fall back to stored UUID (desktop, unusual devices).
+      // Fall back to random UUID below.
     }
 
-    return _legacyStoredUuid();
+    return const Uuid().v4();
   }
 
   /// Deterministic opaque token — URL-safe, fixed length.
@@ -57,17 +69,6 @@ class DeviceIdRepository {
     final bytes = utf8.encode('apartment_manager.device.v1|$rawOsId');
     final digest = sha256.convert(bytes);
     return base64Url.encode(digest.bytes).replaceAll('=', '');
-  }
-
-  Future<String> _legacyStoredUuid() async {
-    final existing = await _storage.read(key: _storageKey);
-    if (existing != null && existing.isNotEmpty) {
-      return existing;
-    }
-    const uuid = Uuid();
-    final id = uuid.v4();
-    await _storage.write(key: _storageKey, value: id);
-    return id;
   }
 
   /// Optional platform summary for logs or support (no PII).
@@ -92,7 +93,7 @@ class DeviceIdRepository {
 }
 
 final flutterSecureStorageProvider = Provider<FlutterSecureStorage>(
-  (ref) => const FlutterSecureStorage(),
+  (ref) => appSecureStorage,
 );
 
 final deviceIdRepositoryProvider = Provider<DeviceIdRepository>(

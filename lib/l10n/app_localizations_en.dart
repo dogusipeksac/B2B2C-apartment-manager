@@ -1186,6 +1186,30 @@ class AppLocalizationsEn extends AppLocalizations {
       'This device is linked for building administration.';
 
   @override
+  String profileCardSubtitleManagerWithUnit(Object unit) {
+    return 'Manager · Unit $unit';
+  }
+
+  @override
+  String get profileMenuClaimUnit => 'Set up my unit';
+
+  @override
+  String get profileClaimUnitTitle => 'Set up my unit';
+
+  @override
+  String get profileClaimUnitSubtitle =>
+      'Choose the unit you live in as manager. No invite code needed.';
+
+  @override
+  String get profileClaimUnitConfirm => 'Save this unit';
+
+  @override
+  String get profileClaimUnitSuccess => 'Unit saved.';
+
+  @override
+  String get managerUnitBadgeManager => 'MANAGER';
+
+  @override
   String get profileCardSubtitleResident =>
       'This device is linked to a unit via invite code.';
 
@@ -1218,6 +1242,38 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileMenuProfileInfo => 'Profile details';
+
+  @override
+  String get profileEditTitle => 'Profile details';
+
+  @override
+  String get profileEditEditableSection => 'EDITABLE';
+
+  @override
+  String get profileEditLinkedSection => 'LINKED INFO';
+
+  @override
+  String get profileEditReadOnlyHint =>
+      'Building, unit, and invite code cannot be changed here.';
+
+  @override
+  String get profileEditBuildingLabel => 'Building';
+
+  @override
+  String get profileEditUnitLabel => 'Unit';
+
+  @override
+  String get profileEditInviteCodeLabel => 'Invite code';
+
+  @override
+  String get profileEditSave => 'Save';
+
+  @override
+  String get profileEditSaved => 'Profile updated.';
+
+  @override
+  String get profileEditNameRequired =>
+      'Full name must be at least 2 characters.';
 
   @override
   String get profileMenuNotifications => 'Notification settings';
@@ -1536,8 +1592,20 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get setupManagerUnitHint =>
+      'Select the unit you will be linked to as manager.';
+
+  @override
+  String setupManagerUnitSelected(Object label) {
+    return 'Manager unit: $label';
+  }
+
+  @override
+  String get setupManagerUnitRequired => 'Please select the manager\'s unit.';
+
+  @override
   String get setupWizardUnitsInstruction =>
-      'Review the auto-generated list; add or remove units if needed.';
+      'Review the auto-generated list and mark your unit as manager.';
 
   @override
   String get setupWizardUnitsEdit => 'Edit';
@@ -2060,6 +2128,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get inviteCodeNotesCreate => 'Create';
 
   @override
+  String get inviteCodeNotesSheetAdminSubtitle =>
+      'Choose how the code can be used. Notes are optional. The code is copied when created.';
+
+  @override
+  String get inviteCodeNotesSheetUnitSubtitle =>
+      'Add an optional note for the resident invite code.';
+
+  @override
+  String get inviteCodeNotesPolicySection => 'USAGE TYPE';
+
+  @override
+  String get inviteCodeNotesPolicyReusableHint =>
+      'The same code can set up managers on multiple devices.';
+
+  @override
+  String get inviteCodeNotesPolicySingleHint =>
+      'The code stops working after the first setup.';
+
+  @override
+  String get superadminAdminCodeSingleBadge => 'Single use';
+
+  @override
   String get inviteCodeNotesAdminTitle => 'Manager code note';
 
   @override
@@ -2140,4 +2230,187 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settingsLoadFailed => 'Could not load settings.';
+
+  @override
+  String get demoNavElections => 'Election';
+
+  @override
+  String get electionListTitle => 'Manager election';
+
+  @override
+  String get electionCreateFab => 'New election';
+
+  @override
+  String get electionListEmpty => 'No elections yet. A manager can start one.';
+
+  @override
+  String get electionListNominateCta => 'Run in this election →';
+
+  @override
+  String get electionCreateTitle => 'Create election';
+
+  @override
+  String get electionFieldTitle => 'Title';
+
+  @override
+  String get electionFieldDescription => 'Description';
+
+  @override
+  String get electionFieldNominationsCloseAt => 'Nominations close';
+
+  @override
+  String get electionFieldClosesAt => 'Voting closes';
+
+  @override
+  String get electionClosesAtOptional => 'Optional';
+
+  @override
+  String electionNominationsCloseAtLabel(Object date) {
+    return 'Nominations end: $date';
+  }
+
+  @override
+  String get electionTitleValidation => 'Title must be at least 3 characters.';
+
+  @override
+  String get electionSecretHint =>
+      'Votes are secret; who voted for whom is never shown. Results appear when the election closes.';
+
+  @override
+  String get electionCreateSubmit => 'Create';
+
+  @override
+  String get electionDetailTitle => 'Election details';
+
+  @override
+  String get electionNotFound => 'Election not found.';
+
+  @override
+  String get electionStatusDraft => 'Draft';
+
+  @override
+  String get electionStatusNominating => 'Nominations';
+
+  @override
+  String get electionStatusActive => 'Voting';
+
+  @override
+  String get electionStatusClosed => 'Closed';
+
+  @override
+  String electionCandidateCount(Object count) {
+    return '$count candidates';
+  }
+
+  @override
+  String electionClosesAtLabel(Object date) {
+    return 'Closes: $date';
+  }
+
+  @override
+  String electionParticipationCount(Object count) {
+    return '$count units voted';
+  }
+
+  @override
+  String get electionSecretBallotHint =>
+      'Secret ballot: vote counts stay hidden until the election closes. One vote per unit.';
+
+  @override
+  String get electionResultsPublicHint =>
+      'Election closed. Totals are shown below; individual choices remain private.';
+
+  @override
+  String get electionCandidatesSection => 'Candidates';
+
+  @override
+  String get electionNoCandidates =>
+      'No candidates yet. Use the button below to run.';
+
+  @override
+  String get electionNominateSelf => 'Run as candidate';
+
+  @override
+  String get electionNominateSelfManager => 'You can run as a candidate too';
+
+  @override
+  String get electionNominateSelfResident => 'You can run as a candidate';
+
+  @override
+  String get electionNominateDraftHint =>
+      'Add yourself before nominations open to everyone.';
+
+  @override
+  String get electionNominateNominatingHint =>
+      'Add yourself to the candidate list during the nomination period.';
+
+  @override
+  String get electionNominateSuccess => 'Your candidacy was registered.';
+
+  @override
+  String get electionYouVotedSecret =>
+      'Your vote is recorded and kept private.';
+
+  @override
+  String get electionSubmitVote => 'Submit my vote';
+
+  @override
+  String get electionSelectCandidate => 'Please select a candidate.';
+
+  @override
+  String get electionVoteSuccess => 'Your vote was recorded privately.';
+
+  @override
+  String get electionStartAction => 'Start election';
+
+  @override
+  String get electionStartNominationsAction => 'Open nominations';
+
+  @override
+  String get electionStartVotingAction => 'Start voting';
+
+  @override
+  String get electionCloseAction => 'Close election';
+
+  @override
+  String get electionCandidateYou => 'You';
+
+  @override
+  String electionVoteCount(Object count) {
+    return '$count votes';
+  }
+
+  @override
+  String get electionNominatingBannerTitle => 'Nominations are open';
+
+  @override
+  String get electionActiveBannerTitle => 'Voting is open';
+
+  @override
+  String get electionActiveBannerNominate => 'Run as candidate';
+
+  @override
+  String get electionActiveBannerVote => 'Cast your vote';
+
+  @override
+  String get electionActiveBannerVoted => 'You voted';
+
+  @override
+  String electionCandidateManager(Object name) {
+    return 'Manager ($name)';
+  }
+
+  @override
+  String electionCandidateResident(Object unit) {
+    return 'Resident ($unit)';
+  }
+
+  @override
+  String get electionCandidateResidentNoUnit => 'Resident';
+
+  @override
+  String get electionRoleBadgeManager => 'MANAGER';
+
+  @override
+  String get electionRoleBadgeResident => 'RESIDENT';
 }

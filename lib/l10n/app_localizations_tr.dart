@@ -1184,6 +1184,30 @@ class AppLocalizationsTr extends AppLocalizations {
       'Bu cihaz apartman yönetimi için bağlı.';
 
   @override
+  String profileCardSubtitleManagerWithUnit(Object unit) {
+    return 'Yönetici · Daire $unit';
+  }
+
+  @override
+  String get profileMenuClaimUnit => 'Dairemi kur';
+
+  @override
+  String get profileClaimUnitTitle => 'Dairemi kur';
+
+  @override
+  String get profileClaimUnitSubtitle =>
+      'Yönetici olarak bağlı olduğunuz daireyi listeden seçin. Davet kodu gerekmez.';
+
+  @override
+  String get profileClaimUnitConfirm => 'Bu daireyi kaydet';
+
+  @override
+  String get profileClaimUnitSuccess => 'Daire kaydedildi.';
+
+  @override
+  String get managerUnitBadgeManager => 'YÖNETİCİ';
+
+  @override
   String get profileCardSubtitleResident =>
       'Bu cihaz davet kodu ile bir daireye bağlı.';
 
@@ -1217,6 +1241,37 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get profileMenuProfileInfo => 'Profil bilgileri';
+
+  @override
+  String get profileEditTitle => 'Profil bilgileri';
+
+  @override
+  String get profileEditEditableSection => 'DÜZENLENEBİLİR';
+
+  @override
+  String get profileEditLinkedSection => 'BAĞLANTI BİLGİLERİ';
+
+  @override
+  String get profileEditReadOnlyHint =>
+      'Apartman, daire ve davet kodu değiştirilemez.';
+
+  @override
+  String get profileEditBuildingLabel => 'Apartman';
+
+  @override
+  String get profileEditUnitLabel => 'Daire';
+
+  @override
+  String get profileEditInviteCodeLabel => 'Davet kodu';
+
+  @override
+  String get profileEditSave => 'Kaydet';
+
+  @override
+  String get profileEditSaved => 'Profil güncellendi.';
+
+  @override
+  String get profileEditNameRequired => 'Ad soyad en az 2 karakter olmalı.';
 
   @override
   String get profileMenuNotifications => 'Bildirim ayarları';
@@ -1534,8 +1589,20 @@ class AppLocalizationsTr extends AppLocalizations {
   }
 
   @override
+  String get setupManagerUnitHint =>
+      'Yönetici olarak bağlanacağınız daireyi seçin.';
+
+  @override
+  String setupManagerUnitSelected(Object label) {
+    return 'Yönetici dairesi: $label';
+  }
+
+  @override
+  String get setupManagerUnitRequired => 'Yöneticinin dairesi seçilmeli.';
+
+  @override
   String get setupWizardUnitsInstruction =>
-      'Otomatik oluşturulan listeyi gözden geçir, gerekirse daire ekle/çıkar.';
+      'Otomatik oluşturulan listeyi gözden geçir; yönetici dairenizi işaretleyin.';
 
   @override
   String get setupWizardUnitsEdit => 'Düzenle';
@@ -2058,6 +2125,28 @@ class AppLocalizationsTr extends AppLocalizations {
   String get inviteCodeNotesCreate => 'Oluştur';
 
   @override
+  String get inviteCodeNotesSheetAdminSubtitle =>
+      'Kullanım tipini seçin; not isteğe bağlıdır. Kod oluşturulunca panoya kopyalanır.';
+
+  @override
+  String get inviteCodeNotesSheetUnitSubtitle =>
+      'Sakine ileteceğiniz kod için isteğe bağlı not ekleyebilirsiniz.';
+
+  @override
+  String get inviteCodeNotesPolicySection => 'KULLANIM TİPİ';
+
+  @override
+  String get inviteCodeNotesPolicyReusableHint =>
+      'Aynı kodla birden fazla cihazda yönetici kurulumu yapılabilir.';
+
+  @override
+  String get inviteCodeNotesPolicySingleHint =>
+      'İlk kurulumdan sonra kod devre dışı kalır.';
+
+  @override
+  String get superadminAdminCodeSingleBadge => 'Tek kullanımlı';
+
+  @override
   String get inviteCodeNotesAdminTitle => 'Yönetici kodu notu';
 
   @override
@@ -2137,4 +2226,188 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get settingsLoadFailed => 'Ayarlar yüklenemedi.';
+
+  @override
+  String get demoNavElections => 'Seçim';
+
+  @override
+  String get electionListTitle => 'Yönetici seçimi';
+
+  @override
+  String get electionCreateFab => 'Yeni seçim';
+
+  @override
+  String get electionListEmpty =>
+      'Henüz seçim yok. Yönetici yeni bir seçim başlatabilir.';
+
+  @override
+  String get electionListNominateCta => 'Seçime aday ol →';
+
+  @override
+  String get electionCreateTitle => 'Seçim oluştur';
+
+  @override
+  String get electionFieldTitle => 'Başlık';
+
+  @override
+  String get electionFieldDescription => 'Açıklama';
+
+  @override
+  String get electionFieldNominationsCloseAt => 'Adaylık bitiş tarihi';
+
+  @override
+  String get electionFieldClosesAt => 'Oylama bitiş tarihi';
+
+  @override
+  String get electionClosesAtOptional => 'İsteğe bağlı';
+
+  @override
+  String electionNominationsCloseAtLabel(Object date) {
+    return 'Adaylık sonu: $date';
+  }
+
+  @override
+  String get electionTitleValidation => 'Başlık en az 3 karakter olmalıdır.';
+
+  @override
+  String get electionSecretHint =>
+      'Oylar gizlidir; kim kime oy verdiği görülmez. Sonuçlar seçim kapanınca açıklanır.';
+
+  @override
+  String get electionCreateSubmit => 'Oluştur';
+
+  @override
+  String get electionDetailTitle => 'Seçim detayı';
+
+  @override
+  String get electionNotFound => 'Seçim bulunamadı.';
+
+  @override
+  String get electionStatusDraft => 'Taslak';
+
+  @override
+  String get electionStatusNominating => 'Adaylık';
+
+  @override
+  String get electionStatusActive => 'Oylama';
+
+  @override
+  String get electionStatusClosed => 'Kapandı';
+
+  @override
+  String electionCandidateCount(Object count) {
+    return '$count aday';
+  }
+
+  @override
+  String electionClosesAtLabel(Object date) {
+    return 'Bitiş: $date';
+  }
+
+  @override
+  String electionParticipationCount(Object count) {
+    return '$count daire oy kullandı';
+  }
+
+  @override
+  String get electionSecretBallotHint =>
+      'Gizli oy: Aday oyları seçim bitene kadar gösterilmez. Bir daire yalnızca bir oy kullanabilir.';
+
+  @override
+  String get electionResultsPublicHint =>
+      'Seçim kapandı. Aşağıda toplam oy sayıları görünür; kim kime oy verdi bilinmez.';
+
+  @override
+  String get electionCandidatesSection => 'Adaylar';
+
+  @override
+  String get electionNoCandidates =>
+      'Henüz aday yok. Aday olmak için aşağıdaki düğmeyi kullanın.';
+
+  @override
+  String get electionNominateSelf => 'Aday ol';
+
+  @override
+  String get electionNominateSelfManager => 'Siz de aday olabilirsiniz';
+
+  @override
+  String get electionNominateSelfResident => 'Aday olabilirsiniz';
+
+  @override
+  String get electionNominateDraftHint =>
+      'Adaylık başlamadan önce kendinizi listeye ekleyebilirsiniz.';
+
+  @override
+  String get electionNominateNominatingHint =>
+      'Adaylık süresi içinde kendinizi aday listesine ekleyebilirsiniz.';
+
+  @override
+  String get electionNominateSuccess => 'Adaylığınız kaydedildi.';
+
+  @override
+  String get electionYouVotedSecret =>
+      'Oyunuz kaydedildi. Tercihiniz gizli tutulur.';
+
+  @override
+  String get electionSubmitVote => 'Oyumu gönder';
+
+  @override
+  String get electionSelectCandidate => 'Lütfen bir aday seçin.';
+
+  @override
+  String get electionVoteSuccess => 'Oyunuz gizli olarak kaydedildi.';
+
+  @override
+  String get electionStartAction => 'Seçimi başlat';
+
+  @override
+  String get electionStartNominationsAction => 'Adaylığı başlat';
+
+  @override
+  String get electionStartVotingAction => 'Oylamayı başlat';
+
+  @override
+  String get electionCloseAction => 'Seçimi kapat';
+
+  @override
+  String get electionCandidateYou => 'Siz';
+
+  @override
+  String electionVoteCount(Object count) {
+    return '$count oy';
+  }
+
+  @override
+  String get electionNominatingBannerTitle => 'Adaylık süreci devam ediyor';
+
+  @override
+  String get electionActiveBannerTitle => 'Oylama başladı';
+
+  @override
+  String get electionActiveBannerNominate => 'Aday ol';
+
+  @override
+  String get electionActiveBannerVote => 'Oy kullan';
+
+  @override
+  String get electionActiveBannerVoted => 'Oy kullandınız';
+
+  @override
+  String electionCandidateManager(Object name) {
+    return 'Yönetici ($name)';
+  }
+
+  @override
+  String electionCandidateResident(Object unit) {
+    return 'Sakin ($unit)';
+  }
+
+  @override
+  String get electionCandidateResidentNoUnit => 'Sakin';
+
+  @override
+  String get electionRoleBadgeManager => 'YÖNETİCİ';
+
+  @override
+  String get electionRoleBadgeResident => 'SAKİN';
 }

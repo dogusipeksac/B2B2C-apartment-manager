@@ -54,8 +54,13 @@ extension LocalSessionPersistenceRef on WidgetRef {
     LocalSession session, {
     required bool rememberMe,
   }) async {
+    final deviceId = await read(deviceIdProvider.future);
     await read(localSessionRepositoryProvider).save(
-      session.copyWith(rememberMe: rememberMe, savedAt: DateTime.now()),
+      session.copyWith(
+        deviceId: deviceId,
+        rememberMe: rememberMe,
+        savedAt: DateTime.now(),
+      ),
     );
     await SessionPreferencesStorage.saveRememberMeDefault(rememberMe);
     notifyLocalSessionChanged();

@@ -114,14 +114,16 @@ class _UnitInviteDetailScreenState
 
   Future<void> _generate() async {
     final l10n = AppLocalizations.of(context)!;
-    final notes = await showInviteCodeNotesDialog(
+    final sheetResult = await showInviteCodeNotesDialog(
       context,
-      title: l10n.inviteCodeNotesUnitTitle,
+      title: l10n.managerInviteGenerate,
+      subtitle: l10n.inviteCodeNotesSheetUnitSubtitle,
       hint: l10n.inviteCodeNotesUnitHint,
     );
-    if (!mounted || notes == null) {
+    if (!mounted || sheetResult == null) {
       return;
     }
+    final notes = sheetResult.notes;
     setState(() => _creating = true);
     try {
       final session = await ref.read(localSessionRepositoryProvider).load();
@@ -139,14 +141,14 @@ class _UnitInviteDetailScreenState
           session,
           buildingId: widget.superadminBuildingId!,
           unitId: widget.unitId,
-          notes: notes,
+          notes: notes.isEmpty ? null : notes,
         );
       } else {
         final repo = ref.read(managerInviteRepositoryProvider);
         result = await repo.createInvite(
           session,
           unitId: widget.unitId,
-          notes: notes,
+          notes: notes.isEmpty ? null : notes,
         );
       }
       if (!mounted) {
@@ -163,7 +165,7 @@ class _UnitInviteDetailScreenState
             label: prev.label,
             inviteCode: result.code,
             inviteExpiresAt: result.expiresAt ?? prev.inviteExpiresAt,
-            inviteNotes: notes,
+            inviteNotes: notes.isEmpty ? null : notes,
             residentJoined: prev.residentJoined,
           );
           _creating = false;

@@ -56,9 +56,7 @@ class _BuildingSetupWizardScreenState
   final _namingAutomatic = ValueNotifier<bool>(true);
   final Map<String, String> _customDoorByKey = {};
   final _showAllFloors = ValueNotifier<bool>(false);
-  final _highlightUnit = ValueNotifier<String?>(
-    Env.demoMode ? '3A' : null,
-  );
+  final _highlightUnit = ValueNotifier<String?>(null);
 
   /// Tutar kuruş cinsinden (₺1.500,00 → 150000).
   final _duesKurus = ValueNotifier<int>(150_000);
@@ -118,6 +116,41 @@ class _BuildingSetupWizardScreenState
       blockCount: _effectiveBlockCount,
       customNames: _effectiveCustomNames,
     );
+  }
+
+  String _managerUnitKeyFor(SetupUnitSpec u) {
+    if (_namingAutomatic.value) {
+      return u.block.isEmpty ? u.doorNumber : '${u.block}-${u.doorNumber}';
+    }
+    return u.structuralKey;
+  }
+
+  List<SetupUnitSpec> _allUnitSpecsForManagerPick() {
+    return _namingAutomatic.value ? _unitSpecs : _resolvedCustomUnits();
+  }
+
+  void _ensureDefaultManagerUnit() {
+    if (_highlightUnit.value != null) {
+      return;
+    }
+    final units = _allUnitSpecsForManagerPick();
+    if (units.isEmpty) {
+      return;
+    }
+    _highlightUnit.value = _managerUnitKeyFor(units.first);
+  }
+
+  SetupUnitSpec? _selectedManagerUnit() {
+    final key = _highlightUnit.value;
+    if (key == null) {
+      return null;
+    }
+    for (final u in _allUnitSpecsForManagerPick()) {
+      if (_managerUnitKeyFor(u) == key) {
+        return u;
+      }
+    }
+    return null;
   }
 
   String? _customNamingError(AppLocalizations l10n) {
@@ -213,11 +246,13 @@ class _BuildingSetupWizardScreenState
                     ? null
                     : _resolvedCustomUnits(),
                 managerFullName: session.fullName,
+                managerUnit: _selectedManagerUnit(),
               );
 
       final updated = session.copyWith(
         buildingId: result.buildingId,
         profileId: result.profileId,
+        unitId: result.unitId ?? session.unitId,
         buildingName: result.buildingLabel,
         savedAt: DateTime.now(),
       );
@@ -341,11 +376,20 @@ class _BuildingSetupWizardScreenState
         return;
       }
     }
+    if (_step == 1) {
+      _ensureDefaultManagerUnit();
+    }
     if (_step == 2) {
       final namingError = _customNamingError(l10n);
       if (namingError != null) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(namingError)),
+        );
+        return;
+      }
+      if (_selectedManagerUnit() == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.setupManagerUnitRequired)),
         );
         return;
       }
@@ -909,6 +953,48 @@ class _BuildingSetupWizardScreenState
             child: Text(l10n.setupWizardUnitsEdit),
           ),
         ),
+        const SizedBox(height: 12),
+        ValueListenableBuilder<String?>(
+          valueListenable: _highlightUnit,
+          builder: (context, _, __) {
+            final spec = _selectedManagerUnit();
+            return Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.primary.withValues(alpha: 0.08),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: AppTheme.primary.withValues(alpha: 0.25),
+                ),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Icon(
+                    Icons.home_work_outlined,
+                    color: AppTheme.primary,
+                    size: 20,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      spec != null
+                          ? l10n.setupManagerUnitSelected(spec.displayLabel)
+                          : l10n.setupManagerUnitHint,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        height: 1.35,
+                        color: theme.colorScheme.onSurface,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
+        const SizedBox(height: 12),
         ValueListenableBuilder<bool>(
           valueListenable: _namingAutomatic,
           builder: (context, auto, _) {
@@ -998,9 +1084,6 @@ class _BuildingSetupWizardScreenState
             final floorLimit = expanded ? floors : math.min(3, floors);
             final children = <Widget>[];
 
-            String unitKey(SetupUnitSpec u) =>
-                u.block.isEmpty ? u.doorNumber : '${u.block}-${u.doorNumber}';
-
             void addFloorSection(String blockCode, int fi) {
               children.add(
                 Padding(
@@ -1039,7 +1122,7 @@ class _BuildingSetupWizardScreenState
                   spacing: 8,
                   runSpacing: 8,
                   children: rowUnits.map((u) {
-                    final key = unitKey(u);
+                    final key = _managerUnitKeyFor(u);
                     return _UnitPill(
                       label: u.displayLabel,
                       selected: highlight == key,
@@ -1247,6 +1330,38 @@ class _BuildingSetupWizardScreenState
         ),
       );
     }
+
+    final resolved = _resolvedCustomUnits();
+    children.add(
+      Padding(
+        padding: const EdgeInsets.only(top: 16, bottom: 8),
+        child: Text(
+          l10n.setupManagerUnitHint,
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      ),
+    );
+    children.add(
+      ValueListenableBuilder<String?>(
+        valueListenable: _highlightUnit,
+        builder: (context, highlight, _) {
+          return Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: resolved.map((u) {
+              final key = _managerUnitKeyFor(u);
+              return _UnitPill(
+                label: u.displayLabel,
+                selected: highlight == key,
+                onTap: () => _highlightUnit.value = key,
+              );
+            }).toList(),
+          );
+        },
+      ),
+    );
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
