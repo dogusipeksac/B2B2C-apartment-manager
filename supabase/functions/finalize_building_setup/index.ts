@@ -16,6 +16,7 @@
  *     "dues_due_day": number,
  *     "late_fee_enabled": boolean,
  *     "single_block": boolean,
+ *     "block_count"?: number,
  *     "floors": number,
  *     "per_floor": number,
  *     "naming_automatic": boolean
@@ -56,23 +57,89 @@ function generateUnits(
   floors: number,
   perFloor: number,
   singleBlock: boolean,
-  namingAutomatic: boolean,
+  blockCount: number,
 ): Array<{ floor: number; door_number: string; block: string }> {
-  if (!namingAutomatic) {
-    throw new Error("custom_naming_not_supported");
-  }
-  const block = singleBlock ? "" : "A";
+  const blocks = singleBlock
+    ? [""]
+    : Array.from(
+      { length: blockCount },
+      (_, i) => String.fromCharCode(65 + i),
+    );
   const units: Array<{ floor: number; door_number: string; block: string }> =
     [];
-  for (let fi = 1; fi <= floors; fi++) {
-    for (let k = 0; k < perFloor; k++) {
-      const letter = String.fromCharCode(65 + k);
-      units.push({
-        floor: fi,
-        door_number: `${fi}${letter}`,
-        block,
-      });
+  for (const block of blocks) {
+    for (let fi = 1; fi <= floors; fi++) {
+      for (let k = 0; k < perFloor; k++) {
+        const letter = String.fromCharCode(65 + k);
+        units.push({
+          floor: fi,
+          door_number: `${fi}${letter}`,
+          block,
+        });
+      }
     }
+  }
+  return units;
+}
+
+function parseCustomUnits(
+  raw: unknown,
+  floors: number,
+  perFloor: number,
+  singleBlock: boolean,
+  blockCount: number,
+): Array<{ floor: number; door_number: string; block: string }> {
+  if (!Array.isArray(raw)) {
+    throw new Error("custom_units_invalid");
+  }
+  const expected = singleBlock
+    ? floors * perFloor
+    : floors * perFloor * blockCount;
+  if (raw.length !== expected) {
+    throw new Error("custom_units_count_mismatch");
+  }
+  const allowedBlocks = singleBlock
+    ? [""]
+    : Array.from(
+      { length: blockCount },
+      (_, i) => String.fromCharCode(65 + i),
+    );
+  const seen = new Set<string>();
+  const units: Array<{ floor: number; door_number: string; block: string }> =
+    [];
+  for (const item of raw) {
+    if (!item || typeof item !== "object") {
+      throw new Error("custom_units_invalid");
+    }
+    const row = item as Record<string, unknown>;
+    const floor = Number(row.floor);
+    const doorRaw = row.door_number;
+    const door_number = typeof doorRaw === "string" ? doorRaw.trim() : "";
+    let block = typeof row.block === "string" ? row.block.trim() : "";
+    if (
+      !door_number ||
+      door_number.length > 40 ||
+      !Number.isFinite(floor) ||
+      floor < 1 ||
+      floor > floors
+    ) {
+      throw new Error("custom_units_invalid");
+    }
+    if (singleBlock) {
+      block = "";
+    } else if (!allowedBlocks.includes(block)) {
+      throw new Error("custom_units_invalid");
+    }
+    const key = `${block}\0${door_number}`;
+    if (seen.has(key)) {
+      throw new Error("custom_units_duplicate");
+    }
+    seen.add(key);
+    units.push({
+      floor: Math.trunc(floor),
+      door_number,
+      block,
+    });
   }
   return units;
 }
@@ -134,6 +201,10 @@ serve(async (req: Request): Promise<Response> => {
   const duesDueDay = Number(b.dues_due_day);
   const lateFeeEnabled = Boolean(b.late_fee_enabled);
   const singleBlock = Boolean(b.single_block);
+  let blockCount = Number(b.block_count);
+  if (!Number.isFinite(blockCount) || blockCount < 1) {
+    blockCount = singleBlock ? 1 : 2;
+  }
   const floors = Number(b.floors);
   const perFloor = Number(b.per_floor);
   const namingAutomatic = Boolean(b.naming_automatic);
@@ -155,7 +226,12 @@ serve(async (req: Request): Promise<Response> => {
     floors > 60 ||
     !Number.isFinite(perFloor) ||
     perFloor < 1 ||
-    perFloor > 40
+    perFloor > 40 ||
+    !Number.isFinite(blockCount) ||
+    blockCount < 1 ||
+    blockCount > 12 ||
+    (singleBlock && blockCount !== 1) ||
+    (!singleBlock && blockCount < 2)
   ) {
     return jsonResponse(422, {
       success: false,
@@ -167,20 +243,24 @@ serve(async (req: Request): Promise<Response> => {
     { floor: number; door_number: string; block: string }
   >;
   try {
-    unitsSpec = generateUnits(
-      Math.trunc(floors),
-      Math.trunc(perFloor),
-      singleBlock,
-      namingAutomatic,
-    );
+    if (namingAutomatic) {
+      unitsSpec = generateUnits(
+        Math.trunc(floors),
+        Math.trunc(perFloor),
+        singleBlock,
+        Math.trunc(blockCount),
+      );
+    } else {
+      unitsSpec = parseCustomUnits(
+        b.units,
+        Math.trunc(floors),
+        Math.trunc(perFloor),
+        singleBlock,
+        Math.trunc(blockCount),
+      );
+    }
   } catch (e) {
     const msg = e instanceof Error ? e.message : "invalid_units";
-    if (msg === "custom_naming_not_supported") {
-      return jsonResponse(422, {
-        success: false,
-        error: "custom_naming_not_supported",
-      });
-    }
     return jsonResponse(422, { success: false, error: msg });
   }
 
@@ -382,6 +462,16 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   const nowIso = new Date().toISOString();
+  const { data: devBefore, error: devSelErr } = await supabase
+    .from("devices")
+    .select("admin_invite_code_id")
+    .eq("device_id", deviceId)
+    .maybeSingle();
+
+  if (devSelErr && !isMissingColumn(devSelErr, "admin_invite_code_id")) {
+    console.error("devices select before finalize link", devSelErr);
+  }
+
   const { error: upDevErr } = await supabase.from("devices").update({
     profile_id: profileId,
     building_id: buildingId,
@@ -391,6 +481,19 @@ serve(async (req: Request): Promise<Response> => {
   if (upDevErr) {
     console.error("devices update", upDevErr);
     return jsonResponse(500, { success: false, error: "database_error" });
+  }
+
+  const adminInviteId = devBefore?.admin_invite_code_id;
+  if (adminInviteId && String(adminInviteId).length > 0) {
+    const { error: linkErr } = await supabase
+      .from("invite_codes")
+      .update({ building_id: buildingId })
+      .eq("id", adminInviteId)
+      .eq("code_type", "admin");
+
+    if (linkErr) {
+      console.error("invite_codes link building", linkErr);
+    }
   }
 
   return jsonResponse(200, {

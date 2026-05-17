@@ -109,6 +109,12 @@ class ManagerInviteRepository {
         if (expRaw is String && expRaw.trim().isNotEmpty) {
           inviteExpires = DateTime.tryParse(expRaw.trim());
         }
+        final notesRaw = m['invite_notes'];
+        final inviteNotes = notesRaw is String && notesRaw.trim().isNotEmpty
+            ? notesRaw.trim()
+            : null;
+        final joinedRaw = m['resident_joined'];
+        final residentJoined = joinedRaw == true;
         return ManagerUnitOption(
           id: id,
           floor: floor,
@@ -117,6 +123,8 @@ class ManagerInviteRepository {
           label: label,
           inviteCode: inviteCode,
           inviteExpiresAt: inviteExpires,
+          inviteNotes: inviteNotes,
+          residentJoined: residentJoined,
         );
       }).toList();
       return ManagerInviteListResult(
@@ -131,6 +139,7 @@ class ManagerInviteRepository {
   Future<CreatedUnitInvite> createInvite(
     LocalSession session, {
     String? unitId,
+    String? notes,
   }) async {
     if (_disabled) {
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -159,6 +168,7 @@ class ManagerInviteRepository {
         'device_id': session.deviceId,
         'session_token': token,
         if (unitId != null && unitId.isNotEmpty) 'unit_id': unitId,
+        if (notes != null && notes.isNotEmpty) 'notes': notes,
       },
       options: Options(
         headers: <String, String>{
@@ -207,6 +217,53 @@ class ManagerInviteRepository {
         unitId: body['unit_id']! as String,
         expiresAt: exp,
       );
+    }
+
+    throw const AppException.unknown();
+  }
+
+  Future<void> revokeInvite(
+    LocalSession session, {
+    required String unitId,
+  }) async {
+    if (_disabled) {
+      return;
+    }
+
+    final token = session.sessionToken;
+    if (token == null || token.isEmpty) {
+      throw const AppException.auth(code: 'no_session_token');
+    }
+
+    final url = '${Env.supabaseUrl}/functions/v1/manager_invite';
+    final response = await _dio.post<dynamic>(
+      url,
+      data: <String, dynamic>{
+        'action': 'revoke_invite',
+        'device_id': session.deviceId,
+        'session_token': token,
+        'unit_id': unitId,
+      },
+      options: Options(
+        headers: <String, String>{
+          'Authorization': 'Bearer ${Env.supabaseAnonKey}',
+          'apikey': Env.supabaseAnonKey,
+          'Content-Type': 'application/json',
+        },
+        validateStatus: (_) => true,
+      ),
+    );
+
+    final status = response.statusCode ?? 0;
+    final body = _bodyMap(response.data);
+    _throwIfHttpError(status, body);
+
+    if (status == 200 && body['success'] == false) {
+      throw AppException.validation(code: _errorCode(body));
+    }
+
+    if (status == 200 && body['success'] == true) {
+      return;
     }
 
     throw const AppException.unknown();
@@ -304,6 +361,8 @@ class ManagerUnitOption {
     required this.label,
     this.inviteCode,
     this.inviteExpiresAt,
+    this.inviteNotes,
+    this.residentJoined = false,
   });
 
   final String id;
@@ -315,6 +374,12 @@ class ManagerUnitOption {
   /// Active unit invite code from server, if any.
   final String? inviteCode;
   final DateTime? inviteExpiresAt;
+
+  /// Optional note set when the invite was created.
+  final String? inviteNotes;
+
+  /// Active resident membership exists for this unit (joined via invite).
+  final bool residentJoined;
 }
 
 class CreatedUnitInvite {

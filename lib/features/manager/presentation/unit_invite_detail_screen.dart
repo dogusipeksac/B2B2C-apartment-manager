@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
+import 'package:apartment_manager/core/widgets/invite_code_notes_dialog.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/manager/data/manager_invite_repository.dart';
 import 'package:apartment_manager/features/superadmin/data/superadmin_repository.dart';
@@ -11,7 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -40,6 +40,7 @@ class _UnitInviteDetailScreenState
   ManagerUnitOption? _unit;
   bool _loading = true;
   bool _creating = false;
+  bool _revoking = false;
 
   @override
   void initState() {
@@ -113,6 +114,14 @@ class _UnitInviteDetailScreenState
 
   Future<void> _generate() async {
     final l10n = AppLocalizations.of(context)!;
+    final notes = await showInviteCodeNotesDialog(
+      context,
+      title: l10n.inviteCodeNotesUnitTitle,
+      hint: l10n.inviteCodeNotesUnitHint,
+    );
+    if (!mounted || notes == null) {
+      return;
+    }
     setState(() => _creating = true);
     try {
       final session = await ref.read(localSessionRepositoryProvider).load();
@@ -130,12 +139,14 @@ class _UnitInviteDetailScreenState
           session,
           buildingId: widget.superadminBuildingId!,
           unitId: widget.unitId,
+          notes: notes,
         );
       } else {
         final repo = ref.read(managerInviteRepositoryProvider);
         result = await repo.createInvite(
           session,
           unitId: widget.unitId,
+          notes: notes,
         );
       }
       if (!mounted) {
@@ -152,6 +163,8 @@ class _UnitInviteDetailScreenState
             label: prev.label,
             inviteCode: result.code,
             inviteExpiresAt: result.expiresAt ?? prev.inviteExpiresAt,
+            inviteNotes: notes,
+            residentJoined: prev.residentJoined,
           );
           _creating = false;
         });
@@ -184,6 +197,95 @@ class _UnitInviteDetailScreenState
     }
   }
 
+  Future<void> _confirmRevoke() async {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.managerInviteRevokeTitle),
+        content: Text(l10n.managerInviteRevokeBody),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.navBack),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+              foregroundColor: theme.colorScheme.onError,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.managerInviteRevokeConfirm),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) {
+      return;
+    }
+    setState(() => _revoking = true);
+    try {
+      final session = await ref.read(localSessionRepositoryProvider).load();
+      if (!mounted || session == null) {
+        return;
+      }
+      if (widget.superadminBuildingId != null) {
+        await ref.read(superadminRepositoryProvider).revokeUnitInvite(
+          session,
+          buildingId: widget.superadminBuildingId!,
+          unitId: widget.unitId,
+        );
+      } else {
+        await ref.read(managerInviteRepositoryProvider).revokeInvite(
+          session,
+          unitId: widget.unitId,
+        );
+      }
+      if (!mounted) {
+        return;
+      }
+      final prev = _unit;
+      if (prev != null) {
+        setState(() {
+          _unit = ManagerUnitOption(
+            id: prev.id,
+            floor: prev.floor,
+            doorNumber: prev.doorNumber,
+            block: prev.block,
+            label: prev.label,
+            inviteCode: null,
+            inviteExpiresAt: null,
+            inviteNotes: null,
+            residentJoined: prev.residentJoined,
+          );
+          _revoking = false;
+        });
+      } else {
+        setState(() => _revoking = false);
+      }
+      if (!mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.managerInviteRevoked)),
+      );
+    } on AppException catch (e) {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _revoking = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.userMessage)),
+      );
+    } on Object {
+      if (!mounted) {
+        return;
+      }
+      setState(() => _revoking = false);
+    }
+  }
+
   Future<void> _copy(String code) async {
     await Clipboard.setData(ClipboardData(text: code));
     if (!mounted) {
@@ -212,8 +314,6 @@ class _UnitInviteDetailScreenState
     final headline = u != null
         ? l10n.managerInviteDetailHeadline(_shortDoor(u))
         : l10n.managerInviteTitle;
-
-    final dateFmt = DateFormat.yMMMMd('tr_TR');
 
     return Scaffold(
       backgroundColor: apart.scaffoldBg,
@@ -304,22 +404,62 @@ class _UnitInviteDetailScreenState
                               ),
                             ],
                           ),
-                          if (u.inviteExpiresAt != null) ...[
-                            const SizedBox(height: 8),
-                            Text(
-                              _validityLine(
-                                l10n,
-                                u.inviteExpiresAt!,
-                                dateFmt,
+                          const SizedBox(height: 8),
+                          Text(
+                            l10n.managerInviteActiveUntilRevoked,
+                            textAlign: TextAlign.center,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: apart.onSurfaceVariant,
+                            ),
+                          ),
+                          if (u.residentJoined) ...[
+                            const SizedBox(height: 10),
+                            _JoinedViaCodeChip(label: l10n.managerUnitJoinedViaCode),
+                          ],
+                          if (u.inviteNotes != null &&
+                              u.inviteNotes!.isNotEmpty) ...[
+                            const SizedBox(height: 12),
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                l10n.inviteCodeNotesLabel,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: apart.onSurfaceVariant,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                              textAlign: TextAlign.center,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: apart.onSurfaceVariant,
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              u.inviteNotes!,
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                height: 1.35,
                               ),
                             ),
                           ],
                         ],
                       ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  OutlinedButton.icon(
+                    onPressed: _revoking
+                        ? null
+                        : () => unawaited(_confirmRevoke()),
+                    icon: _revoking
+                        ? const SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          )
+                        : Icon(
+                            Icons.block_rounded,
+                            color: theme.colorScheme.error,
+                          ),
+                    label: Text(l10n.managerInviteRevokeAction),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.error,
+                      side: BorderSide(color: theme.colorScheme.error),
                     ),
                   ),
                   const SizedBox(height: 20),
@@ -452,16 +592,38 @@ class _UnitInviteDetailScreenState
     );
   }
 
-  String _validityLine(
-    AppLocalizations l10n,
-    DateTime expiresAt,
-    DateFormat dateFmt,
-  ) {
-    final days = expiresAt.difference(DateTime.now()).inDays;
-    final safeDays = days < 0 ? 0 : days;
-    final until = dateFmt.format(expiresAt);
-    return '${l10n.managerInviteValidDays('$safeDays')} · '
-        '${l10n.managerInviteValidUntilDate(until)}';
+}
+
+class _JoinedViaCodeChip extends StatelessWidget {
+  const _JoinedViaCodeChip({required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: AppTheme.success.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: AppTheme.success.withValues(alpha: 0.35)),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.check_circle_rounded, size: 16, color: AppTheme.success),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: AppTheme.success,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

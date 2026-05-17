@@ -4,6 +4,7 @@ import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/features/auth/data/invite_code_repository.dart';
 import 'package:apartment_manager/features/auth/data/local_session.dart';
+import 'package:apartment_manager/features/setup/domain/setup_unit_spec.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -32,9 +33,11 @@ class BuildingSetupRepository {
     required int duesDueDay,
     required bool lateFeeEnabled,
     required bool singleBlock,
+    required int blockCount,
     required int floors,
     required int perFloor,
     required bool namingAutomatic,
+    List<SetupUnitSpec>? customUnits,
     String? managerFullName,
   }) async {
     if (_disabled) {
@@ -65,9 +68,20 @@ class BuildingSetupRepository {
             'dues_due_day': duesDueDay,
             'late_fee_enabled': lateFeeEnabled,
             'single_block': singleBlock,
+            'block_count': blockCount,
             'floors': floors,
             'per_floor': perFloor,
             'naming_automatic': namingAutomatic,
+            if (!namingAutomatic && customUnits != null)
+              'units': customUnits
+                  .map(
+                    (u) => <String, dynamic>{
+                      'floor': u.floor,
+                      'door_number': u.doorNumber,
+                      'block': u.block,
+                    },
+                  )
+                  .toList(),
           },
         },
         options: Options(

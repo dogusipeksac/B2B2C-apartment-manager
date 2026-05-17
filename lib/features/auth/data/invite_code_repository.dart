@@ -16,15 +16,20 @@ String normalizeInviteCode(String raw) {
 }
 
 /// Result of Edge `redeem_code` with `probe: true` (read-only for resume UI).
-class AdminInviteProbeResult {
-  const AdminInviteProbeResult({
+class InviteProbeResult {
+  const InviteProbeResult({
     required this.wouldResume,
     this.buildingName,
+    this.unitLabel,
   });
 
   final bool wouldResume;
   final String? buildingName;
+  final String? unitLabel;
 }
+
+typedef AdminInviteProbeResult = InviteProbeResult;
+typedef ResidentInviteProbeResult = InviteProbeResult;
 
 /// Validates invite codes via anon Supabase reads and redeems via Edge
 /// Function.
@@ -119,13 +124,26 @@ class InviteCodeRepository {
     }
   }
 
-  /// Whether this device can resume manager login without running setup again.
-  Future<AdminInviteProbeResult> probeAdminInvite(
+  /// Whether an existing registration exists for this invite (manager).
+  Future<InviteProbeResult> probeAdminInvite(
+    String code,
+    String deviceId,
+  ) =>
+      _probeInvite(code, deviceId);
+
+  /// Whether an existing registration exists for this unit invite (resident).
+  Future<InviteProbeResult> probeResidentInvite(
+    String code,
+    String deviceId,
+  ) =>
+      _probeInvite(code, deviceId);
+
+  Future<InviteProbeResult> _probeInvite(
     String code,
     String deviceId,
   ) async {
     if (_disabled) {
-      return const AdminInviteProbeResult(wouldResume: false);
+      return const InviteProbeResult(wouldResume: false);
     }
 
     final normalized = normalizeInviteCode(code);
@@ -156,7 +174,7 @@ class InviteCodeRepository {
           status == 404 ||
           status == 409 ||
           status == 422) {
-        return const AdminInviteProbeResult(wouldResume: false);
+        return const InviteProbeResult(wouldResume: false);
       }
 
       if (status == 200 &&
@@ -165,13 +183,16 @@ class InviteCodeRepository {
         final resume = body['would_resume'] == true;
         final bnRaw = body['building_name'];
         final bn = bnRaw is String ? bnRaw.trim() : '';
-        return AdminInviteProbeResult(
+        final ulRaw = body['unit_label'];
+        final ul = ulRaw is String ? ulRaw.trim() : '';
+        return InviteProbeResult(
           wouldResume: resume,
           buildingName: bn.isEmpty ? null : bn,
+          unitLabel: ul.isEmpty ? null : ul,
         );
       }
 
-      return const AdminInviteProbeResult(wouldResume: false);
+      return const InviteProbeResult(wouldResume: false);
     } on DioException catch (e) {
       if (e.type == DioExceptionType.connectionTimeout ||
           e.type == DioExceptionType.connectionError ||
@@ -179,11 +200,11 @@ class InviteCodeRepository {
           e.type == DioExceptionType.receiveTimeout) {
         throw const AppException.network();
       }
-      return const AdminInviteProbeResult(wouldResume: false);
+      return const InviteProbeResult(wouldResume: false);
     } on SocketException {
       throw const AppException.network();
     } on Object {
-      return const AdminInviteProbeResult(wouldResume: false);
+      return const InviteProbeResult(wouldResume: false);
     }
   }
 
@@ -244,6 +265,13 @@ class InviteCodeRepository {
           body['role'] is String) {
         final bnRaw = body['building_name'];
         final bn = bnRaw is String ? bnRaw.trim() : '';
+        final fnRaw = body['full_name'];
+        final fnFromServer = fnRaw is String ? fnRaw.trim() : '';
+        final resolvedName = fnFromServer.isNotEmpty
+            ? fnFromServer
+            : (fullName?.trim().isNotEmpty ?? false)
+            ? fullName!.trim()
+            : null;
         return LocalSession(
           deviceId: deviceId,
           role: UserRole.fromWire(body['role'] as String),
@@ -251,7 +279,7 @@ class InviteCodeRepository {
           buildingId: body['building_id'] as String?,
           unitId: body['unit_id'] as String?,
           profileId: body['profile_id'] as String?,
-          fullName: fullName?.trim(),
+          fullName: resolvedName,
           sessionToken: body['session_token'] as String?,
           buildingName: bn.isEmpty ? null : bn,
         );

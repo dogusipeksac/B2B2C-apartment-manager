@@ -6,7 +6,9 @@ import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/auth/data/invite_code_repository.dart';
 import 'package:apartment_manager/features/auth/domain/code_preview.dart';
 import 'package:apartment_manager/features/auth/domain/user_role.dart';
+import 'package:apartment_manager/features/auth/data/session_preferences_storage.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/auth/presentation/widgets/remember_me_checkbox.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -56,6 +58,7 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
   /// From Edge probe — existing manager registration for this device + code.
   String? _resumeBuildingName;
   bool _busy = false;
+  bool _rememberMe = true;
 
   static const _otpLength = 8;
 
@@ -64,6 +67,14 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
     super.initState();
     _otpController.addListener(_onCodeChanged);
     _focusNode.addListener(() => setState(() {}));
+    unawaited(_loadRememberDefault());
+  }
+
+  Future<void> _loadRememberDefault() async {
+    final value = await SessionPreferencesStorage.loadRememberMeDefault();
+    if (mounted) {
+      setState(() => _rememberMe = value);
+    }
   }
 
   @override
@@ -209,8 +220,7 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
         );
         return;
       }
-      await ref.read(localSessionRepositoryProvider).save(session);
-      ref.notifyLocalSessionChanged();
+      await ref.persistLocalSession(session, rememberMe: _rememberMe);
       if (!mounted) {
         return;
       }
@@ -400,6 +410,11 @@ class _AdminInviteScreenState extends ConsumerState<AdminInviteScreen> {
                               fontSize: 16,
                             ),
                           ),
+                  ),
+                  const SizedBox(height: 8),
+                  RememberMeCheckbox(
+                    value: _rememberMe,
+                    onChanged: (v) => setState(() => _rememberMe = v),
                   ),
                   const SizedBox(height: 12),
                   _InviteFooterRow(l10n: l10n, apart: apart),

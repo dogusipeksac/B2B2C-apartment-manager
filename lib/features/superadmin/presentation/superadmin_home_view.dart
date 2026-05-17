@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:apartment_manager/core/config/env.dart';
+import 'package:apartment_manager/core/widgets/invite_code_notes_dialog.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/core/utils/formatters.dart';
@@ -101,6 +102,14 @@ class _SuperadminShellState extends ConsumerState<SuperadminShell> {
     if (_creatingAdmin) {
       return;
     }
+    final notes = await showInviteCodeNotesDialog(
+      context,
+      title: l10n.inviteCodeNotesAdminTitle,
+      hint: l10n.inviteCodeNotesAdminHint,
+    );
+    if (!mounted || notes == null) {
+      return;
+    }
     setState(() => _creatingAdmin = true);
     try {
       final session = await ref.read(localSessionRepositoryProvider).load();
@@ -108,7 +117,10 @@ class _SuperadminShellState extends ConsumerState<SuperadminShell> {
         return;
       }
       final repo = ref.read(superadminRepositoryProvider);
-      final created = await repo.createAdminInvite(session);
+      final created = await repo.createAdminInvite(
+        session,
+        notes: notes,
+      );
       if (!mounted) {
         return;
       }
@@ -912,6 +924,18 @@ class _ManagerCodeGridTile extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: apart.onSurfaceVariant,
+                ),
+              ),
+            ],
+            if (row.notes != null && row.notes!.isNotEmpty) ...[
+              const SizedBox(height: 6),
+              Text(
+                row.notes!,
+                maxLines: 3,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: apart.onSurfaceVariant,
+                  height: 1.25,
                 ),
               ),
             ],

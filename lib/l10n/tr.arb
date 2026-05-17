@@ -62,6 +62,8 @@
     }
   },
   "signOut": "Çıkış yap",
+  "rememberMeLabel": "Beni hatırla",
+  "rememberMeHint": "Uygulamayı her açtığımda oturumum açık kalsın",
   "errorGeneric": "Bir hata oluştu. Lütfen tekrar deneyin.",
   "errorNetwork": "İnternet bağlantınızı kontrol edin ve tekrar deneyin.",
   "errorInvalidOtp": "Kod geçersiz. Lütfen tekrar deneyin.",
@@ -625,6 +627,21 @@
   "setupBlockCountLabel": "BLOK SAYISI",
   "setupSingleBlock": "Tek blok",
   "setupMultipleBlocks": "Çok blok",
+  "setupBlockCountLabel": "Blok sayısı",
+  "setupBlockHeading": "Blok {block}",
+  "@setupBlockHeading": {
+    "placeholders": {
+      "block": {}
+    }
+  },
+  "setupStructureSummaryTailMulti": "oluşturulacak ({floors} kat × {perFloor} daire/blok × {blocks} blok). Sonraki adımda düzenleyebilirsin.",
+  "@setupStructureSummaryTailMulti": {
+    "placeholders": {
+      "floors": {},
+      "perFloor": {},
+      "blocks": {}
+    }
+  },
   "setupStructureCountBold": "{count} daire",
   "@setupStructureCountBold": {
     "placeholders": {
@@ -649,6 +666,11 @@
   "setupWizardCollapseFloors": "Daha az göster",
   "setupNamingAutomatic": "Otomatik (1A–6C)",
   "setupNamingCustom": "Özel adlandır",
+  "setupWizardUnitsInstructionCustom": "Her daire için görünecek adı yazın. Aynı blokta tekrar eden ad olamaz.",
+  "setupCustomNameHint": "Daire adı",
+  "setupCustomNameEmpty": "Tüm daire adları dolu olmalı.",
+  "setupCustomNameDuplicate": "Aynı blokta aynı daire adı iki kez kullanılamaz.",
+  "setupCustomNameTooLong": "Daire adı en fazla 40 karakter olabilir.",
   "setupWizardProceed": "İlerle",
   "setupDuesHeadline": "Aidat ayarla",
   "setupDuesSubtitle": "Sakinlerin görüp ödeyebileceği aylık tutar.",
@@ -692,14 +714,14 @@
   "setupFinalizeBuildingNameRequired": "Kurulumu tamamlamak için bina adı gerekli.",
   "homeManagerLockedPlaceholder": "Özet ve grafik verisi yakında burada olacak.",
   "homeQuickLockedHint": "Bu özellik yakında açılacak.",
-  "managerInviteSubtitle": "Seçtiğin daire için sunucuda tek kullanımlık bir kod üretilir; sakine ilet.",
+  "managerInviteSubtitle": "Seçtiğin daire için kalıcı bir davet kodu üretilir; iptal edilene kadar tekrar giriş için kullanılabilir.",
   "managerInviteGenerate": "Davet kodu oluştur",
   "managerInviteYourCode": "Davet kodu",
   "managerInviteCopy": "Panoya kopyala",
   "managerInviteCopied": "Kod panoya kopyalandı.",
   "managerInviteFailed": "Kod oluşturulamadı. Oturumu kontrol edip tekrar dene.",
   "managerInviteCodeCreated": "Yeni davet kodu hazır.",
-  "managerInviteShareHint": "Bu kodu sakine güvenli kanaldan ilet; tek kullanımlıdır.",
+  "managerInviteShareHint": "Bu kodu sakine güvenli kanaldan ilet; iptal edilene kadar tekrar giriş için kullanılabilir.",
   "managerInviteDemoBanner": "Demo modda kod yerelde üretilir; gerçek davet için DEMO_MODE=false kullan.",
   "managerInviteSelectUnit": "Daire",
   "residentInviteScreenTitle": "Davet kodun",
@@ -755,6 +777,12 @@
   "residentInvitePreviewTitle": "Kod ile bağlantı",
   "residentInviteWrongCodeType": "Bu bir yönetici davet kodu. Sakin olarak girmek için yöneticiden daire kodu isteyin.",
   "residentInvitePreviewDemo": "Demo modda sunucu doğrulaması yok; gerçek akış için DEMO_MODE kapalı çalıştırın.",
+  "residentInviteResumeHeadline": "Kaydınız bulunmaktadır",
+  "residentInviteResumeSubtitle": "Bu kod ile daha önce kayıt olunmuş. Giriş yaparak devam edebilirsiniz.",
+  "residentInviteResumeCardBadge": "KAYIT MEVCUT",
+  "residentInviteResumeCardBody": "Bu daire kodu daha önce kullanılmış. Aynı apartmana tekrar bağlanırsınız.",
+  "residentInviteResumeSignIn": "Giriş yap",
+  "residentInviteChecking": "Kod kontrol ediliyor…",
   "homeManagerRolePrefix": "YÖNETİCİ",
   "homeManagerBuildingFallback": "YÖNETİCİ · Apartman",
   "residentRolePrefix": "SAKİN",
@@ -802,5 +830,18 @@
   "superadminRevokeAdminCodeTitle": "Yönetici kodunu iptal et",
   "superadminRevokeAdminCodeBody": "Bu kod artık kullanılamaz. Emin misiniz?",
   "superadminRevokeAdminCodeConfirm": "İptal et",
-  "superadminCodeRevoked": "Kod iptal edildi."
+  "superadminCodeRevoked": "Kod iptal edildi.",
+  "inviteCodeNotesCreate": "Oluştur",
+  "inviteCodeNotesAdminTitle": "Yönetici kodu notu",
+  "inviteCodeNotesAdminHint": "İsteğe bağlı: hangi yönetici veya apartman için (ör. Ahmet Bey – Site A)",
+  "inviteCodeNotesUnitTitle": "Sakin / daire notu",
+  "inviteCodeNotesUnitHint": "İsteğe bağlı: sakin veya daire hakkında (ör. 6A – Yeni kiracı)",
+  "inviteCodeNotesLabel": "Not",
+  "managerInviteRevokeAction": "Kodu iptal et",
+  "managerInviteRevokeTitle": "Davet kodunu iptal et",
+  "managerInviteRevokeBody": "Bu kod artık giriş için kullanılamaz. Yeni kod oluşturabilirsiniz.",
+  "managerInviteRevokeConfirm": "İptal et",
+  "managerInviteRevoked": "Davet kodu iptal edildi.",
+  "managerInviteActiveUntilRevoked": "İptal edilene kadar geçerli",
+  "managerUnitJoinedViaCode": "Kod ile katıldı"
 }

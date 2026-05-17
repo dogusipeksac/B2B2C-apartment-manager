@@ -9,6 +9,7 @@ import 'package:apartment_manager/features/auth/domain/user_role.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/features/setup/data/building_setup_repository.dart';
 import 'package:apartment_manager/features/setup/data/turkey_locations_repository.dart';
+import 'package:apartment_manager/features/setup/domain/setup_unit_spec.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -43,13 +44,17 @@ class _BuildingSetupWizardScreenState
 
   int? _selectedProvinceId;
   int? _selectedDistrictId;
+  String? _selectedCityName;
+  String? _selectedDistrictName;
   bool _demoDefaultsApplied = false;
 
   final _singleBlock = ValueNotifier<bool>(true);
+  final _blockCount = ValueNotifier<int>(Env.demoMode ? 2 : 2);
   final _floors = ValueNotifier<int>(Env.demoMode ? 6 : 1);
   final _perFloor = ValueNotifier<int>(Env.demoMode ? 3 : 1);
 
   final _namingAutomatic = ValueNotifier<bool>(true);
+  final Map<String, String> _customDoorByKey = {};
   final _showAllFloors = ValueNotifier<bool>(false);
   final _highlightUnit = ValueNotifier<String?>(
     Env.demoMode ? '3A' : null,
@@ -72,6 +77,7 @@ class _BuildingSetupWizardScreenState
     _address.dispose();
     _yearBuilt.dispose();
     _singleBlock.dispose();
+    _blockCount.dispose();
     _floors.dispose();
     _perFloor.dispose();
     _namingAutomatic.dispose();
@@ -84,7 +90,47 @@ class _BuildingSetupWizardScreenState
     super.dispose();
   }
 
-  int get _totalUnits => _floors.value * _perFloor.value;
+  int get _effectiveBlockCount => _singleBlock.value ? 1 : _blockCount.value;
+
+  int get _totalUnits =>
+      _floors.value * _perFloor.value * _effectiveBlockCount;
+
+  List<SetupUnitSpec> get _unitSpecs => buildAutomaticSetupUnits(
+        floors: _floors.value,
+        perFloor: _perFloor.value,
+        singleBlock: _singleBlock.value,
+        blockCount: _effectiveBlockCount,
+      );
+
+  Map<String, String> get _effectiveCustomNames => mergeCustomDoorNames(
+        floors: _floors.value,
+        perFloor: _perFloor.value,
+        singleBlock: _singleBlock.value,
+        blockCount: _effectiveBlockCount,
+        existing: _customDoorByKey,
+      );
+
+  List<SetupUnitSpec> _resolvedCustomUnits() {
+    return resolveSetupUnitsWithCustomNames(
+      floors: _floors.value,
+      perFloor: _perFloor.value,
+      singleBlock: _singleBlock.value,
+      blockCount: _effectiveBlockCount,
+      customNames: _effectiveCustomNames,
+    );
+  }
+
+  String? _customNamingError(AppLocalizations l10n) {
+    if (_namingAutomatic.value) {
+      return null;
+    }
+    return switch (validateSetupUnitNames(_resolvedCustomUnits())) {
+      SetupUnitNameValidation.ok => null,
+      SetupUnitNameValidation.empty => l10n.setupCustomNameEmpty,
+      SetupUnitNameValidation.duplicate => l10n.setupCustomNameDuplicate,
+      SetupUnitNameValidation.tooLong => l10n.setupCustomNameTooLong,
+    };
+  }
 
   String _formatTry(int kurus) {
     final fmt = NumberFormat.currency(
@@ -101,9 +147,10 @@ class _BuildingSetupWizardScreenState
 
   Future<void> _completeSetup(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
-    if (!_namingAutomatic.value) {
+    final namingError = _customNamingError(l10n);
+    if (namingError != null) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.homeFeatureSoon)),
+        SnackBar(content: Text(namingError)),
       );
       return;
     }
@@ -158,9 +205,13 @@ class _BuildingSetupWizardScreenState
                 duesDueDay: _dueDay.value,
                 lateFeeEnabled: _lateFeeEnabled.value,
                 singleBlock: _singleBlock.value,
+                blockCount: _effectiveBlockCount,
                 floors: _floors.value,
                 perFloor: _perFloor.value,
                 namingAutomatic: _namingAutomatic.value,
+                customUnits: _namingAutomatic.value
+                    ? null
+                    : _resolvedCustomUnits(),
                 managerFullName: session.fullName,
               );
 
@@ -170,8 +221,10 @@ class _BuildingSetupWizardScreenState
         buildingName: result.buildingLabel,
         savedAt: DateTime.now(),
       );
-      await ref.read(localSessionRepositoryProvider).save(updated);
-      ref.notifyLocalSessionChanged();
+      await ref.persistLocalSession(
+        updated,
+        rememberMe: session.rememberMe,
+      );
 
       if (!context.mounted) {
         return;
@@ -213,6 +266,15 @@ class _BuildingSetupWizardScreenState
   }
 
   (String, String)? _resolveSelectedLocation() {
+    final city = _selectedCityName?.trim();
+    final district = _selectedDistrictName?.trim();
+    if (city != null &&
+        city.isNotEmpty &&
+        district != null &&
+        district.isNotEmpty) {
+      return (city, district);
+    }
+
     final provinces = ref.read(turkeyProvincesProvider).value;
     if (provinces == null ||
         _selectedProvinceId == null ||
@@ -225,6 +287,8 @@ class _BuildingSetupWizardScreenState
       }
       for (final d in p.districts) {
         if (d.id == _selectedDistrictId) {
+          _selectedCityName = p.name;
+          _selectedDistrictName = d.name;
           return (p.name, d.name);
         }
       }
@@ -261,16 +325,28 @@ class _BuildingSetupWizardScreenState
     }
     _selectedProvinceId = istanbul.id;
     _selectedDistrictId = kadikoy.id;
+    _selectedCityName = istanbul.name;
+    _selectedDistrictName = kadikoy.name;
     _demoDefaultsApplied = true;
   }
 
   void _next(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     if (_finalizeBusy) {
       return;
     }
     if (_step == 0) {
       final valid = _buildingFormKey.currentState?.validate() ?? false;
       if (!valid) {
+        return;
+      }
+    }
+    if (_step == 2) {
+      final namingError = _customNamingError(l10n);
+      if (namingError != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(namingError)),
+        );
         return;
       }
     }
@@ -549,9 +625,12 @@ class _BuildingSetupWizardScreenState
                         )
                         .toList(),
                     onChanged: (v) {
+                      final province = _findProvince(provinces, v);
                       setState(() {
                         _selectedProvinceId = v;
                         _selectedDistrictId = null;
+                        _selectedCityName = province?.name;
+                        _selectedDistrictName = null;
                       });
                     },
                     validator: (v) {
@@ -582,7 +661,17 @@ class _BuildingSetupWizardScreenState
                     onChanged: _selectedProvinceId == null
                         ? null
                         : (v) {
-                            setState(() => _selectedDistrictId = v);
+                            TurkeyDistrict? district;
+                            for (final d in districts) {
+                              if (d.id == v) {
+                                district = d;
+                                break;
+                              }
+                            }
+                            setState(() {
+                              _selectedDistrictId = v;
+                              _selectedDistrictName = district?.name;
+                            });
                           },
                     validator: (v) {
                       if (_selectedProvinceId == null || v == null) {
@@ -681,23 +770,45 @@ class _BuildingSetupWizardScreenState
         ValueListenableBuilder<bool>(
           valueListenable: _singleBlock,
           builder: (context, single, _) {
-            return Row(
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Expanded(
-                  child: _StructureBlockCard(
-                    title: l10n.setupSingleBlock,
-                    selected: single,
-                    onTap: () => _singleBlock.value = true,
-                  ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: _StructureBlockCard(
+                        title: l10n.setupSingleBlock,
+                        selected: single,
+                        onTap: () {
+                          _singleBlock.value = true;
+                          _blockCount.value = 1;
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: _StructureBlockCard(
+                        title: l10n.setupMultipleBlocks,
+                        selected: !single,
+                        onTap: () {
+                          _singleBlock.value = false;
+                          if (_blockCount.value < 2) {
+                            _blockCount.value = 2;
+                          }
+                        },
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _StructureBlockCard(
-                    title: l10n.setupMultipleBlocks,
-                    selected: !single,
-                    onTap: () => _singleBlock.value = false,
+                if (!single) ...[
+                  const SizedBox(height: 12),
+                  _StepperCard(
+                    label: l10n.setupBlockCountLabel,
+                    notifier: _blockCount,
+                    min: 2,
+                    max: 8,
                   ),
-                ),
+                ],
               ],
             );
           },
@@ -717,53 +828,55 @@ class _BuildingSetupWizardScreenState
           max: 12,
         ),
         const SizedBox(height: 16),
-        ValueListenableBuilder<int>(
-          valueListenable: _floors,
-          builder: (context, floors, _) {
-            return ValueListenableBuilder<int>(
-              valueListenable: _perFloor,
-              builder: (context, per, _) {
-                final count = floors * per;
-                return Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: AppTheme.warningContainer,
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Icon(Icons.info_outline_rounded, color: scheme.secondary),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text.rich(
-                          TextSpan(
-                            style: theme.textTheme.labelMedium?.copyWith(
-                              height: 1.35,
-                              color: scheme.onSurface,
-                            ),
-                            children: [
-                              TextSpan(
-                                text: l10n.setupStructureCountBold('$count'),
-                                style: const TextStyle(
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              const TextSpan(text: ' '),
-                              TextSpan(
-                                text: l10n.setupStructureSummaryTail(
-                                  '$floors',
-                                  '$per',
-                                ),
-                              ),
-                            ],
-                          ),
+        ListenableBuilder(
+          listenable: Listenable.merge(
+            [_singleBlock, _blockCount, _floors, _perFloor],
+          ),
+          builder: (context, _) {
+            final floors = _floors.value;
+            final per = _perFloor.value;
+            final blocks = _effectiveBlockCount;
+            final count = floors * per * blocks;
+            final summaryTail = _singleBlock.value
+                ? l10n.setupStructureSummaryTail('$floors', '$per')
+                : l10n.setupStructureSummaryTailMulti(
+                    '$floors',
+                    '$per',
+                    '$blocks',
+                  );
+            return Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: AppTheme.warningContainer,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline_rounded, color: scheme.secondary),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text.rich(
+                      TextSpan(
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          height: 1.35,
+                          color: scheme.onSurface,
                         ),
+                        children: [
+                          TextSpan(
+                            text: l10n.setupStructureCountBold('$count'),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const TextSpan(text: ' '),
+                          TextSpan(text: summaryTail),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
-                );
-              },
+                ],
+              ),
             );
           },
         ),
@@ -791,19 +904,24 @@ class _BuildingSetupWizardScreenState
               ),
             ),
             onPressed: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.homeFeatureSoon)),
-              );
+              _showAllFloors.value = true;
             },
             child: Text(l10n.setupWizardUnitsEdit),
           ),
         ),
-        Text(
-          l10n.setupWizardUnitsInstruction,
-          style: theme.textTheme.bodyLarge?.copyWith(
-            color: apart.onSurfaceVariant,
-            height: 1.45,
-          ),
+        ValueListenableBuilder<bool>(
+          valueListenable: _namingAutomatic,
+          builder: (context, auto, _) {
+            return Text(
+              auto
+                  ? l10n.setupWizardUnitsInstruction
+                  : l10n.setupWizardUnitsInstructionCustom,
+              style: theme.textTheme.bodyLarge?.copyWith(
+                color: apart.onSurfaceVariant,
+                height: 1.45,
+              ),
+            );
+          },
         ),
         const SizedBox(height: 16),
         ValueListenableBuilder<bool>(
@@ -821,14 +939,19 @@ class _BuildingSetupWizardScreenState
                     child: _NamingToggleChip(
                       label: l10n.setupNamingAutomatic,
                       selected: auto,
-                      onTap: () => _namingAutomatic.value = true,
+                      onTap: () {
+                        _namingAutomatic.value = true;
+                      },
                     ),
                   ),
                   Expanded(
                     child: _NamingToggleChip(
                       label: l10n.setupNamingCustom,
                       selected: !auto,
-                      onTap: () => _namingAutomatic.value = false,
+                      onTap: () {
+                        _namingAutomatic.value = false;
+                        setState(() {});
+                      },
                     ),
                   ),
                 ],
@@ -838,106 +961,296 @@ class _BuildingSetupWizardScreenState
         ),
         const SizedBox(height: 16),
         ValueListenableBuilder<bool>(
-          valueListenable: _showAllFloors,
-          builder: (context, expanded, _) {
-            return ValueListenableBuilder<int>(
-              valueListenable: _floors,
-              builder: (context, floors, _) {
-                return ValueListenableBuilder<int>(
-                  valueListenable: _perFloor,
-                  builder: (context, perFloor, _) {
-                    return ValueListenableBuilder<String?>(
-                      valueListenable: _highlightUnit,
-                      builder: (context, highlight, _) {
-                        final limit =
-                            expanded ? floors : math.min(3, floors);
-                        final children = <Widget>[];
-                        for (var fi = 1; fi <= limit; fi++) {
-                          children.add(
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                top: 10,
-                                bottom: 6,
-                              ),
-                              child: Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      l10n.managerFloorHeading('$fi'),
-                                      style:
-                                          theme.textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w700,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    l10n.managerFloorUnitCount('$perFloor'),
-                                    style:
-                                        theme.textTheme.labelMedium?.copyWith(
-                                      color: apart.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                          final rowLabels = <String>[];
-                          for (var k = 0; k < perFloor; k++) {
-                            rowLabels.add(
-                              '$fi${String.fromCharCode(65 + k)}',
-                            );
-                          }
-                          children.add(
-                            Wrap(
-                              spacing: 8,
-                              runSpacing: 8,
-                              children: rowLabels.map((label) {
-                                final selected = highlight == label;
-                                return _UnitPill(
-                                  label: label,
-                                  selected: selected,
-                                  onTap: () => _highlightUnit.value = label,
-                                );
-                              }).toList(),
-                            ),
-                          );
-                        }
-                        if (floors > 3) {
-                          final tail = List.generate(
-                            floors - 3,
-                            (i) => '${i + 4}',
-                          ).join(', ');
-                          children.add(
-                            TextButton(
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppTheme.primary,
-                              ),
-                              onPressed: () {
-                                _showAllFloors.value = !expanded;
-                              },
-                              child: Text(
-                                expanded
-                                    ? l10n.setupWizardCollapseFloors
-                                    : l10n.setupShowMoreFloorsDetail(
-                                        tail,
-                                      ),
-                              ),
-                            ),
-                          );
-                        }
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: children,
-                        );
-                      },
+          valueListenable: _namingAutomatic,
+          builder: (context, auto, _) {
+            if (!auto) {
+              return ListenableBuilder(
+                listenable: Listenable.merge([
+                  _showAllFloors,
+                  _singleBlock,
+                  _blockCount,
+                  _floors,
+                  _perFloor,
+                ]),
+                builder: (context, _) => _buildCustomUnitsEditor(
+                  context,
+                  l10n,
+                  theme,
+                  apart,
+                ),
+              );
+            }
+            return ListenableBuilder(
+              listenable: Listenable.merge([
+                _showAllFloors,
+                _singleBlock,
+                _blockCount,
+                _floors,
+                _perFloor,
+                _highlightUnit,
+              ]),
+              builder: (context, _) {
+            final specs = _unitSpecs;
+            final floors = _floors.value;
+            final perFloor = _perFloor.value;
+            final expanded = _showAllFloors.value;
+            final highlight = _highlightUnit.value;
+            final floorLimit = expanded ? floors : math.min(3, floors);
+            final children = <Widget>[];
+
+            String unitKey(SetupUnitSpec u) =>
+                u.block.isEmpty ? u.doorNumber : '${u.block}-${u.doorNumber}';
+
+            void addFloorSection(String blockCode, int fi) {
+              children.add(
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 6),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          l10n.managerFloorHeading('$fi'),
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                      Text(
+                        l10n.managerFloorUnitCount('$perFloor'),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: apart.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+              final rowUnits = specs
+                  .where(
+                    (u) =>
+                        u.floor == fi &&
+                        (blockCode.isEmpty
+                            ? u.block.isEmpty
+                            : u.block == blockCode),
+                  )
+                  .toList();
+              children.add(
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: rowUnits.map((u) {
+                    final key = unitKey(u);
+                    return _UnitPill(
+                      label: u.displayLabel,
+                      selected: highlight == key,
+                      onTap: () => _highlightUnit.value = key,
                     );
-                  },
+                  }).toList(),
+                ),
+              );
+            }
+
+            if (_singleBlock.value) {
+              for (var fi = 1; fi <= floorLimit; fi++) {
+                addFloorSection('', fi);
+              }
+            } else {
+              for (var bi = 0; bi < _effectiveBlockCount; bi++) {
+                final blockCode = String.fromCharCode(65 + bi);
+                children.add(
+                  Padding(
+                    padding: const EdgeInsets.only(top: 14, bottom: 4),
+                    child: Text(
+                      l10n.setupBlockHeading(blockCode),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.primaryDark,
+                      ),
+                    ),
+                  ),
                 );
+                for (var fi = 1; fi <= floorLimit; fi++) {
+                  addFloorSection(blockCode, fi);
+                }
+              }
+            }
+
+            if (floors > 3) {
+              final tail = List.generate(
+                floors - 3,
+                (i) => '${i + 4}',
+              ).join(', ');
+              children.add(
+                TextButton(
+                  style: TextButton.styleFrom(
+                    foregroundColor: AppTheme.primary,
+                  ),
+                  onPressed: () {
+                    _showAllFloors.value = !expanded;
+                  },
+                  child: Text(
+                    expanded
+                        ? l10n.setupWizardCollapseFloors
+                        : l10n.setupShowMoreFloorsDetail(tail),
+                  ),
+                ),
+              );
+            }
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: children,
+            );
               },
             );
           },
         ),
       ],
+    );
+  }
+
+  Widget _buildCustomUnitsEditor(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+    ApartmanTokens apart,
+  ) {
+    final specs = _unitSpecs;
+    final names = _effectiveCustomNames;
+    final floors = _floors.value;
+    final perFloor = _perFloor.value;
+    final expanded = _showAllFloors.value;
+    final floorLimit = expanded ? floors : math.min(3, floors);
+    final children = <Widget>[];
+
+    void addFloorSection(String blockCode, int fi) {
+      children.add(
+        Padding(
+          padding: const EdgeInsets.only(top: 10, bottom: 6),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.managerFloorHeading('$fi'),
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              ),
+              Text(
+                l10n.managerFloorUnitCount('$perFloor'),
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: apart.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+      final rowUnits = specs
+          .where(
+            (u) =>
+                u.floor == fi &&
+                (blockCode.isEmpty ? u.block.isEmpty : u.block == blockCode),
+          )
+          .toList();
+      children.add(
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: rowUnits.map((u) {
+            final key = u.structuralKey;
+            return SizedBox(
+              width: 88,
+              child: TextFormField(
+                key: ValueKey('custom-$key'),
+                initialValue: names[key],
+                maxLength: 40,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: InputDecoration(
+                  isDense: true,
+                  counterText: '',
+                  hintText: l10n.setupCustomNameHint,
+                  filled: true,
+                  fillColor: apart.chipInactiveBg,
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 10,
+                  ),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: const BorderSide(
+                      color: AppTheme.primary,
+                      width: 1.5,
+                    ),
+                  ),
+                ),
+                onChanged: (value) {
+                  _customDoorByKey[key] = value;
+                },
+              ),
+            );
+          }).toList(),
+        ),
+      );
+    }
+
+    if (_singleBlock.value) {
+      for (var fi = 1; fi <= floorLimit; fi++) {
+        addFloorSection('', fi);
+      }
+    } else {
+      for (var bi = 0; bi < _effectiveBlockCount; bi++) {
+        final blockCode = String.fromCharCode(65 + bi);
+        children.add(
+          Padding(
+            padding: const EdgeInsets.only(top: 14, bottom: 4),
+            child: Text(
+              l10n.setupBlockHeading(blockCode),
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w800,
+                color: AppTheme.primaryDark,
+              ),
+            ),
+          ),
+        );
+        for (var fi = 1; fi <= floorLimit; fi++) {
+          addFloorSection(blockCode, fi);
+        }
+      }
+    }
+
+    if (floors > 3) {
+      final tail = List.generate(
+        floors - 3,
+        (i) => '${i + 4}',
+      ).join(', ');
+      children.add(
+        TextButton(
+          style: TextButton.styleFrom(
+            foregroundColor: AppTheme.primary,
+          ),
+          onPressed: () {
+            _showAllFloors.value = !expanded;
+          },
+          child: Text(
+            expanded
+                ? l10n.setupWizardCollapseFloors
+                : l10n.setupShowMoreFloorsDetail(tail),
+          ),
+        ),
+      );
+    }
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: children,
     );
   }
 

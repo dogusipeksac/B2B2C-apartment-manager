@@ -17,6 +17,7 @@ _LocalSession _$LocalSessionFromJson(Map<String, dynamic> json) =>
       fullName: json['fullName'] as String?,
       sessionToken: json['sessionToken'] as String?,
       buildingName: json['buildingName'] as String?,
+      rememberMe: json['rememberMe'] as bool? ?? true,
     );
 
 Map<String, dynamic> _$LocalSessionToJson(_LocalSession instance) =>
@@ -30,4 +31,5 @@ Map<String, dynamic> _$LocalSessionToJson(_LocalSession instance) =>
       'fullName': instance.fullName,
       'sessionToken': instance.sessionToken,
       'buildingName': instance.buildingName,
+      'rememberMe': instance.rememberMe,
     };

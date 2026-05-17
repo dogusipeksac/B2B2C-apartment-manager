@@ -20,6 +20,8 @@ abstract class LocalSession with _$LocalSession {
     String? sessionToken,
     /// Cached from finalize or invite APIs for dashboard titles.
     String? buildingName,
+    /// When true, session is restored on next app launch (secure storage).
+    @Default(true) bool rememberMe,
   }) = _LocalSession;
 
   factory LocalSession.fromJson(Map<String, dynamic> json) =>
@@ -34,7 +36,13 @@ class LocalSessionRepository {
 
   final FlutterSecureStorage _storage;
 
+  /// In-memory session when [LocalSession.rememberMe] is false (until app closes).
+  LocalSession? _ephemeralSession;
+
   Future<LocalSession?> load() async {
+    if (_ephemeralSession != null) {
+      return _ephemeralSession;
+    }
     final raw = await _storage.read(key: storageKey);
     if (raw == null || raw.isEmpty) {
       return null;
@@ -48,13 +56,20 @@ class LocalSessionRepository {
   }
 
   Future<void> save(LocalSession session) async {
-    await _storage.write(
-      key: storageKey,
-      value: jsonEncode(session.toJson()),
-    );
+    if (session.rememberMe) {
+      _ephemeralSession = null;
+      await _storage.write(
+        key: storageKey,
+        value: jsonEncode(session.toJson()),
+      );
+    } else {
+      _ephemeralSession = session;
+      await _storage.delete(key: storageKey);
+    }
   }
 
   Future<void> clear() async {
+    _ephemeralSession = null;
     await _storage.delete(key: storageKey);
   }
 

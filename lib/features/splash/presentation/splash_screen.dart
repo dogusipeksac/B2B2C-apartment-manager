@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:apartment_manager/core/config/env.dart';
 import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/onboarding/onboarding_storage.dart';
+import 'package:apartment_manager/features/auth/data/session_metadata_repository.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart';
@@ -41,6 +43,24 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
           final label = localSession == null ? 'null' : 'non-null';
           debugPrint('splash: local session is $label');
         }
+        if (localSession != null && !Env.demoMode) {
+          final token = localSession.sessionToken;
+          if (token != null && token.isNotEmpty) {
+            final valid = await ref
+                .read(sessionMetadataRepositoryProvider)
+                .isSessionValid(localSession);
+            if (!valid) {
+              await ref.read(localSessionRepositoryProvider).clear();
+              ref.notifyLocalSessionChanged();
+              if (!mounted) {
+                return;
+              }
+              context.go('/setup/account-type');
+              return;
+            }
+          }
+        }
+
         if (localSession == null) {
           final seenOnboarding =
               await OnboardingStorage.hasSeenOnboarding();

@@ -415,7 +415,12 @@ class _SaUnitTile extends StatelessWidget {
     final apart = context.apart;
     final code = unit.inviteCode?.trim();
     final hasCode = code != null && code.isNotEmpty;
-    final topColor = hasCode ? AppTheme.success : apart.outlineMuted;
+    final joined = unit.residentJoined;
+    final topColor = joined
+        ? AppTheme.primary
+        : hasCode
+        ? AppTheme.success
+        : apart.outlineMuted;
 
     return Material(
       color: apart.surface,
@@ -447,22 +452,44 @@ class _SaUnitTile extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Text(
-                      hasCode ? code : '—',
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      textAlign: TextAlign.center,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: hasCode ? 0.8 : 0,
-                        color: hasCode
-                            ? AppTheme.success
-                            : apart.onSurfaceVariant,
-                        fontFeatures: const [
-                          FontFeature.tabularFigures(),
-                        ],
+                    if (joined) ...[
+                      Text(
+                        AppLocalizations.of(context)!.managerUnitJoinedViaCode,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          color: AppTheme.primary,
+                        ),
                       ),
-                    ),
+                      if (hasCode) const SizedBox(height: 4),
+                    ],
+                    if (hasCode)
+                      Text(
+                        code,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.8,
+                          color: joined
+                              ? apart.onSurfaceVariant
+                              : AppTheme.success,
+                          fontFeatures: const [
+                            FontFeature.tabularFigures(),
+                          ],
+                        ),
+                      )
+                    else if (!joined)
+                      Text(
+                        '—',
+                        textAlign: TextAlign.center,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: apart.onSurfaceVariant,
+                        ),
+                      ),
                   ],
                 ),
               ),

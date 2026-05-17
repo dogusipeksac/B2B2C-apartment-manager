@@ -6,24 +6,27 @@
  *   "building_id"?: uuid, "unit_id"?: uuid }
  *
  * Actions: list_buildings | list_admin_codes | create_admin_invite |
- *          revoke_admin_code | list_units | create_unit_invite | delete_building
+ *          revoke_admin_code | list_units | create_unit_invite |
+ *          revoke_unit_invite | delete_building
  */
 import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
 
 import { isMissingColumn } from "../_shared/db_compat.ts";
+import {
+  ADMIN_CODE_LENGTH,
+  UNIT_CODE_LENGTH,
+  allocateUniqueInviteCode,
+  isInviteCodeDuplicateError,
+  normalizeInviteCode,
+} from "../_shared/invite_code_gen.ts";
+import { parseInviteNotes } from "../_shared/invite_notes.ts";
 
 const corsHeaders: Record<string, string> = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type",
 };
-
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
-
-function normalizeInviteCode(raw: string): string {
-  return raw.trim().toUpperCase().replace(/[^A-Z0-9]/g, "");
-}
 
 function jsonResponse(
   status: number,
@@ -33,24 +36,6 @@ function jsonResponse(
     status,
     headers: { ...corsHeaders, "Content-Type": "application/json" },
   });
-}
-
-function randomUnitCode(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(5));
-  let s = "";
-  for (let i = 0; i < 5; i++) {
-    s += CODE_ALPHABET[bytes[i]! % CODE_ALPHABET.length];
-  }
-  return s;
-}
-
-function randomAdminCode(): string {
-  const bytes = crypto.getRandomValues(new Uint8Array(8));
-  let s = "";
-  for (let i = 0; i < 8; i++) {
-    s += CODE_ALPHABET[bytes[i]! % CODE_ALPHABET.length];
-  }
-  return s;
 }
 
 type DeviceRow = {
@@ -152,6 +137,7 @@ serve(async (req: Request): Promise<Response> => {
     unit_id?: string;
     admin_redeem_policy?: string;
     code?: string;
+    notes?: string;
   };
 
   try {
@@ -209,7 +195,7 @@ serve(async (req: Request): Promise<Response> => {
     const listFull = await supabase
       .from("invite_codes")
       .select(
-        "id, code, status, expires_at, created_at, admin_redeem_policy",
+        "id, code, status, expires_at, created_at, admin_redeem_policy, notes",
       )
       .eq("code_type", "admin")
       .order("created_at", { ascending: false })
@@ -244,6 +230,9 @@ serve(async (req: Request): Promise<Response> => {
       admin_redeem_policy: typeof r.admin_redeem_policy === "string"
         ? r.admin_redeem_policy.trim()
         : "single_use",
+      notes: typeof r.notes === "string" && r.notes.trim().length > 0
+        ? r.notes.trim()
+        : null,
     }));
 
     return jsonResponse(200, { success: true, codes });
@@ -290,9 +279,13 @@ serve(async (req: Request): Promise<Response> => {
     const adminRedeemPolicy = policyRaw === "reusable"
       ? "reusable"
       : "single_use";
+    const adminNotes = parseInviteNotes(payload.notes);
 
-    for (let attempt = 0; attempt < 24; attempt++) {
-      const code = randomAdminCode();
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const code = await allocateUniqueInviteCode(supabase, ADMIN_CODE_LENGTH);
+      if (!code) {
+        break;
+      }
       const rowInsert = {
         code,
         code_type: "admin" as const,
@@ -301,6 +294,7 @@ serve(async (req: Request): Promise<Response> => {
         unit_id: null,
         created_by: createdBy,
         admin_redeem_policy: adminRedeemPolicy,
+        ...(adminNotes ? { notes: adminNotes } : {}),
       };
 
       let ins = await supabase
@@ -334,8 +328,7 @@ serve(async (req: Request): Promise<Response> => {
         });
       }
 
-      const msg = insErr?.message ?? "";
-      if (msg.includes("duplicate") || msg.includes("unique")) {
+      if (isInviteCodeDuplicateError(insErr)) {
         continue;
       }
 
@@ -352,7 +345,8 @@ serve(async (req: Request): Promise<Response> => {
   const buildingIdRaw = payload.building_id?.trim();
   if (
     action === "list_units" ||
-    action === "create_unit_invite"
+    action === "create_unit_invite" ||
+    action === "revoke_unit_invite"
   ) {
     if (!buildingIdRaw || buildingIdRaw.length === 0) {
       return jsonResponse(400, {
@@ -407,15 +401,39 @@ serve(async (req: Request): Promise<Response> => {
     type InvitePick = {
       code: string;
       expires_at: string | null;
+      notes: string | null;
       created_at: number;
     };
     const inviteByUnit = new Map<string, InvitePick>();
 
     const ids = unitRows.map((r) => r.id);
+    const joinedUnitIds = new Set<string>();
+    if (ids.length > 0) {
+      const { data: memRows, error: memErr } = await supabase
+        .from("memberships")
+        .select("unit_id")
+        .eq("building_id", buildingId)
+        .eq("role", "resident")
+        .eq("status", "active")
+        .in("unit_id", ids);
+
+      if (memErr) {
+        console.error("memberships joined list", memErr);
+        return jsonResponse(500, { success: false, error: "database_error" });
+      }
+
+      for (const m of memRows ?? []) {
+        const uid = m.unit_id as string | null;
+        if (uid) {
+          joinedUnitIds.add(uid);
+        }
+      }
+    }
+
     if (ids.length > 0) {
       const { data: invs, error: invErr } = await supabase
         .from("invite_codes")
-        .select("unit_id, code, expires_at, created_at")
+        .select("unit_id, code, expires_at, notes, created_at")
         .eq("building_id", buildingId)
         .eq("code_type", "unit")
         .eq("status", "active")
@@ -438,9 +456,14 @@ serve(async (req: Request): Promise<Response> => {
         const ca = new Date(row.created_at as string).getTime();
         const prev = inviteByUnit.get(uid);
         if (!prev || ca > prev.created_at) {
+          const notesRaw = row.notes;
+          const notesVal = typeof notesRaw === "string" && notesRaw.trim().length > 0
+            ? notesRaw.trim()
+            : null;
           inviteByUnit.set(uid, {
             code: row.code as string,
             expires_at: row.expires_at ? String(row.expires_at) : null,
+            notes: notesVal,
             created_at: ca,
           });
         }
@@ -453,6 +476,8 @@ serve(async (req: Request): Promise<Response> => {
         ...u,
         invite_code: inv?.code ?? null,
         invite_expires_at: inv?.expires_at ?? null,
+        invite_notes: inv?.notes ?? null,
+        resident_joined: joinedUnitIds.has(u.id),
       };
     });
 
@@ -463,8 +488,59 @@ serve(async (req: Request): Promise<Response> => {
     });
   }
 
+  if (action === "revoke_unit_invite") {
+    const buildingId = buildingIdRaw!;
+    const unitIdRevoke = payload.unit_id?.trim();
+    if (!unitIdRevoke || unitIdRevoke.length === 0) {
+      return jsonResponse(400, {
+        success: false,
+        error: "unit_id_required",
+      });
+    }
+
+    const { data: uOk, error: verifyErr } = await supabase
+      .from("units")
+      .select("id")
+      .eq("id", unitIdRevoke)
+      .eq("building_id", buildingId)
+      .maybeSingle();
+
+    if (verifyErr) {
+      console.error("units verify revoke", verifyErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    if (!uOk) {
+      return jsonResponse(422, { success: false, error: "invalid_unit" });
+    }
+
+    const { data: revokedRows, error: revErr } = await supabase
+      .from("invite_codes")
+      .update({ status: "revoked" })
+      .eq("building_id", buildingId)
+      .eq("unit_id", unitIdRevoke)
+      .eq("code_type", "unit")
+      .eq("status", "active")
+      .select("id");
+
+    if (revErr) {
+      console.error("invite_codes revoke unit", revErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    if (!revokedRows || revokedRows.length === 0) {
+      return jsonResponse(404, {
+        success: false,
+        error: "unit_invite_not_found",
+      });
+    }
+
+    return jsonResponse(200, { success: true });
+  }
+
   if (action === "create_unit_invite") {
     const buildingId = buildingIdRaw!;
+    const unitNotes = parseInviteNotes(payload.notes);
     let unitId = payload.unit_id?.trim();
 
     if (!unitId || unitId.length === 0) {
@@ -511,7 +587,7 @@ serve(async (req: Request): Promise<Response> => {
 
     const { data: existingRows, error: exErr } = await supabase
       .from("invite_codes")
-      .select("code, expires_at, created_at")
+      .select("id, code, expires_at, created_at")
       .eq("building_id", buildingId)
       .eq("unit_id", unitId)
       .eq("code_type", "unit")
@@ -535,6 +611,13 @@ serve(async (req: Request): Promise<Response> => {
       if (codeReuse.length === 0) {
         continue;
       }
+      const existingId = row.id as string | undefined;
+      if (unitNotes && existingId) {
+        await supabase
+          .from("invite_codes")
+          .update({ notes: unitNotes })
+          .eq("id", existingId);
+      }
       return jsonResponse(200, {
         success: true,
         code: codeReuse,
@@ -544,8 +627,11 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    for (let attempt = 0; attempt < 16; attempt++) {
-      const code = randomUnitCode();
+    for (let attempt = 0; attempt < 8; attempt++) {
+      const code = await allocateUniqueInviteCode(supabase, UNIT_CODE_LENGTH);
+      if (!code) {
+        break;
+      }
       const { data: row, error: insErr } = await supabase
         .from("invite_codes")
         .insert({
@@ -555,6 +641,7 @@ serve(async (req: Request): Promise<Response> => {
           building_id: buildingId,
           unit_id: unitId,
           created_by: createdBy,
+          ...(unitNotes ? { notes: unitNotes } : {}),
         })
         .select("expires_at")
         .single();
@@ -569,8 +656,7 @@ serve(async (req: Request): Promise<Response> => {
         });
       }
 
-      const msg = insErr?.message ?? "";
-      if (msg.includes("duplicate") || msg.includes("unique")) {
+      if (isInviteCodeDuplicateError(insErr)) {
         continue;
       }
 

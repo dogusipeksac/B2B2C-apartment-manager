@@ -1,5 +1,6 @@
 import 'package:apartment_manager/core/device/device_id_provider.dart';
 import 'package:apartment_manager/features/auth/data/local_session.dart';
+import 'package:apartment_manager/features/auth/data/session_preferences_storage.dart';
 import 'package:apartment_manager/features/auth/data/profile_repository.dart';
 import 'package:apartment_manager/features/auth/domain/profile.dart';
 import 'package:flutter/foundation.dart';
@@ -46,5 +47,17 @@ extension LocalSessionPersistenceRef on WidgetRef {
     invalidate(localSessionProvider);
     invalidate(currentProfileProvider);
     read(sessionRefreshNotifierProvider).notifySessionChanged();
+  }
+
+  /// Persists session (secure storage if [rememberMe], else until app closes).
+  Future<void> persistLocalSession(
+    LocalSession session, {
+    required bool rememberMe,
+  }) async {
+    await read(localSessionRepositoryProvider).save(
+      session.copyWith(rememberMe: rememberMe, savedAt: DateTime.now()),
+    );
+    await SessionPreferencesStorage.saveRememberMeDefault(rememberMe);
+    notifyLocalSessionChanged();
   }
 }

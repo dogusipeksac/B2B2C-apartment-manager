@@ -46,3 +46,41 @@ FROM (
 WHERE sub.used_by_device_id = d.device_id
   AND d.admin_invite_code_id IS NULL
   AND d.role = 'building_admin'::public.user_role;
+
+-- schema_v8 — admin invite ↔ completed building; RLS for used codes
+ALTER TABLE public.invite_codes DROP CONSTRAINT IF EXISTS invite_codes_admin_no_unit;
+
+ALTER TABLE public.invite_codes
+  ADD CONSTRAINT invite_codes_admin_no_unit_id CHECK (
+    code_type <> 'admin' OR unit_id IS NULL
+  );
+
+UPDATE public.invite_codes ic
+SET building_id = d.building_id
+FROM public.devices d
+WHERE d.admin_invite_code_id = ic.id
+  AND ic.code_type = 'admin'::public.invite_code_type
+  AND ic.building_id IS NULL
+  AND d.building_id IS NOT NULL;
+
+DROP POLICY IF EXISTS anyone_validate_active_code ON public.invite_codes;
+
+CREATE POLICY anyone_validate_active_code
+  ON public.invite_codes
+  FOR SELECT
+  USING (
+    (
+      status = 'active'
+      AND (expires_at IS NULL OR expires_at > now())
+    )
+    OR (
+      status = 'used'
+      AND building_id IS NOT NULL
+      AND (expires_at IS NULL OR expires_at > now())
+    )
+    OR (
+      status = 'used'
+      AND code_type = 'admin'::public.invite_code_type
+      AND (expires_at IS NULL OR expires_at > now())
+    )
+  );

@@ -5,7 +5,9 @@ import 'package:apartment_manager/core/errors/app_exception.dart';
 import 'package:apartment_manager/core/theme/app_theme.dart';
 import 'package:apartment_manager/features/auth/data/invite_code_repository.dart';
 import 'package:apartment_manager/features/auth/domain/user_role.dart';
+import 'package:apartment_manager/features/auth/data/session_preferences_storage.dart';
 import 'package:apartment_manager/features/auth/presentation/providers/auth_providers.dart';
+import 'package:apartment_manager/features/auth/presentation/widgets/remember_me_checkbox.dart';
 import 'package:apartment_manager/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +27,20 @@ class SuperadminAccessScreen extends ConsumerStatefulWidget {
 class _SuperadminAccessScreenState extends ConsumerState<SuperadminAccessScreen> {
   final _controller = TextEditingController();
   bool _busy = false;
+  bool _rememberMe = true;
+
+  @override
+  void initState() {
+    super.initState();
+    unawaited(_loadRememberDefault());
+  }
+
+  Future<void> _loadRememberDefault() async {
+    final value = await SessionPreferencesStorage.loadRememberMeDefault();
+    if (mounted) {
+      setState(() => _rememberMe = value);
+    }
+  }
 
   @override
   void dispose() {
@@ -62,8 +78,7 @@ class _SuperadminAccessScreenState extends ConsumerState<SuperadminAccessScreen>
         );
         return;
       }
-      await ref.read(localSessionRepositoryProvider).save(session);
-      ref.notifyLocalSessionChanged();
+      await ref.persistLocalSession(session, rememberMe: _rememberMe);
       if (!mounted) {
         return;
       }
@@ -153,6 +168,11 @@ class _SuperadminAccessScreenState extends ConsumerState<SuperadminAccessScreen>
                 onSubmitted: (_) => unawaited(_submit()),
               ),
               const Spacer(),
+              RememberMeCheckbox(
+                value: _rememberMe,
+                onChanged: (v) => setState(() => _rememberMe = v),
+              ),
+              const SizedBox(height: 16),
               FilledButton(
                 onPressed: _busy ? null : () => unawaited(_submit()),
                 style: FilledButton.styleFrom(

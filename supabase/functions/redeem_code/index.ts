@@ -4,9 +4,10 @@
  * POST body JSON:
  * { "code": string, "device_id": string, "full_name"?: string, "probe"?: boolean }
  *
- * probe=true (admin codes only): read-only — returns would_resume + building_name for UI,
+ * probe=true: read-only — returns would_resume + building_name (+ unit_label for unit codes),
  * no invite consume and no device upsert.
- * Reinstall: new device_id but same invite row — singleton completed admin row is rebound.
+ * Reinstall / new phone: same invite code reopens the linked building (admin) or unit
+ * (resident) when setup or first redeem already completed — not tied to a single device_id.
  *
  * Admin (8-char): full_name optional — creates device row, building wizard fills building later.
  * Unit (5-char): full_name required (≥3 chars) — creates profile + membership + device.
@@ -69,37 +70,620 @@ async function upsertDeviceWithLegacyColumns(
   }
 }
 
-/** Exactly one completed admin device row for this invite — reinstall / device_id change. */
-async function findSingletonCompletedAdminForInvite(
+type CanonicalDevice = {
+  pk: string;
+  device_id: string;
+  building_id: string;
+  profile_id: string | null;
+  unit_id: string | null;
+};
+
+function isInviteExpired(row: Record<string, unknown>): boolean {
+  if (!row.expires_at) {
+    return false;
+  }
+  const exp = new Date(row.expires_at as string);
+  return exp.getTime() < Date.now();
+}
+
+function inviteAllowsRedeem(
+  row: Record<string, unknown>,
+  hasExistingAccess: boolean,
+): boolean {
+  const status = String(row.status ?? "");
+  if (status === "revoked" || status === "expired") {
+    return false;
+  }
+  if (status === "active") {
+    return true;
+  }
+  if (status === "used" && hasExistingAccess) {
+    return true;
+  }
+  return false;
+}
+
+async function fetchUnitLabel(
+  supabase: ReturnType<typeof createClient>,
+  unitId: string | null,
+): Promise<string> {
+  if (!unitId || unitId.length === 0) {
+    return "";
+  }
+  const { data: uMeta } = await supabase
+    .from("units")
+    .select("block, door_number, floor")
+    .eq("id", unitId)
+    .maybeSingle();
+  if (!uMeta) {
+    return "";
+  }
+  const block = typeof uMeta.block === "string" ? uMeta.block.trim() : "";
+  const door = typeof uMeta.door_number === "string"
+    ? uMeta.door_number.trim()
+    : "";
+  const floor = uMeta.floor;
+  const floorPart = floor == null ? "" : `${floor}. kat · `;
+  if (block.length > 0) {
+    return `${floorPart}${block} · ${door || "-"}`;
+  }
+  if (door.length > 0) {
+    return `${floorPart}${door}`;
+  }
+  return "";
+}
+
+async function fetchBuildingName(
+  supabase: ReturnType<typeof createClient>,
+  buildingId: string,
+): Promise<string> {
+  const { data: bMeta } = await supabase
+    .from("buildings")
+    .select("name")
+    .eq("id", buildingId)
+    .maybeSingle();
+  if (typeof bMeta?.name === "string") {
+    return (bMeta.name as string).trim();
+  }
+  return "";
+}
+
+function inviteCodeWasUsed(row: Record<string, unknown>): boolean {
+  const usedAt = row.used_at;
+  return usedAt != null && String(usedAt).length > 0;
+}
+
+/** Best admin device row for this invite (completed setup). */
+async function findCanonicalAdminForInvite(
   supabase: ReturnType<typeof createClient>,
   inviteRowId: string,
-): Promise<{ row: Record<string, unknown>; pk: string } | null> {
+  inviteBuildingId: string | null,
+): Promise<CanonicalDevice | null> {
   const sel = await supabase
     .from("devices")
     .select(
-      "id, device_id, building_id, profile_id, unit_id, role, admin_invite_code_id",
+      "id, device_id, building_id, profile_id, unit_id, role, admin_invite_code_id, created_at",
     )
     .eq("admin_invite_code_id", inviteRowId)
     .eq("role", "building_admin")
     .not("building_id", "is", null);
 
   if (sel.error && isMissingColumn(sel.error, "admin_invite_code_id")) {
+    if (inviteBuildingId) {
+      return {
+        pk: "",
+        device_id: "",
+        building_id: inviteBuildingId,
+        profile_id: null,
+        unit_id: null,
+      };
+    }
     return null;
   }
   if (sel.error) {
-    console.error("devices singleton admin lookup", sel.error);
+    console.error("devices canonical admin lookup", sel.error);
     return null;
   }
-  const rows = sel.data as Record<string, unknown>[] | null;
-  if (!rows || rows.length !== 1) {
+
+  const rows = (sel.data as Record<string, unknown>[] | null) ?? [];
+  if (rows.length === 0) {
+    if (inviteBuildingId) {
+      return {
+        pk: "",
+        device_id: "",
+        building_id: inviteBuildingId,
+        profile_id: null,
+        unit_id: null,
+      };
+    }
     return null;
   }
+
+  rows.sort((a, b) => {
+    const aProfile = a.profile_id ? 1 : 0;
+    const bProfile = b.profile_id ? 1 : 0;
+    if (bProfile !== aProfile) {
+      return bProfile - aProfile;
+    }
+    const aTs = String(a.created_at ?? "");
+    const bTs = String(b.created_at ?? "");
+    return aTs.localeCompare(bTs);
+  });
+
   const r = rows[0]!;
-  const pk = String(r.id ?? "");
-  if (!pk) {
+  const buildingId = String(r.building_id ?? "");
+  if (!buildingId) {
     return null;
   }
-  return { row: r, pk };
+  const pk = String(r.id ?? "");
+  return {
+    pk,
+    device_id: String(r.device_id ?? ""),
+    building_id: inviteBuildingId && inviteBuildingId.length > 0
+      ? inviteBuildingId
+      : buildingId,
+    profile_id: r.profile_id ? String(r.profile_id) : null,
+    unit_id: r.unit_id ? String(r.unit_id) : null,
+  };
+}
+
+/** Active resident membership for a unit (service-role lookup). */
+async function findMembershipProfileForUnit(
+  supabase: ReturnType<typeof createClient>,
+  buildingId: string,
+  unitId: string,
+): Promise<string | null> {
+  let query = supabase
+    .from("memberships")
+    .select("user_id")
+    .eq("building_id", buildingId)
+    .eq("unit_id", unitId)
+    .eq("role", "resident");
+
+  let res = await query
+    .eq("status", "active")
+    .order("joined_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (res.error && isMissingColumn(res.error, "status")) {
+    res = await query
+      .order("joined_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+  }
+
+  if (res.error && isMissingColumn(res.error, "joined_at")) {
+    res = await query.limit(1).maybeSingle();
+  }
+
+  if (res.error) {
+    console.error("memberships unit resident lookup", res.error);
+    return null;
+  }
+
+  const profileId = typeof res.data?.user_id === "string"
+    ? (res.data.user_id as string).trim()
+    : "";
+  return profileId.length > 0 ? profileId : null;
+}
+
+async function profileToCanonicalResident(
+  supabase: ReturnType<typeof createClient>,
+  profileId: string,
+  buildingId: string,
+  unitId: string,
+): Promise<CanonicalDevice> {
+  const devSel = await supabase
+    .from("devices")
+    .select(
+      "id, device_id, building_id, profile_id, unit_id, role, created_at",
+    )
+    .eq("profile_id", profileId)
+    .eq("role", "resident")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (devSel.error || !devSel.data) {
+    return {
+      pk: "",
+      device_id: "",
+      building_id: buildingId,
+      profile_id: profileId,
+      unit_id: unitId,
+    };
+  }
+
+  const d = devSel.data as Record<string, unknown>;
+  return {
+    pk: String(d.id ?? ""),
+    device_id: String(d.device_id ?? ""),
+    building_id: String(d.building_id ?? buildingId),
+    profile_id: profileId,
+    unit_id: d.unit_id ? String(d.unit_id) : unitId,
+  };
+}
+
+/** Resident device already bound to this unit invite (phone change / reinstall). */
+async function findCanonicalResidentForInvite(
+  supabase: ReturnType<typeof createClient>,
+  inviteRowId: string,
+  buildingId?: string | null,
+  unitId?: string | null,
+): Promise<CanonicalDevice | null> {
+  const sel = await supabase
+    .from("devices")
+    .select(
+      "id, device_id, building_id, profile_id, unit_id, role, admin_invite_code_id, created_at",
+    )
+    .eq("admin_invite_code_id", inviteRowId)
+    .eq("role", "resident")
+    .not("building_id", "is", null);
+
+  let rows: Record<string, unknown>[] = [];
+  if (sel.error && isMissingColumn(sel.error, "admin_invite_code_id")) {
+    rows = [];
+  } else if (sel.error) {
+    console.error("devices canonical resident lookup", sel.error);
+    return null;
+  } else {
+    rows = (sel.data as Record<string, unknown>[] | null) ?? [];
+  }
+
+  rows = rows.filter((r) => {
+    const bid = String(r.building_id ?? "");
+    const pid = r.profile_id;
+    return (
+      bid.length > 0 &&
+      typeof pid === "string" &&
+      (pid as string).trim().length > 0
+    );
+  });
+
+  if (rows.length === 0) {
+    const inv = await supabase
+      .from("invite_codes")
+      .select("used_by_device_id, building_id, unit_id")
+      .eq("id", inviteRowId)
+      .maybeSingle();
+    const legacyDid = typeof inv.data?.used_by_device_id === "string"
+      ? (inv.data.used_by_device_id as string).trim()
+      : "";
+    if (legacyDid.length > 0) {
+      let leg = await supabase
+        .from("devices")
+        .select(
+          "id, device_id, building_id, profile_id, unit_id, role, created_at",
+        )
+        .eq("device_id", legacyDid)
+        .eq("role", "resident")
+        .maybeSingle();
+      if (!leg.data) {
+        leg = await supabase
+          .from("devices")
+          .select(
+            "id, device_id, building_id, profile_id, unit_id, role, created_at",
+          )
+          .eq("device_id", legacyDid)
+          .not("profile_id", "is", null)
+          .maybeSingle();
+      }
+      if (leg.data) {
+        const legRow = leg.data as Record<string, unknown>;
+        const legPid = String(legRow.profile_id ?? "").trim();
+        const legBid = String(legRow.building_id ?? "").trim();
+        if (legPid.length > 0 && legBid.length > 0) {
+          rows = [legRow];
+        }
+      }
+    }
+    if (rows.length === 0) {
+      const bid =
+        typeof buildingId === "string" && buildingId.length > 0
+          ? buildingId
+          : null;
+      const uid = typeof unitId === "string" && unitId.length > 0
+        ? unitId
+        : null;
+      if (!bid || !uid) {
+        return null;
+      }
+
+      const profileId = await findMembershipProfileForUnit(supabase, bid, uid);
+      if (!profileId) {
+        const { data: unitDev, error: udErr } = await supabase
+          .from("devices")
+          .select(
+            "id, device_id, building_id, profile_id, unit_id, role, created_at",
+          )
+          .eq("building_id", bid)
+          .eq("unit_id", uid)
+          .eq("role", "resident")
+          .not("profile_id", "is", null)
+          .order("created_at", { ascending: true })
+          .limit(1)
+          .maybeSingle();
+
+        if (!udErr && unitDev) {
+          const d = unitDev as Record<string, unknown>;
+          const pid = String(d.profile_id ?? "").trim();
+          if (pid.length > 0) {
+            return {
+              pk: String(d.id ?? ""),
+              device_id: String(d.device_id ?? ""),
+              building_id: String(d.building_id ?? bid),
+              profile_id: pid,
+              unit_id: d.unit_id ? String(d.unit_id) : uid,
+            };
+          }
+        }
+        return null;
+      }
+
+      return await profileToCanonicalResident(
+        supabase,
+        profileId,
+        bid,
+        uid,
+      );
+    }
+  }
+
+  rows.sort((a, b) => {
+    const aTs = String(a.created_at ?? "");
+    const bTs = String(b.created_at ?? "");
+    return aTs.localeCompare(bTs);
+  });
+
+  const r = rows[0]!;
+  const resolvedBuildingId = String(r.building_id ?? "");
+  if (!resolvedBuildingId) {
+    return null;
+  }
+  return {
+    pk: String(r.id ?? ""),
+    device_id: String(r.device_id ?? ""),
+    building_id: resolvedBuildingId,
+    profile_id: r.profile_id ? String(r.profile_id) : null,
+    unit_id: r.unit_id ? String(r.unit_id) : null,
+  };
+}
+
+/** Drop stale incomplete device row blocking upsert on this device_id. */
+async function clearIncompleteDeviceClash(
+  supabase: ReturnType<typeof createClient>,
+  deviceId: string,
+  inviteRowId: string,
+): Promise<void> {
+  const clash = await supabase
+    .from("devices")
+    .select("id, building_id, admin_invite_code_id, role")
+    .eq("device_id", deviceId)
+    .maybeSingle();
+
+  if (clash.error || !clash.data) {
+    return;
+  }
+
+  const row = clash.data as Record<string, unknown>;
+  const pk = String(row.id ?? "");
+  const bid = row.building_id;
+  const hasBuilding = typeof bid === "string" && bid.length > 0;
+  const sameInvite = String(row.admin_invite_code_id ?? "") === inviteRowId;
+
+  if (!pk || (hasBuilding && sameInvite)) {
+    return;
+  }
+
+  await supabase.from("devices").delete().eq("id", pk);
+}
+
+async function grantManagerAccess(
+  supabase: ReturnType<typeof createClient>,
+  deviceId: string,
+  sessionToken: string,
+  nowIso: string,
+  inviteRowId: string,
+  canonical: CanonicalDevice,
+): Promise<Response> {
+  const buildingId = canonical.building_id;
+  const profileId = canonical.profile_id;
+
+  await clearIncompleteDeviceClash(supabase, deviceId, inviteRowId);
+
+  if (canonical.pk && canonical.device_id !== deviceId) {
+    const clash = await supabase
+      .from("devices")
+      .select("id")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+    const clashPk = clash.data
+      ? String((clash.data as Record<string, unknown>).id ?? "")
+      : "";
+    if (clashPk.length > 0 && clashPk !== canonical.pk) {
+      await supabase.from("devices").delete().eq("id", clashPk);
+    }
+
+    let rebErr = (
+      await supabase
+        .from("devices")
+        .update({
+          device_id: deviceId,
+          session_token: sessionToken,
+          last_seen_at: nowIso,
+          profile_id: profileId,
+          building_id: buildingId,
+          admin_invite_code_id: inviteRowId,
+        })
+        .eq("id", canonical.pk)
+    ).error;
+
+    if (rebErr && isMissingColumn(rebErr, "session_token")) {
+      rebErr = (
+        await supabase
+          .from("devices")
+          .update({
+            device_id: deviceId,
+            last_seen_at: nowIso,
+            profile_id: profileId,
+            building_id: buildingId,
+            admin_invite_code_id: inviteRowId,
+          })
+          .eq("id", canonical.pk)
+      ).error;
+    }
+
+    if (rebErr) {
+      console.error("devices rebind admin", rebErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+  } else {
+    const { error: devErr } = await upsertDeviceWithLegacyColumns(supabase, {
+      device_id: deviceId,
+      profile_id: profileId,
+      building_id: buildingId,
+      unit_id: null,
+      role: "building_admin",
+      session_token: sessionToken,
+      last_seen_at: nowIso,
+      admin_invite_code_id: inviteRowId,
+    });
+    if (devErr) {
+      console.error("devices grant admin", devErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+  }
+
+  const buildingName = await fetchBuildingName(supabase, buildingId);
+  return jsonResponse(200, {
+    success: true,
+    role: "building_admin",
+    building_id: buildingId,
+    unit_id: canonical.unit_id,
+    profile_id: profileId,
+    session_token: sessionToken,
+    building_name: buildingName.length > 0 ? buildingName : null,
+    resumed: true,
+    rebound: canonical.device_id !== deviceId,
+  });
+}
+
+async function grantResidentAccess(
+  supabase: ReturnType<typeof createClient>,
+  deviceId: string,
+  sessionToken: string,
+  nowIso: string,
+  inviteRowId: string,
+  canonical: CanonicalDevice,
+  fullName: string,
+): Promise<Response> {
+  const buildingId = canonical.building_id;
+  const unitId = canonical.unit_id;
+  const profileId = canonical.profile_id;
+
+  if (profileId && fullName.length >= 3) {
+    await supabase
+      .from("profiles")
+      .update({ full_name: fullName })
+      .eq("id", profileId);
+  }
+
+  await clearIncompleteDeviceClash(supabase, deviceId, inviteRowId);
+
+  if (canonical.pk && canonical.device_id !== deviceId) {
+    const clash = await supabase
+      .from("devices")
+      .select("id")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+    const clashPk = clash.data
+      ? String((clash.data as Record<string, unknown>).id ?? "")
+      : "";
+    if (clashPk.length > 0 && clashPk !== canonical.pk) {
+      await supabase.from("devices").delete().eq("id", clashPk);
+    }
+
+    let rebErr = (
+      await supabase
+        .from("devices")
+        .update({
+          device_id: deviceId,
+          session_token: sessionToken,
+          last_seen_at: nowIso,
+          profile_id: profileId,
+          building_id: buildingId,
+          unit_id: unitId,
+          admin_invite_code_id: inviteRowId,
+        })
+        .eq("id", canonical.pk)
+    ).error;
+
+    if (rebErr && isMissingColumn(rebErr, "session_token")) {
+      rebErr = (
+        await supabase
+          .from("devices")
+          .update({
+            device_id: deviceId,
+            last_seen_at: nowIso,
+            profile_id: profileId,
+            building_id: buildingId,
+            unit_id: unitId,
+            admin_invite_code_id: inviteRowId,
+          })
+          .eq("id", canonical.pk)
+      ).error;
+    }
+
+    if (rebErr) {
+      console.error("devices rebind resident", rebErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+  } else {
+    const { error: dErr } = await upsertDeviceWithLegacyColumns(supabase, {
+      device_id: deviceId,
+      profile_id: profileId,
+      building_id: buildingId,
+      unit_id: unitId,
+      role: "resident",
+      session_token: sessionToken,
+      last_seen_at: nowIso,
+      admin_invite_code_id: inviteRowId,
+    });
+    if (dErr) {
+      console.error("devices grant resident", dErr);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+  }
+
+  const buildingName = await fetchBuildingName(supabase, buildingId);
+  let resolvedFullName: string | null = null;
+  if (profileId) {
+    const { data: prof } = await supabase
+      .from("profiles")
+      .select("full_name")
+      .eq("id", profileId)
+      .maybeSingle();
+    if (typeof prof?.full_name === "string" && prof.full_name.trim().length > 0) {
+      resolvedFullName = prof.full_name.trim();
+    }
+  }
+  if (!resolvedFullName && fullName.length >= 3) {
+    resolvedFullName = fullName;
+  }
+
+  return jsonResponse(200, {
+    success: true,
+    role: "resident",
+    building_id: buildingId,
+    unit_id: unitId,
+    profile_id: profileId,
+    session_token: sessionToken,
+    building_name: buildingName.length > 0 ? buildingName : null,
+    full_name: resolvedFullName,
+    resumed: true,
+    rebound: canonical.device_id !== deviceId,
+  });
 }
 
 serve(async (req: Request): Promise<Response> => {
@@ -197,7 +781,8 @@ serve(async (req: Request): Promise<Response> => {
   const primary = await supabase
     .from("invite_codes")
     .select(
-      "id, code_type, status, building_id, unit_id, expires_at, admin_redeem_policy",
+      "id, code_type, status, building_id, unit_id, expires_at, "
+        + "admin_redeem_policy, used_at, used_by_device_id",
     )
     .eq("code", code)
     .maybeSingle();
@@ -205,7 +790,10 @@ serve(async (req: Request): Promise<Response> => {
   if (primary.error && isMissingColumn(primary.error, "admin_redeem_policy")) {
     const legacy = await supabase
       .from("invite_codes")
-      .select("id, code_type, status, building_id, unit_id, expires_at")
+      .select(
+        "id, code_type, status, building_id, unit_id, expires_at, "
+          + "used_at, used_by_device_id",
+      )
       .eq("code", code)
       .maybeSingle();
     if (legacy.error) {
@@ -229,7 +817,7 @@ serve(async (req: Request): Promise<Response> => {
     });
   }
 
-  if (row.status !== "active") {
+  if (isInviteExpired(row)) {
     return jsonResponse(404, {
       success: false,
       error: "code_not_found_or_expired",
@@ -238,34 +826,163 @@ serve(async (req: Request): Promise<Response> => {
     });
   }
 
-  if (row.expires_at) {
-    const exp = new Date(row.expires_at as string);
-    if (exp.getTime() < Date.now()) {
-      return jsonResponse(404, {
-        success: false,
-        error: "code_not_found_or_expired",
-        message:
-          "Kod bulunamadı veya süresi dolmuş.",
-      });
-    }
-  }
-
   const codeType = row.code_type as string;
+  const inviteRowId = String(row.id);
+  const inviteBuildingId =
+    typeof row.building_id === "string" && row.building_id.length > 0
+      ? row.building_id
+      : null;
+
+  const adminCanonical = codeType === "admin"
+    ? await findCanonicalAdminForInvite(
+      supabase,
+      inviteRowId,
+      inviteBuildingId,
+    )
+    : null;
+  const inviteUnitId =
+    typeof row.unit_id === "string" && row.unit_id.length > 0
+      ? row.unit_id
+      : null;
+  let residentCanonical = codeType === "unit"
+    ? await findCanonicalResidentForInvite(
+      supabase,
+      inviteRowId,
+      inviteBuildingId,
+      inviteUnitId,
+    )
+    : null;
+
+  const hasExistingAccess = codeType === "admin"
+    ? adminCanonical != null
+    : residentCanonical != null;
+
+  if (!inviteAllowsRedeem(row, hasExistingAccess)) {
+    return jsonResponse(404, {
+      success: false,
+      error: "code_not_found_or_expired",
+      message:
+        "Kod bulunamadı veya süresi dolmuş.",
+    });
+  }
   const rawAdminPolicy = (row as Record<string, unknown>).admin_redeem_policy;
   const adminRedeemPolicy =
     typeof rawAdminPolicy === "string" && rawAdminPolicy.trim() === "reusable"
       ? "reusable"
       : "single_use";
 
-  if (probeOnly && codeType !== "admin") {
-    return jsonResponse(400, {
-      success: false,
-      error: "probe_admin_only",
+  const nowIso = new Date().toISOString();
+
+  if (probeOnly && codeType === "unit") {
+    let devProbe = await supabase
+      .from("devices")
+      .select("building_id, profile_id, unit_id, role, admin_invite_code_id")
+      .eq("device_id", deviceId)
+      .maybeSingle();
+
+    if (
+      devProbe.error &&
+      isMissingColumn(devProbe.error, "admin_invite_code_id")
+    ) {
+      devProbe = await supabase
+        .from("devices")
+        .select("building_id, profile_id, unit_id, role")
+        .eq("device_id", deviceId)
+        .maybeSingle();
+    }
+
+    if (devProbe.error) {
+      console.error("devices select resident probe", devProbe.error);
+      return jsonResponse(500, { success: false, error: "database_error" });
+    }
+
+    const ex = devProbe.data as Record<string, unknown> | null;
+    const exBid = ex?.building_id;
+    const storedInvite = ex?.admin_invite_code_id;
+    const exUnitRaw = ex?.unit_id;
+    const exUnitId = typeof exUnitRaw === "string" && exUnitRaw.length > 0
+      ? exUnitRaw
+      : null;
+    const unitMatches = !inviteUnitId || exUnitId === inviteUnitId;
+    const canResume =
+      ex?.role === "resident" &&
+      typeof exBid === "string" &&
+      exBid.length > 0 &&
+      inviteBuildingId &&
+      String(exBid) === inviteBuildingId &&
+      unitMatches &&
+      (storedInvite == null ||
+        String(storedInvite) === inviteRowId);
+
+    if (canResume && typeof exBid === "string") {
+      const unitId = exUnitId ?? inviteUnitId;
+      const buildingName = await fetchBuildingName(supabase, exBid);
+      const unitLabel = await fetchUnitLabel(supabase, unitId);
+      return jsonResponse(200, {
+        success: true,
+        probe: true,
+        would_resume: true,
+        building_id: exBid,
+        building_name: buildingName.length > 0 ? buildingName : null,
+        unit_label: unitLabel.length > 0 ? unitLabel : null,
+      });
+    }
+
+    if (residentCanonical) {
+      const buildingName = await fetchBuildingName(
+        supabase,
+        residentCanonical.building_id,
+      );
+      const unitLabel = await fetchUnitLabel(
+        supabase,
+        residentCanonical.unit_id,
+      );
+      return jsonResponse(200, {
+        success: true,
+        probe: true,
+        would_resume: true,
+        building_id: residentCanonical.building_id,
+        building_name: buildingName.length > 0 ? buildingName : null,
+        unit_label: unitLabel.length > 0 ? unitLabel : null,
+      });
+    }
+
+    if (
+      inviteCodeWasUsed(row) &&
+      inviteBuildingId &&
+      inviteUnitId
+    ) {
+      const buildingName = await fetchBuildingName(supabase, inviteBuildingId);
+      const unitLabel = await fetchUnitLabel(supabase, inviteUnitId);
+      return jsonResponse(200, {
+        success: true,
+        probe: true,
+        would_resume: true,
+        building_id: inviteBuildingId,
+        building_name: buildingName.length > 0 ? buildingName : null,
+        unit_label: unitLabel.length > 0 ? unitLabel : null,
+      });
+    }
+
+    return jsonResponse(200, {
+      success: true,
+      probe: true,
+      would_resume: false,
     });
   }
 
-  if (codeType === "unit") {
-    if (!fullName || fullName.length < 3) {
+  if (codeType === "unit" && !probeOnly) {
+    const codeAlreadyUsed = inviteCodeWasUsed(row);
+    if (!residentCanonical && codeAlreadyUsed) {
+      residentCanonical = await findCanonicalResidentForInvite(
+        supabase,
+        inviteRowId,
+        inviteBuildingId,
+        inviteUnitId,
+      );
+    }
+    const isReturning = residentCanonical != null || codeAlreadyUsed;
+    if (!isReturning && (!fullName || fullName.length < 3)) {
       return jsonResponse(422, {
         success: false,
         error: "full_name_required",
@@ -274,11 +991,7 @@ serve(async (req: Request): Promise<Response> => {
     }
   }
 
-  const nowIso = new Date().toISOString();
-
   if (codeType === "admin") {
-    const inviteRowId = String(row.id);
-
     let devProbe = await supabase
       .from("devices")
       .select("building_id, profile_id, unit_id, role, admin_invite_code_id")
@@ -330,30 +1043,18 @@ serve(async (req: Request): Promise<Response> => {
           building_name: buildingName.length > 0 ? buildingName : null,
         });
       }
-      const probeSingleton = await findSingletonCompletedAdminForInvite(
-        supabase,
-        inviteRowId,
-      );
-      if (probeSingleton) {
-        const bid = probeSingleton.row.building_id;
-        if (typeof bid === "string" && bid.length > 0) {
-          let buildingName = "";
-          const { data: bMetaSg } = await supabase
-            .from("buildings")
-            .select("name")
-            .eq("id", bid)
-            .maybeSingle();
-          if (typeof bMetaSg?.name === "string") {
-            buildingName = (bMetaSg.name as string).trim();
-          }
-          return jsonResponse(200, {
-            success: true,
-            probe: true,
-            would_resume: true,
-            building_id: bid,
-            building_name: buildingName.length > 0 ? buildingName : null,
-          });
-        }
+      if (adminCanonical) {
+        const buildingName = await fetchBuildingName(
+          supabase,
+          adminCanonical.building_id,
+        );
+        return jsonResponse(200, {
+          success: true,
+          probe: true,
+          would_resume: true,
+          building_id: adminCanonical.building_id,
+          building_name: buildingName.length > 0 ? buildingName : null,
+        });
       }
       return jsonResponse(200, {
         success: true,
@@ -387,15 +1088,10 @@ serve(async (req: Request): Promise<Response> => {
         return jsonResponse(500, { success: false, error: "database_error" });
       }
 
-      let buildingName = "";
-      const { data: bMeta } = await supabase
-        .from("buildings")
-        .select("name")
-        .eq("id", exBid)
-        .maybeSingle();
-      if (typeof bMeta?.name === "string") {
-        buildingName = (bMeta.name as string).trim();
-      }
+      const buildingName = await fetchBuildingName(
+        supabase,
+        String(exBid),
+      );
 
       return jsonResponse(200, {
         success: true,
@@ -409,86 +1105,15 @@ serve(async (req: Request): Promise<Response> => {
       });
     }
 
-    const reinstallSingleton = await findSingletonCompletedAdminForInvite(
-      supabase,
-      inviteRowId,
-    );
-    const reinstallBid =
-      reinstallSingleton &&
-      typeof reinstallSingleton.row.building_id === "string" &&
-      String(reinstallSingleton.row.building_id).length > 0
-        ? String(reinstallSingleton.row.building_id)
-        : null;
-
-    if (reinstallSingleton && reinstallBid) {
-      const prevDid = String(reinstallSingleton.row.device_id ?? "").trim();
-      if (prevDid !== deviceId) {
-        const clash = await supabase
-          .from("devices")
-          .select("id")
-          .eq("device_id", deviceId)
-          .maybeSingle();
-
-        const clashId = clash.data
-          ? String((clash.data as Record<string, unknown>).id ?? "")
-          : "";
-        if (clashId.length > 0 && clashId !== reinstallSingleton.pk) {
-          return jsonResponse(409, {
-            success: false,
-            error: "device_id_conflict",
-          });
-        }
-
-        let rebErr = (
-          await supabase
-            .from("devices")
-            .update({
-              device_id: deviceId,
-              session_token: sessionToken,
-              last_seen_at: nowIso,
-            })
-            .eq("id", reinstallSingleton.pk)
-        ).error;
-
-        if (rebErr && isMissingColumn(rebErr, "session_token")) {
-          rebErr = (
-            await supabase
-              .from("devices")
-              .update({
-                device_id: deviceId,
-                last_seen_at: nowIso,
-              })
-              .eq("id", reinstallSingleton.pk)
-          ).error;
-        }
-
-        if (rebErr) {
-          console.error("devices rebind reinstall admin", rebErr);
-          return jsonResponse(500, { success: false, error: "database_error" });
-        }
-
-        let rbName = "";
-        const { data: bMetaRb } = await supabase
-          .from("buildings")
-          .select("name")
-          .eq("id", reinstallBid)
-          .maybeSingle();
-        if (typeof bMetaRb?.name === "string") {
-          rbName = (bMetaRb.name as string).trim();
-        }
-
-        return jsonResponse(200, {
-          success: true,
-          role: "building_admin",
-          building_id: reinstallBid,
-          unit_id: reinstallSingleton.row.unit_id ?? null,
-          profile_id: reinstallSingleton.row.profile_id ?? null,
-          session_token: sessionToken,
-          building_name: rbName.length > 0 ? rbName : null,
-          resumed: true,
-          rebound: true,
-        });
-      }
+    if (adminCanonical) {
+      return await grantManagerAccess(
+        supabase,
+        deviceId,
+        sessionToken,
+        nowIso,
+        inviteRowId,
+        adminCanonical,
+      );
     }
 
     if (adminRedeemPolicy !== "reusable") {
@@ -545,33 +1170,90 @@ serve(async (req: Request): Promise<Response> => {
   }
 
   if (codeType === "unit") {
-    const { data: locked, error: updErr } = await supabase
+    if (!residentCanonical && inviteCodeWasUsed(row)) {
+      residentCanonical = await findCanonicalResidentForInvite(
+        supabase,
+        inviteRowId,
+        inviteBuildingId,
+        inviteUnitId,
+      );
+    }
+
+    if (residentCanonical) {
+      return await grantResidentAccess(
+        supabase,
+        deviceId,
+        sessionToken,
+        nowIso,
+        inviteRowId,
+        residentCanonical,
+        fullName ?? "",
+      );
+    }
+
+    if (inviteCodeWasUsed(row) && inviteBuildingId && inviteUnitId) {
+      const profileId = await findMembershipProfileForUnit(
+        supabase,
+        inviteBuildingId,
+        inviteUnitId,
+      );
+      if (profileId) {
+        residentCanonical = await profileToCanonicalResident(
+          supabase,
+          profileId,
+          inviteBuildingId,
+          inviteUnitId,
+        );
+        if (residentCanonical) {
+          return await grantResidentAccess(
+            supabase,
+            deviceId,
+            sessionToken,
+            nowIso,
+            inviteRowId,
+            residentCanonical,
+            fullName ?? "",
+          );
+        }
+      }
+      return jsonResponse(409, {
+        success: false,
+        error: "resident_registration_not_found",
+        message:
+          "Bu kodla kayıt bulunamadı. Yöneticinize başvurun.",
+      });
+    }
+
+    // Audit first use only; code stays active for repeat login on other devices.
+    await supabase
       .from("invite_codes")
       .update({
-        status: "used",
         used_at: nowIso,
         used_by_device_id: deviceId,
       })
       .eq("id", row.id)
-      .eq("status", "active")
-      .select("id")
-      .maybeSingle();
-
-    if (updErr) {
-      console.error("invite_codes update unit", updErr);
-      return jsonResponse(500, { success: false, error: "database_error" });
-    }
-
-    if (!locked) {
-      return jsonResponse(409, {
-        success: false,
-        error: "code_already_used",
-        message: "Bu kod daha önce kullanılmış.",
-      });
-    }
+      .is("used_at", null);
 
     const buildingId = row.building_id as string | null;
     const unitId = row.unit_id as string | null;
+
+    const residentAfterAudit = await findCanonicalResidentForInvite(
+      supabase,
+      inviteRowId,
+      buildingId,
+      unitId,
+    );
+    if (residentAfterAudit) {
+      return await grantResidentAccess(
+        supabase,
+        deviceId,
+        sessionToken,
+        nowIso,
+        inviteRowId,
+        residentAfterAudit,
+        fullName ?? "",
+      );
+    }
 
     if (!buildingId) {
       return jsonResponse(500, {
@@ -618,6 +1300,7 @@ serve(async (req: Request): Promise<Response> => {
       role: "resident",
       session_token: sessionToken,
       last_seen_at: nowIso,
+      admin_invite_code_id: inviteRowId,
     });
 
     if (dErr) {
@@ -627,18 +1310,7 @@ serve(async (req: Request): Promise<Response> => {
       return jsonResponse(500, { success: false, error: "database_error" });
     }
 
-    let buildingName = "";
-    const { data: bMeta, error: bNameErr } = await supabase
-      .from("buildings")
-      .select("name")
-      .eq("id", buildingId)
-      .maybeSingle();
-
-    if (bNameErr) {
-      console.error("buildings name for redeem", bNameErr);
-    } else if (typeof bMeta?.name === "string") {
-      buildingName = (bMeta.name as string).trim();
-    }
+    const buildingName = await fetchBuildingName(supabase, buildingId);
 
     return jsonResponse(200, {
       success: true,

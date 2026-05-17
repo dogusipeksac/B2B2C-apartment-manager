@@ -48,6 +48,20 @@ sealed class AppException with _$AppException implements Exception {
           return 'Bina adı ve il / ilçe bilgilerini kontrol edin.';
         case 'building_numeric_invalid':
           return 'Kat, daire sayısı ve aidat ayarlarını kontrol edin.';
+        case 'custom_naming_not_supported':
+          return 'Özel adlandırma sunucuda henüz etkin değil. '
+              'Yönetici: `supabase functions deploy finalize_building_setup` '
+              'çalıştırın veya kurulumda Otomatik adlandırma seçin.';
+        case 'custom_units_invalid':
+        case 'custom_units_count_mismatch':
+          return 'Daire listesi yapı ile uyuşmuyor. Daireler adımına dönüp '
+              'isimleri kontrol edin.';
+        case 'custom_units_duplicate':
+          return 'Aynı blokta aynı daire adı iki kez kullanılamaz.';
+        case 'invalid_units':
+          return 'Daire listesi geçersiz. Daireler adımını kontrol edin.';
+        case 'building_required':
+          return 'Bina bilgileri eksik. Kurulumu baştan tamamlayın.';
         case 'building_already_created_inconsistent':
           return 'Bu cihaz için kayıt yarım kalmış. Destek ile iletişime '
               'geçin veya yeni davet kodu isteyin.';
@@ -91,10 +105,17 @@ sealed class AppException with _$AppException implements Exception {
           return 'Kod bulunamadı veya süresi dolmuş.';
         case 'code_not_found_or_revoked':
           return 'Kod bulunamadı veya zaten iptal edilmiş.';
+        case 'unit_invite_not_found':
+          return 'Aktif davet kodu bulunamadı.';
         case 'code_already_used':
           return 'Bu kod daha önce kullanılmış.';
+        case 'device_id_conflict':
+          return 'Bu cihazda eski bir oturum kaydı var. Uygulamayı kapatıp '
+              'tekrar deneyin veya verileri temizleyin.';
         case 'full_name_required':
           return 'Ad soyad en az 3 karakter olmalıdır.';
+        case 'resident_registration_not_found':
+          return 'Bu kodla kayıt bulunamadı. Apartman yöneticinize başvurun.';
         case 'code_required':
         case 'code_invalid_length':
           return 'Davet kodunu kontrol edin.';

@@ -132,6 +132,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get signOut => 'Sign out';
 
   @override
+  String get rememberMeLabel => 'Remember me';
+
+  @override
+  String get rememberMeHint => 'Keep me signed in when I open the app';
+
+  @override
   String get errorGeneric => 'Something went wrong. Please try again.';
 
   @override
@@ -1428,13 +1434,27 @@ class AppLocalizationsEn extends AppLocalizations {
       'Blocks and floors — units are created automatically in the next step.';
 
   @override
-  String get setupBlockCountLabel => 'BLOCK COUNT';
+  String get setupBlockCountLabel => 'Number of blocks';
 
   @override
   String get setupSingleBlock => 'Single block';
 
   @override
   String get setupMultipleBlocks => 'Multiple blocks';
+
+  @override
+  String setupBlockHeading(Object block) {
+    return 'Block $block';
+  }
+
+  @override
+  String setupStructureSummaryTailMulti(
+    Object floors,
+    Object perFloor,
+    Object blocks,
+  ) {
+    return 'will be created ($floors floors × $perFloor units/block × $blocks blocks). You can edit in the next step.';
+  }
 
   @override
   String setupStructureCountBold(Object count) {
@@ -1466,6 +1486,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get setupNamingCustom => 'Custom names';
+
+  @override
+  String get setupWizardUnitsInstructionCustom =>
+      'Enter the label shown for each unit. Names must be unique within a block.';
+
+  @override
+  String get setupCustomNameHint => 'Unit name';
+
+  @override
+  String get setupCustomNameEmpty => 'All unit names must be filled in.';
+
+  @override
+  String get setupCustomNameDuplicate =>
+      'Duplicate unit names are not allowed within the same block.';
+
+  @override
+  String get setupCustomNameTooLong =>
+      'Unit names can be at most 40 characters.';
 
   @override
   String get setupWizardProceed => 'Continue';
@@ -1609,7 +1647,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get managerInviteSubtitle =>
-      'Creates a one-time code on the server for the selected unit—share it with the resident.';
+      'Creates a persistent invite code for the selected unit—valid for login until you revoke it.';
 
   @override
   String get managerInviteGenerate => 'Generate invite code';
@@ -1632,7 +1670,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get managerInviteShareHint =>
-      'Send this code to the resident over a trusted channel; it is single-use.';
+      'Send this code to the resident over a trusted channel; it stays valid for login until revoked.';
 
   @override
   String get managerInviteDemoBanner =>
@@ -1757,6 +1795,26 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get residentInvitePreviewDemo =>
       'Demo mode has no server validation; run with DEMO_MODE off for the real flow.';
+
+  @override
+  String get residentInviteResumeHeadline => 'Registration found';
+
+  @override
+  String get residentInviteResumeSubtitle =>
+      'This code was already used. Sign in to continue.';
+
+  @override
+  String get residentInviteResumeCardBadge => 'ALREADY REGISTERED';
+
+  @override
+  String get residentInviteResumeCardBody =>
+      'This unit code was used before. You will reconnect to the same apartment.';
+
+  @override
+  String get residentInviteResumeSignIn => 'Sign in';
+
+  @override
+  String get residentInviteChecking => 'Checking code…';
 
   @override
   String get homeManagerRolePrefix => 'MANAGER';
@@ -1912,4 +1970,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get superadminCodeRevoked => 'Code revoked.';
+
+  @override
+  String get inviteCodeNotesCreate => 'Create';
+
+  @override
+  String get inviteCodeNotesAdminTitle => 'Manager code note';
+
+  @override
+  String get inviteCodeNotesAdminHint =>
+      'Optional: which manager or building (e.g. John – Block A)';
+
+  @override
+  String get inviteCodeNotesUnitTitle => 'Resident / unit note';
+
+  @override
+  String get inviteCodeNotesUnitHint =>
+      'Optional: resident or unit context (e.g. 6A – New tenant)';
+
+  @override
+  String get inviteCodeNotesLabel => 'Note';
+
+  @override
+  String get managerInviteRevokeAction => 'Revoke code';
+
+  @override
+  String get managerInviteRevokeTitle => 'Revoke invite code';
+
+  @override
+  String get managerInviteRevokeBody =>
+      'This code can no longer be used to sign in. You can create a new one.';
+
+  @override
+  String get managerInviteRevokeConfirm => 'Revoke';
+
+  @override
+  String get managerInviteRevoked => 'Invite code revoked.';
+
+  @override
+  String get managerInviteActiveUntilRevoked => 'Valid until revoked';
+
+  @override
+  String get managerUnitJoinedViaCode => 'Joined via code';
 }

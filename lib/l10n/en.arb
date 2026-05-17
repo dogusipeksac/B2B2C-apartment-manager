@@ -62,6 +62,8 @@
     }
   },
   "signOut": "Sign out",
+  "rememberMeLabel": "Remember me",
+  "rememberMeHint": "Keep me signed in when I open the app",
   "errorGeneric": "Something went wrong. Please try again.",
   "errorNetwork": "Please check your internet connection and try again.",
   "errorInvalidOtp": "Invalid code. Please try again.",
@@ -625,6 +627,21 @@
   "setupBlockCountLabel": "BLOCK COUNT",
   "setupSingleBlock": "Single block",
   "setupMultipleBlocks": "Multiple blocks",
+  "setupBlockCountLabel": "Number of blocks",
+  "setupBlockHeading": "Block {block}",
+  "@setupBlockHeading": {
+    "placeholders": {
+      "block": {}
+    }
+  },
+  "setupStructureSummaryTailMulti": "will be created ({floors} floors × {perFloor} units/block × {blocks} blocks). You can edit in the next step.",
+  "@setupStructureSummaryTailMulti": {
+    "placeholders": {
+      "floors": {},
+      "perFloor": {},
+      "blocks": {}
+    }
+  },
   "setupStructureCountBold": "{count} units",
   "@setupStructureCountBold": {
     "placeholders": {
@@ -649,6 +666,11 @@
   "setupWizardCollapseFloors": "Show less",
   "setupNamingAutomatic": "Automatic (1A–6C)",
   "setupNamingCustom": "Custom names",
+  "setupWizardUnitsInstructionCustom": "Enter the label shown for each unit. Names must be unique within a block.",
+  "setupCustomNameHint": "Unit name",
+  "setupCustomNameEmpty": "All unit names must be filled in.",
+  "setupCustomNameDuplicate": "Duplicate unit names are not allowed within the same block.",
+  "setupCustomNameTooLong": "Unit names can be at most 40 characters.",
   "setupWizardProceed": "Continue",
   "setupDuesHeadline": "Set dues",
   "setupDuesSubtitle": "Monthly amount residents will see and pay.",
@@ -692,14 +714,14 @@
   "setupFinalizeBuildingNameRequired": "Building name is required to complete setup.",
   "homeManagerLockedPlaceholder": "Summary and chart data will appear here soon.",
   "homeQuickLockedHint": "This feature is coming soon.",
-  "managerInviteSubtitle": "Creates a one-time code on the server for the selected unit—share it with the resident.",
+  "managerInviteSubtitle": "Creates a persistent invite code for the selected unit—valid for login until you revoke it.",
   "managerInviteGenerate": "Generate invite code",
   "managerInviteYourCode": "Invite code",
   "managerInviteCopy": "Copy to clipboard",
   "managerInviteCopied": "Code copied to clipboard.",
   "managerInviteFailed": "Could not create the code. Check your session and try again.",
   "managerInviteCodeCreated": "New invite code is ready.",
-  "managerInviteShareHint": "Send this code to the resident over a trusted channel; it is single-use.",
+  "managerInviteShareHint": "Send this code to the resident over a trusted channel; it stays valid for login until revoked.",
   "managerInviteDemoBanner": "In demo mode the code is generated locally; set DEMO_MODE=false for real invites.",
   "managerInviteSelectUnit": "Unit",
   "residentInviteScreenTitle": "Your invite code",
@@ -755,6 +777,12 @@
   "residentInvitePreviewTitle": "Linked with this code",
   "residentInviteWrongCodeType": "This is a manager invite code. Ask your manager for a unit code to join as a resident.",
   "residentInvitePreviewDemo": "Demo mode has no server validation; run with DEMO_MODE off for the real flow.",
+  "residentInviteResumeHeadline": "Registration found",
+  "residentInviteResumeSubtitle": "This code was already used. Sign in to continue.",
+  "residentInviteResumeCardBadge": "ALREADY REGISTERED",
+  "residentInviteResumeCardBody": "This unit code was used before. You will reconnect to the same apartment.",
+  "residentInviteResumeSignIn": "Sign in",
+  "residentInviteChecking": "Checking code…",
   "homeManagerRolePrefix": "MANAGER",
   "homeManagerBuildingFallback": "MANAGER · Building",
   "residentRolePrefix": "RESIDENT",
@@ -802,5 +830,18 @@
   "superadminRevokeAdminCodeTitle": "Revoke manager code",
   "superadminRevokeAdminCodeBody": "This code will no longer work. Continue?",
   "superadminRevokeAdminCodeConfirm": "Revoke",
-  "superadminCodeRevoked": "Code revoked."
+  "superadminCodeRevoked": "Code revoked.",
+  "inviteCodeNotesCreate": "Create",
+  "inviteCodeNotesAdminTitle": "Manager code note",
+  "inviteCodeNotesAdminHint": "Optional: which manager or building (e.g. John – Block A)",
+  "inviteCodeNotesUnitTitle": "Resident / unit note",
+  "inviteCodeNotesUnitHint": "Optional: resident or unit context (e.g. 6A – New tenant)",
+  "inviteCodeNotesLabel": "Note",
+  "managerInviteRevokeAction": "Revoke code",
+  "managerInviteRevokeTitle": "Revoke invite code",
+  "managerInviteRevokeBody": "This code can no longer be used to sign in. You can create a new one.",
+  "managerInviteRevokeConfirm": "Revoke",
+  "managerInviteRevoked": "Invite code revoked.",
+  "managerInviteActiveUntilRevoked": "Valid until revoked",
+  "managerUnitJoinedViaCode": "Joined via code"
 }

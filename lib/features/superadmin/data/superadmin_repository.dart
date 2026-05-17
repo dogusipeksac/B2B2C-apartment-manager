@@ -102,6 +102,10 @@ class SuperadminRepository {
       final policy = polRaw?.trim() == AdminRedeemPolicy.reusable.wireValue
           ? AdminRedeemPolicy.reusable
           : AdminRedeemPolicy.singleUse;
+      final notesRaw = m['notes'];
+      final notes = notesRaw is String && notesRaw.trim().isNotEmpty
+          ? notesRaw.trim()
+          : null;
       return SuperadminAdminCodeRow(
         id: m['id'] as String? ?? '',
         code: m['code'] as String? ?? '',
@@ -109,6 +113,7 @@ class SuperadminRepository {
         expiresAt: exp,
         createdAt: created,
         policy: policy,
+        notes: notes,
       );
     }).toList();
   }
@@ -116,6 +121,7 @@ class SuperadminRepository {
   Future<SuperadminCreatedAdminInvite> createAdminInvite(
     LocalSession session, {
     AdminRedeemPolicy policy = AdminRedeemPolicy.reusable,
+    String? notes,
   }) async {
     if (_disabled) {
       const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
@@ -144,6 +150,7 @@ class SuperadminRepository {
         'device_id': session.deviceId,
         'session_token': token,
         'admin_redeem_policy': policy.wireValue,
+        if (notes != null && notes.isNotEmpty) 'notes': notes,
       },
       options: Options(
         headers: <String, String>{
@@ -299,6 +306,12 @@ class SuperadminRepository {
         if (expRaw is String && expRaw.trim().isNotEmpty) {
           inviteExpires = DateTime.tryParse(expRaw.trim());
         }
+        final notesRaw = m['invite_notes'];
+        final inviteNotes = notesRaw is String && notesRaw.trim().isNotEmpty
+            ? notesRaw.trim()
+            : null;
+        final joinedRaw = m['resident_joined'];
+        final residentJoined = joinedRaw == true;
         return ManagerUnitOption(
           id: id,
           floor: floor,
@@ -307,6 +320,8 @@ class SuperadminRepository {
           label: label,
           inviteCode: inviteCode,
           inviteExpiresAt: inviteExpires,
+          inviteNotes: inviteNotes,
+          residentJoined: residentJoined,
         );
       }).toList();
       return ManagerInviteListResult(
@@ -322,11 +337,13 @@ class SuperadminRepository {
     LocalSession session, {
     required String buildingId,
     String? unitId,
+    String? notes,
   }) async {
     if (_disabled) {
       return ManagerInviteRepository.disabled().createInvite(
         session,
         unitId: unitId,
+        notes: notes,
       );
     }
 
@@ -344,6 +361,7 @@ class SuperadminRepository {
         'session_token': token,
         'building_id': buildingId,
         if (unitId != null && unitId.isNotEmpty) 'unit_id': unitId,
+        if (notes != null && notes.isNotEmpty) 'notes': notes,
       },
       options: Options(
         headers: <String, String>{
@@ -377,6 +395,55 @@ class SuperadminRepository {
         unitId: body['unit_id']! as String,
         expiresAt: exp,
       );
+    }
+
+    throw const AppException.unknown();
+  }
+
+  Future<void> revokeUnitInvite(
+    LocalSession session, {
+    required String buildingId,
+    required String unitId,
+  }) async {
+    if (_disabled) {
+      return;
+    }
+
+    final token = session.sessionToken;
+    if (token == null || token.isEmpty) {
+      throw const AppException.auth(code: 'no_session_token');
+    }
+
+    final url = '${Env.supabaseUrl}/functions/v1/superadmin_ops';
+    final response = await _dio.post<dynamic>(
+      url,
+      data: <String, dynamic>{
+        'action': 'revoke_unit_invite',
+        'device_id': session.deviceId,
+        'session_token': token,
+        'building_id': buildingId,
+        'unit_id': unitId,
+      },
+      options: Options(
+        headers: <String, String>{
+          'Authorization': 'Bearer ${Env.supabaseAnonKey}',
+          'apikey': Env.supabaseAnonKey,
+          'Content-Type': 'application/json',
+        },
+        validateStatus: (_) => true,
+      ),
+    );
+
+    final status = response.statusCode ?? 0;
+    final body = _bodyMap(response.data);
+    _throwIfHttpError(status, body);
+
+    if (status == 200 && body['success'] == false) {
+      throw AppException.validation(code: _errorCode(body));
+    }
+
+    if (status == 200 && body['success'] == true) {
+      return;
     }
 
     throw const AppException.unknown();
@@ -529,6 +596,7 @@ class SuperadminAdminCodeRow {
     this.expiresAt,
     this.createdAt,
     this.policy = AdminRedeemPolicy.singleUse,
+    this.notes,
   });
 
   final String id;
@@ -537,6 +605,7 @@ class SuperadminAdminCodeRow {
   final DateTime? expiresAt;
   final DateTime? createdAt;
   final AdminRedeemPolicy policy;
+  final String? notes;
 }
 
 class SuperadminCreatedAdminInvite {

@@ -320,6 +320,18 @@ abstract class AppLocalizations {
   /// **'Çıkış yap'**
   String get signOut;
 
+  /// No description provided for @rememberMeLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Beni hatırla'**
+  String get rememberMeLabel;
+
+  /// No description provided for @rememberMeHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Uygulamayı her açtığımda oturumum açık kalsın'**
+  String get rememberMeHint;
+
   /// No description provided for @errorGeneric.
   ///
   /// In tr, this message translates to:
@@ -2729,7 +2741,7 @@ abstract class AppLocalizations {
   /// No description provided for @setupBlockCountLabel.
   ///
   /// In tr, this message translates to:
-  /// **'BLOK SAYISI'**
+  /// **'Blok sayısı'**
   String get setupBlockCountLabel;
 
   /// No description provided for @setupSingleBlock.
@@ -2743,6 +2755,22 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Çok blok'**
   String get setupMultipleBlocks;
+
+  /// No description provided for @setupBlockHeading.
+  ///
+  /// In tr, this message translates to:
+  /// **'Blok {block}'**
+  String setupBlockHeading(Object block);
+
+  /// No description provided for @setupStructureSummaryTailMulti.
+  ///
+  /// In tr, this message translates to:
+  /// **'oluşturulacak ({floors} kat × {perFloor} daire/blok × {blocks} blok). Sonraki adımda düzenleyebilirsin.'**
+  String setupStructureSummaryTailMulti(
+    Object floors,
+    Object perFloor,
+    Object blocks,
+  );
 
   /// No description provided for @setupStructureCountBold.
   ///
@@ -2791,6 +2819,36 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Özel adlandır'**
   String get setupNamingCustom;
+
+  /// No description provided for @setupWizardUnitsInstructionCustom.
+  ///
+  /// In tr, this message translates to:
+  /// **'Her daire için görünecek adı yazın. Aynı blokta tekrar eden ad olamaz.'**
+  String get setupWizardUnitsInstructionCustom;
+
+  /// No description provided for @setupCustomNameHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire adı'**
+  String get setupCustomNameHint;
+
+  /// No description provided for @setupCustomNameEmpty.
+  ///
+  /// In tr, this message translates to:
+  /// **'Tüm daire adları dolu olmalı.'**
+  String get setupCustomNameEmpty;
+
+  /// No description provided for @setupCustomNameDuplicate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Aynı blokta aynı daire adı iki kez kullanılamaz.'**
+  String get setupCustomNameDuplicate;
+
+  /// No description provided for @setupCustomNameTooLong.
+  ///
+  /// In tr, this message translates to:
+  /// **'Daire adı en fazla 40 karakter olabilir.'**
+  String get setupCustomNameTooLong;
 
   /// No description provided for @setupWizardProceed.
   ///
@@ -3053,7 +3111,7 @@ abstract class AppLocalizations {
   /// No description provided for @managerInviteSubtitle.
   ///
   /// In tr, this message translates to:
-  /// **'Seçtiğin daire için sunucuda tek kullanımlık bir kod üretilir; sakine ilet.'**
+  /// **'Seçtiğin daire için kalıcı bir davet kodu üretilir; iptal edilene kadar tekrar giriş için kullanılabilir.'**
   String get managerInviteSubtitle;
 
   /// No description provided for @managerInviteGenerate.
@@ -3095,7 +3153,7 @@ abstract class AppLocalizations {
   /// No description provided for @managerInviteShareHint.
   ///
   /// In tr, this message translates to:
-  /// **'Bu kodu sakine güvenli kanaldan ilet; tek kullanımlıdır.'**
+  /// **'Bu kodu sakine güvenli kanaldan ilet; iptal edilene kadar tekrar giriş için kullanılabilir.'**
   String get managerInviteShareHint;
 
   /// No description provided for @managerInviteDemoBanner.
@@ -3307,6 +3365,42 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Demo modda sunucu doğrulaması yok; gerçek akış için DEMO_MODE kapalı çalıştırın.'**
   String get residentInvitePreviewDemo;
+
+  /// No description provided for @residentInviteResumeHeadline.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kaydınız bulunmaktadır'**
+  String get residentInviteResumeHeadline;
+
+  /// No description provided for @residentInviteResumeSubtitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod ile daha önce kayıt olunmuş. Giriş yaparak devam edebilirsiniz.'**
+  String get residentInviteResumeSubtitle;
+
+  /// No description provided for @residentInviteResumeCardBadge.
+  ///
+  /// In tr, this message translates to:
+  /// **'KAYIT MEVCUT'**
+  String get residentInviteResumeCardBadge;
+
+  /// No description provided for @residentInviteResumeCardBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu daire kodu daha önce kullanılmış. Aynı apartmana tekrar bağlanırsınız.'**
+  String get residentInviteResumeCardBody;
+
+  /// No description provided for @residentInviteResumeSignIn.
+  ///
+  /// In tr, this message translates to:
+  /// **'Giriş yap'**
+  String get residentInviteResumeSignIn;
+
+  /// No description provided for @residentInviteChecking.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod kontrol ediliyor…'**
+  String get residentInviteChecking;
 
   /// No description provided for @homeManagerRolePrefix.
   ///
@@ -3595,6 +3689,84 @@ abstract class AppLocalizations {
   /// In tr, this message translates to:
   /// **'Kod iptal edildi.'**
   String get superadminCodeRevoked;
+
+  /// No description provided for @inviteCodeNotesCreate.
+  ///
+  /// In tr, this message translates to:
+  /// **'Oluştur'**
+  String get inviteCodeNotesCreate;
+
+  /// No description provided for @inviteCodeNotesAdminTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Yönetici kodu notu'**
+  String get inviteCodeNotesAdminTitle;
+
+  /// No description provided for @inviteCodeNotesAdminHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı: hangi yönetici veya apartman için (ör. Ahmet Bey – Site A)'**
+  String get inviteCodeNotesAdminHint;
+
+  /// No description provided for @inviteCodeNotesUnitTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Sakin / daire notu'**
+  String get inviteCodeNotesUnitTitle;
+
+  /// No description provided for @inviteCodeNotesUnitHint.
+  ///
+  /// In tr, this message translates to:
+  /// **'İsteğe bağlı: sakin veya daire hakkında (ör. 6A – Yeni kiracı)'**
+  String get inviteCodeNotesUnitHint;
+
+  /// No description provided for @inviteCodeNotesLabel.
+  ///
+  /// In tr, this message translates to:
+  /// **'Not'**
+  String get inviteCodeNotesLabel;
+
+  /// No description provided for @managerInviteRevokeAction.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kodu iptal et'**
+  String get managerInviteRevokeAction;
+
+  /// No description provided for @managerInviteRevokeTitle.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodunu iptal et'**
+  String get managerInviteRevokeTitle;
+
+  /// No description provided for @managerInviteRevokeBody.
+  ///
+  /// In tr, this message translates to:
+  /// **'Bu kod artık giriş için kullanılamaz. Yeni kod oluşturabilirsiniz.'**
+  String get managerInviteRevokeBody;
+
+  /// No description provided for @managerInviteRevokeConfirm.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal et'**
+  String get managerInviteRevokeConfirm;
+
+  /// No description provided for @managerInviteRevoked.
+  ///
+  /// In tr, this message translates to:
+  /// **'Davet kodu iptal edildi.'**
+  String get managerInviteRevoked;
+
+  /// No description provided for @managerInviteActiveUntilRevoked.
+  ///
+  /// In tr, this message translates to:
+  /// **'İptal edilene kadar geçerli'**
+  String get managerInviteActiveUntilRevoked;
+
+  /// No description provided for @managerUnitJoinedViaCode.
+  ///
+  /// In tr, this message translates to:
+  /// **'Kod ile katıldı'**
+  String get managerUnitJoinedViaCode;
 }
 
 class _AppLocalizationsDelegate

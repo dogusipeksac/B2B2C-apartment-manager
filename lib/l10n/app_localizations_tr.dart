@@ -131,6 +131,12 @@ class AppLocalizationsTr extends AppLocalizations {
   String get signOut => 'Çıkış yap';
 
   @override
+  String get rememberMeLabel => 'Beni hatırla';
+
+  @override
+  String get rememberMeHint => 'Uygulamayı her açtığımda oturumum açık kalsın';
+
+  @override
   String get errorGeneric => 'Bir hata oluştu. Lütfen tekrar deneyin.';
 
   @override
@@ -1427,13 +1433,27 @@ class AppLocalizationsTr extends AppLocalizations {
       'Blok ve kat sayısı — bir sonraki adımda daireler otomatik oluşur.';
 
   @override
-  String get setupBlockCountLabel => 'BLOK SAYISI';
+  String get setupBlockCountLabel => 'Blok sayısı';
 
   @override
   String get setupSingleBlock => 'Tek blok';
 
   @override
   String get setupMultipleBlocks => 'Çok blok';
+
+  @override
+  String setupBlockHeading(Object block) {
+    return 'Blok $block';
+  }
+
+  @override
+  String setupStructureSummaryTailMulti(
+    Object floors,
+    Object perFloor,
+    Object blocks,
+  ) {
+    return 'oluşturulacak ($floors kat × $perFloor daire/blok × $blocks blok). Sonraki adımda düzenleyebilirsin.';
+  }
 
   @override
   String setupStructureCountBold(Object count) {
@@ -1465,6 +1485,24 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get setupNamingCustom => 'Özel adlandır';
+
+  @override
+  String get setupWizardUnitsInstructionCustom =>
+      'Her daire için görünecek adı yazın. Aynı blokta tekrar eden ad olamaz.';
+
+  @override
+  String get setupCustomNameHint => 'Daire adı';
+
+  @override
+  String get setupCustomNameEmpty => 'Tüm daire adları dolu olmalı.';
+
+  @override
+  String get setupCustomNameDuplicate =>
+      'Aynı blokta aynı daire adı iki kez kullanılamaz.';
+
+  @override
+  String get setupCustomNameTooLong =>
+      'Daire adı en fazla 40 karakter olabilir.';
 
   @override
   String get setupWizardProceed => 'İlerle';
@@ -1608,7 +1646,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get managerInviteSubtitle =>
-      'Seçtiğin daire için sunucuda tek kullanımlık bir kod üretilir; sakine ilet.';
+      'Seçtiğin daire için kalıcı bir davet kodu üretilir; iptal edilene kadar tekrar giriş için kullanılabilir.';
 
   @override
   String get managerInviteGenerate => 'Davet kodu oluştur';
@@ -1631,7 +1669,7 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get managerInviteShareHint =>
-      'Bu kodu sakine güvenli kanaldan ilet; tek kullanımlıdır.';
+      'Bu kodu sakine güvenli kanaldan ilet; iptal edilene kadar tekrar giriş için kullanılabilir.';
 
   @override
   String get managerInviteDemoBanner =>
@@ -1756,6 +1794,26 @@ class AppLocalizationsTr extends AppLocalizations {
   @override
   String get residentInvitePreviewDemo =>
       'Demo modda sunucu doğrulaması yok; gerçek akış için DEMO_MODE kapalı çalıştırın.';
+
+  @override
+  String get residentInviteResumeHeadline => 'Kaydınız bulunmaktadır';
+
+  @override
+  String get residentInviteResumeSubtitle =>
+      'Bu kod ile daha önce kayıt olunmuş. Giriş yaparak devam edebilirsiniz.';
+
+  @override
+  String get residentInviteResumeCardBadge => 'KAYIT MEVCUT';
+
+  @override
+  String get residentInviteResumeCardBody =>
+      'Bu daire kodu daha önce kullanılmış. Aynı apartmana tekrar bağlanırsınız.';
+
+  @override
+  String get residentInviteResumeSignIn => 'Giriş yap';
+
+  @override
+  String get residentInviteChecking => 'Kod kontrol ediliyor…';
 
   @override
   String get homeManagerRolePrefix => 'YÖNETİCİ';
@@ -1911,4 +1969,46 @@ class AppLocalizationsTr extends AppLocalizations {
 
   @override
   String get superadminCodeRevoked => 'Kod iptal edildi.';
+
+  @override
+  String get inviteCodeNotesCreate => 'Oluştur';
+
+  @override
+  String get inviteCodeNotesAdminTitle => 'Yönetici kodu notu';
+
+  @override
+  String get inviteCodeNotesAdminHint =>
+      'İsteğe bağlı: hangi yönetici veya apartman için (ör. Ahmet Bey – Site A)';
+
+  @override
+  String get inviteCodeNotesUnitTitle => 'Sakin / daire notu';
+
+  @override
+  String get inviteCodeNotesUnitHint =>
+      'İsteğe bağlı: sakin veya daire hakkında (ör. 6A – Yeni kiracı)';
+
+  @override
+  String get inviteCodeNotesLabel => 'Not';
+
+  @override
+  String get managerInviteRevokeAction => 'Kodu iptal et';
+
+  @override
+  String get managerInviteRevokeTitle => 'Davet kodunu iptal et';
+
+  @override
+  String get managerInviteRevokeBody =>
+      'Bu kod artık giriş için kullanılamaz. Yeni kod oluşturabilirsiniz.';
+
+  @override
+  String get managerInviteRevokeConfirm => 'İptal et';
+
+  @override
+  String get managerInviteRevoked => 'Davet kodu iptal edildi.';
+
+  @override
+  String get managerInviteActiveUntilRevoked => 'İptal edilene kadar geçerli';
+
+  @override
+  String get managerUnitJoinedViaCode => 'Kod ile katıldı';
 }
